@@ -10,7 +10,6 @@ All rights reserved.
 import argparse
 import logging
 from sqlmodel import Session, SQLModel, create_engine
-from app.config import settings
 
 # Import SQLModels to ensure they register in metadata
 
@@ -46,13 +45,17 @@ def run_cli():
     # Database setup
     if args.sqlite:
         db_url = "sqlite:///curriculum_cache.db"
+        logger.info(f"Using database: {db_url}")
+        engine = create_engine(db_url)
     elif args.db_url:
         db_url = args.db_url
+        logger.info(f"Using database: {db_url}")
+        engine = create_engine(db_url)
     else:
-        db_url = settings.DATABASE_URL
+        from app.infrastructure.database import engine
 
-    logger.info(f"Using database: {db_url}")
-    engine = create_engine(db_url)
+        db_url = str(engine.url)
+        logger.info("Using API database connection")
 
     # In PostgreSQL, we must ensure schema exists before creating tables
     if "postgresql" in db_url:

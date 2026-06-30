@@ -7,7 +7,6 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from typing import Optional
 from sqlmodel import Field, SQLModel
 
 
@@ -15,6 +14,8 @@ class Modality(SQLModel, table=True):
     __tablename__ = "modalities"
     __table_args__ = {"schema": "curriculum-ingestion"}
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    title: str
+    id: int = Field(primary_key=True)
     url: str
+
+    title: str
+    content: str
