@@ -9,33 +9,30 @@ All rights reserved.
 
 from typing import Tuple, List, Any, Optional
 from bs4 import BeautifulSoup
-from app.domain.model.modality import Modality
+from app.domain.model.root import Root
 from app.domain.model.node import Node
 from app.domain.model.resource_type import ResourceType
 from app.infrastructure.adapter.outbound.http.parser.node_parser import NodeParser
 
 
-class ModalityHTMLParser(NodeParser):
+class RootHTMLParser(NodeParser):
     def parse(
         self,
         node: Node[Any],
         parent_id: Optional[int] = None,
         metadata: Optional[dict] = None,
-    ) -> Tuple[Modality, List[Node]]:
+    ) -> Tuple[Root, List[Node]]:
         soup = BeautifulSoup(node.content, "html.parser")
-        title = "Modality"
-        h1 = soup.find("h1")
-        if h1:
-            title = h1.get_text().strip()
-        elif soup.title and soup.title.string:
+        title = "Curriculum Nacional"
+        if soup.title and soup.title.string:
             title = soup.title.string.strip()
 
         nodes = []
         for a in soup.find_all("a", href=True):
             href = a["href"]
-            if "/asignatura/" in href:
+            if "/curriculum/" in href:
                 nodes.append(
                     Node(url=href, resource_type=ResourceType.HTML, content=None)
                 )
 
-        return Modality(title=title, url=node.url), nodes
+        return Root(title=title, url=node.url), nodes

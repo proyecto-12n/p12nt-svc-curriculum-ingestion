@@ -9,12 +9,16 @@ import httpx
 from bs4 import BeautifulSoup
 
 from app.domain.port.outbound.content_downloader import ContentDownloader
+from app.domain.model.node import Node
+from app.domain.model.resource_type import ResourceType
 
 
 class HTMLDownloader(ContentDownloader[str]):
-    async def download(self, url: str, timeout: float = 60.0) -> str:
+    async def download(self, url: str, timeout: float = 60.0) -> Node[str]:
         async with httpx.AsyncClient(timeout=timeout) as client:
             response = await client.get(url, follow_redirects=True)
             response.raise_for_status()
             soup = BeautifulSoup(response.text, "html.parser")
-            return soup.prettify()
+            return Node(
+                url=url, resource_type=ResourceType.HTML, content=soup.prettify()
+            )

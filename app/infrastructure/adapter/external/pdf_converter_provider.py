@@ -25,13 +25,7 @@ class PDFConverterProvider(PDFConverterProviderPort):
 
     def get_converter(self, provider_name: str) -> PDFConverter:
         name = provider_name.lower()
-        if name == "docling":
-            from app.infrastructure.adapter.external.pdf_converter.docling_pdf_converter import (
-                DoclingPDFConverter,
-            )
-
-            converter_class = DoclingPDFConverter
-        elif name == "markitdown":
+        if name == "markitdown":
             from app.infrastructure.adapter.external.pdf_converter.markitdown_pdf_converter import (
                 MarkItDownPDFConverter,
             )

@@ -17,9 +17,6 @@ from sqlmodel import Session, SQLModel, create_engine
 from app.infrastructure.adapter.outbound.db.sql_curriculum_repository_adapter import (
     SqlCurriculumRepositoryAdapter,
 )
-from app.infrastructure.adapter.outbound.http.http_curriculum_scraper_adapter import (
-    HttpCurriculumScraperAdapter,
-)
 from app.application.usecase.ingest_curriculum_usecase import (
     IngestCurriculumUseCaseImpl,
 )
@@ -76,14 +73,13 @@ def run_cli():
 
     with Session(engine) as session:
         repository = SqlCurriculumRepositoryAdapter(session)
-        scraper = HttpCurriculumScraperAdapter()
         from app.infrastructure.adapter.external.downloader_provider import (
             DownloaderProvider,
         )
 
         downloader_provider = DownloaderProvider()
 
-        use_case = IngestCurriculumUseCaseImpl(repository, scraper, downloader_provider)
+        use_case = IngestCurriculumUseCaseImpl(repository, downloader_provider)
         use_case.execute()
 
     logger.info("Ingestion completed successfully.")

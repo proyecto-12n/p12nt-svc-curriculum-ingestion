@@ -9,21 +9,21 @@ All rights reserved.
 
 from typing import Tuple, List, Any, Optional
 from bs4 import BeautifulSoup
-from app.domain.model.modality import Modality
+from app.domain.model.grade_level import GradeLevel
 from app.domain.model.node import Node
 from app.domain.model.resource_type import ResourceType
 from app.infrastructure.adapter.outbound.http.parser.node_parser import NodeParser
 
 
-class ModalityHTMLParser(NodeParser):
+class GradeLevelHTMLParser(NodeParser):
     def parse(
         self,
         node: Node[Any],
         parent_id: Optional[int] = None,
         metadata: Optional[dict] = None,
-    ) -> Tuple[Modality, List[Node]]:
+    ) -> Tuple[GradeLevel, List[Node]]:
         soup = BeautifulSoup(node.content, "html.parser")
-        title = "Modality"
+        title = "GradeLevel"
         h1 = soup.find("h1")
         if h1:
             title = h1.get_text().strip()
@@ -33,9 +33,10 @@ class ModalityHTMLParser(NodeParser):
         nodes = []
         for a in soup.find_all("a", href=True):
             href = a["href"]
-            if "/asignatura/" in href:
-                nodes.append(
-                    Node(url=href, resource_type=ResourceType.HTML, content=None)
+            if ".pdf" in href or "descargar" in href:
+                res_type = (
+                    ResourceType.PDF if ".pdf" in href.lower() else ResourceType.HTML
                 )
+                nodes.append(Node(url=href, resource_type=res_type, content=None))
 
-        return Modality(title=title, url=node.url), nodes
+        return GradeLevel(title=title, subject_id=parent_id or 0), nodes

@@ -14,6 +14,8 @@ from app.domain.model.study_program import StudyProgram
 from app.domain.model.study_program_ref import StudyProgramRef
 from app.domain.model.resource_type import ResourceType
 from app.domain.model.pdf_resource import PDFResource
+from app.domain.model.node import Node
+from app.domain.model.root import Root
 
 __all__ = [
     "Modality",
@@ -23,4 +25,6 @@ __all__ = [
     "StudyProgramRef",
     "ResourceType",
     "PDFResource",
+    "Node",
+    "Root",
 ]

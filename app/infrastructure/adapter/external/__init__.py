@@ -16,13 +16,6 @@ from app.infrastructure.adapter.external.study_program_agent_parser_provider imp
 
 # Safe optional imports
 try:
-    from app.infrastructure.adapter.external.pdf_converter.docling_pdf_converter import (
-        DoclingPDFConverter,
-    )
-except ImportError:
-    DoclingPDFConverter = None
-
-try:
     from app.infrastructure.adapter.external.pdf_converter.markitdown_pdf_converter import (
         MarkItDownPDFConverter,
     )
@@ -44,7 +37,6 @@ except ImportError:
     PydanticAiStudyProgramAgentParser = None
 
 __all__ = [
-    "DoclingPDFConverter",
     "DownloaderProvider",
     "HTMLDownloader",
     "MarkItDownPDFConverter",
