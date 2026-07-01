@@ -13,19 +13,27 @@ from datetime import datetime
 from app.domain.port.inbound.ingest_curriculum_use_case import IngestCurriculumUseCase
 from app.domain.port.outbound.curriculum_repository import CurriculumRepository
 from app.domain.port.outbound.curriculum_scraper import CurriculumScraper
+from app.domain.port.outbound.downloader_provider import DownloaderProvider
 from app.domain.model.modality import Modality
 from app.domain.model.subject import Subject
 from app.domain.model.grade_level import GradeLevel
 from app.domain.model.study_program_ref import StudyProgramRef
 from app.domain.model.study_program import StudyProgram
+from app.domain.model.resource_type import ResourceType
 
 logger = logging.getLogger(__name__)
 
 
 class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
-    def __init__(self, repository: CurriculumRepository, scraper: CurriculumScraper):
+    def __init__(
+        self,
+        repository: CurriculumRepository,
+        scraper: CurriculumScraper,
+        downloader_provider: DownloaderProvider,
+    ):
         self.repository = repository
         self.scraper = scraper
+        self.downloader_provider = downloader_provider
 
     def execute(self, force_mock: bool = False) -> None:
         logger.info("Starting ingestion of curriculum data...")
@@ -119,7 +127,21 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                         md5 = ""
 
                         try:
-                            content = self.scraper.download_program_content(ref_url)
+                            res_type = (
+                                ResourceType.PDF
+                                if ".pdf" in ref_url.lower()
+                                else ResourceType.HTML
+                            )
+                            downloader = self.downloader_provider.get_downloader(
+                                res_type
+                            )
+                            import asyncio
+
+                            downloaded = asyncio.run(downloader.download(ref_url))
+                            if isinstance(downloaded, str):
+                                raw_content = downloaded.encode("utf-8")
+                            else:
+                                raw_content = downloaded
 
                             # Formating as Canonical Markdown structure (traceability metadata header)
                             metadata_header = (
@@ -134,7 +156,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                             ).encode("utf-8")
 
                             # Prepend metadata to the canonical markdown content
-                            content = metadata_header + content
+                            content = metadata_header + raw_content
                             md5 = hashlib.md5(content).hexdigest()
                         except Exception as e:
                             logger.error(

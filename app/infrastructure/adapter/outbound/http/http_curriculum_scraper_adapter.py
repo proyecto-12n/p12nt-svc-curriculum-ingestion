@@ -9,35 +9,21 @@ All rights reserved.
 
 import urllib.request
 import urllib.error
-from html.parser import HTMLParser
 from typing import List, Dict, Any
 from app.domain.port.outbound.curriculum_scraper import CurriculumScraper
 
-
-class SimpleHTMLParser(HTMLParser):
-    def __init__(self):
-        super().__init__()
-        self.links = []
-        self._current_tag = None
-        self._current_attrs = {}
-        self._temp_text = []
-
-    def handle_starttag(self, tag, attrs):
-        self._current_tag = tag
-        self._current_attrs = dict(attrs)
-        self._temp_text = []
-
-    def handle_data(self, data):
-        if self._current_tag in ["a", "span", "div", "h1", "h2", "h3", "h4"]:
-            self._temp_text.append(data.strip())
-
-    def handle_endtag(self, tag):
-        if tag == "a" and "href" in self._current_attrs:
-            text = " ".join(self._temp_text).strip()
-            self.links.append({"text": text, "href": self._current_attrs["href"]})
-        self._current_tag = None
-        self._current_attrs = {}
-        self._temp_text = []
+from app.infrastructure.adapter.outbound.http.parser.modality_html_parser import (
+    ModalityHTMLParser,
+)
+from app.infrastructure.adapter.outbound.http.parser.subject_html_parser import (
+    SubjectHTMLParser,
+)
+from app.infrastructure.adapter.outbound.http.parser.grade_html_parser import (
+    GradeHTMLParser,
+)
+from app.infrastructure.adapter.outbound.http.parser.program_ref_html_parser import (
+    ProgramRefHTMLParser,
+)
 
 
 class HttpCurriculumScraperAdapter(CurriculumScraper):
@@ -62,11 +48,10 @@ class HttpCurriculumScraperAdapter(CurriculumScraper):
             if self.use_mock:
                 raise RuntimeError("Using mock mode")
             html = self._fetch_html(url)
-            parser = SimpleHTMLParser()
+            parser = ModalityHTMLParser()
             parser.feed(html)
 
-            # Filter and parse modality links
-            links = [link for link in parser.links if "/curriculum/" in link["href"]]
+            links = parser.links
             if not links:
                 raise ValueError("No modalities found")
             return [
@@ -91,11 +76,10 @@ class HttpCurriculumScraperAdapter(CurriculumScraper):
             if self.use_mock:
                 raise RuntimeError("Using mock mode")
             html = self._fetch_html(modality_url)
-            parser = SimpleHTMLParser()
+            parser = SubjectHTMLParser()
             parser.feed(html)
 
-            # Simple simulation of subject link extraction
-            links = [link for link in parser.links if "/asignatura/" in link["href"]]
+            links = parser.links
             if not links:
                 raise ValueError("No subjects found")
             return [
@@ -114,10 +98,10 @@ class HttpCurriculumScraperAdapter(CurriculumScraper):
             if self.use_mock:
                 raise RuntimeError("Using mock mode")
             html = self._fetch_html(subject_url)
-            parser = SimpleHTMLParser()
+            parser = GradeHTMLParser()
             parser.feed(html)
 
-            links = [link for link in parser.links if "/grado/" in link["href"]]
+            links = parser.links
             if not links:
                 raise ValueError("No grades found")
             return [
@@ -142,13 +126,11 @@ class HttpCurriculumScraperAdapter(CurriculumScraper):
             if self.use_mock:
                 raise RuntimeError("Using mock mode")
             html = self._fetch_html(grade_url)
-            parser = SimpleHTMLParser()
+            parser = ProgramRefHTMLParser()
             parser.feed(html)
 
-            # Find download link
-            for link in parser.links:
-                if ".pdf" in link["href"] or "descargar" in link["href"]:
-                    return {"url": link["href"]}
+            if parser.links:
+                return {"url": parser.links[0]["href"]}
             raise ValueError("No program ref found")
         except Exception:
             return {"url": f"{grade_url}/programa_de_estudio_pdf"}

@@ -18,4 +18,4 @@ class Root(SQLModel, table=True):
     url: str
 
     title: str
-    content: str
+    content: str = Field(default="")

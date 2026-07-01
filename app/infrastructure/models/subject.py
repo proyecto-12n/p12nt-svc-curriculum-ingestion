@@ -17,4 +17,4 @@ class Subject(SQLModel, table=True):
     id: int = Field(primary_key=True)
     title: str
     modality_id: int = Field(foreign_key="curriculum-ingestion.modalities.id")
-    content: str
+    content: str = Field(default="")

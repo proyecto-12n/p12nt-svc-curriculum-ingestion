@@ -18,4 +18,4 @@ class Modality(SQLModel, table=True):
     url: str
 
     title: str
-    content: str
+    content: str = Field(default="")

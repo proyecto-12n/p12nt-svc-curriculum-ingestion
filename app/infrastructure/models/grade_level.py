@@ -17,4 +17,4 @@ class GradeLevel(SQLModel, table=True):
     id: int = Field(primary_key=True)
     subject_id: int = Field(foreign_key="curriculum-ingestion.subjects.id")
     title: str
-    content: str
+    content: str = Field(default="")

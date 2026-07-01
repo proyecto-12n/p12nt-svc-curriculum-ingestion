@@ -77,8 +77,13 @@ def run_cli():
     with Session(engine) as session:
         repository = SqlCurriculumRepositoryAdapter(session)
         scraper = HttpCurriculumScraperAdapter()
+        from app.infrastructure.adapter.external.downloader_provider import (
+            DownloaderProvider,
+        )
 
-        use_case = IngestCurriculumUseCaseImpl(repository, scraper)
+        downloader_provider = DownloaderProvider()
+
+        use_case = IngestCurriculumUseCaseImpl(repository, scraper, downloader_provider)
         use_case.execute()
 
     logger.info("Ingestion completed successfully.")

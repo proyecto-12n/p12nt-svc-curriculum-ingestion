@@ -7,6 +7,8 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
+from datetime import datetime
+from typing import Optional
 from sqlmodel import Field, SQLModel
 
 
@@ -21,6 +23,10 @@ class StudyProgram(SQLModel, table=True):
 
     url: str
 
-    title: str
+    title: str = Field(default="")
     content: bytes
     md5sum: str
+    status: str = Field(default="PENDING")
+    error_log: Optional[str] = None
+    extracted_at: datetime = Field(default_factory=datetime.utcnow)
+    version: str = Field(default="1.0")
