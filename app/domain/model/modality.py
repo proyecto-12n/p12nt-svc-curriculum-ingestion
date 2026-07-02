@@ -7,12 +7,17 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import datetime
 
 
 @dataclass
 class Modality:
     id: int
     curriculum_id: int
-    title: str
     url: str
+
+    title: str
+    content: str
+
+    extracted_at: datetime = field(default_factory=datetime.now)

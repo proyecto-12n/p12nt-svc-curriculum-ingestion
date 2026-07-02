@@ -31,7 +31,9 @@ class CurriculumNodeParser(NodeParser[str]):
         title = CurriculumNodeParser._extract_title(soup)
         children = CurriculumNodeParser._extract_nodes(node.url, soup)
 
-        return Curriculum(id=generate_id(title), title=title, url=node.url), children
+        return Curriculum(
+            id=generate_id(title), url=node.url, title=title, content=node.content
+        ), children
 
     @staticmethod
     def _extract_title(soup: BeautifulSoup) -> Optional[str]:

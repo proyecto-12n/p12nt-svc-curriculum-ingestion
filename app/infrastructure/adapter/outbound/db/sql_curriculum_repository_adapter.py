@@ -38,7 +38,13 @@ class SqlCurriculumRepositoryAdapter(CurriculumRepository):
         statement = select(SqlCurriculum).where(SqlCurriculum.url == url)
         sql_cur = self.session.exec(statement).first()
         if sql_cur:
-            return DomainCurriculum(id=sql_cur.id, title=sql_cur.title, url=sql_cur.url)
+            return DomainCurriculum(
+                id=sql_cur.id,
+                url=sql_cur.url,
+                title=sql_cur.title,
+                content=sql_cur.content,
+                extracted_at=sql_cur.extracted_at,
+            )
         return None
 
     def save_curriculum(self, curriculum: DomainCurriculum) -> DomainCurriculum:
@@ -46,6 +52,8 @@ class SqlCurriculumRepositoryAdapter(CurriculumRepository):
             id=curriculum.id,
             title=curriculum.title,
             url=curriculum.url,
+            content=curriculum.content,
+            extracted_at=curriculum.extracted_at,
         )
         self.session.add(sql_cur)
         self.session.commit()
@@ -62,6 +70,8 @@ class SqlCurriculumRepositoryAdapter(CurriculumRepository):
                 curriculum_id=sql_mod.curriculum_id,
                 title=sql_mod.title,
                 url=sql_mod.url,
+                content=sql_mod.content,
+                extracted_at=sql_mod.extracted_at,
             )
         return None
 
@@ -70,6 +80,8 @@ class SqlCurriculumRepositoryAdapter(CurriculumRepository):
             curriculum_id=modality.curriculum_id,
             title=modality.title,
             url=modality.url,
+            content=modality.content,
+            extracted_at=modality.extracted_at,
         )
         self.session.add(sql_mod)
         self.session.commit()
@@ -90,12 +102,18 @@ class SqlCurriculumRepositoryAdapter(CurriculumRepository):
                 title=sql_sub.title,
                 modality_id=sql_sub.modality_id,
                 url=sql_sub.url,
+                content=sql_sub.content,
+                extracted_at=sql_sub.extracted_at,
             )
         return None
 
     def save_subject(self, subject: DomainSubject) -> DomainSubject:
         sql_sub = SqlSubject(
-            title=subject.title, modality_id=subject.modality_id, url=subject.url
+            title=subject.title,
+            modality_id=subject.modality_id,
+            url=subject.url,
+            content=subject.content,
+            extracted_at=subject.extracted_at,
         )
         self.session.add(sql_sub)
         self.session.commit()
@@ -116,6 +134,8 @@ class SqlCurriculumRepositoryAdapter(CurriculumRepository):
                 title=sql_grade.title,
                 subject_id=sql_grade.subject_id,
                 url=sql_grade.url,
+                content=sql_grade.content,
+                extracted_at=sql_grade.extracted_at,
             )
         return None
 
@@ -124,6 +144,8 @@ class SqlCurriculumRepositoryAdapter(CurriculumRepository):
             title=grade_level.title,
             subject_id=grade_level.subject_id,
             url=grade_level.url,
+            content=grade_level.content,
+            extracted_at=grade_level.extracted_at,
         )
         self.session.add(sql_grade)
         self.session.commit()
@@ -142,6 +164,8 @@ class SqlCurriculumRepositoryAdapter(CurriculumRepository):
                 grade_level_id=sql_ref.grade_level_id,
                 title=sql_ref.title,
                 url=sql_ref.url,
+                content=sql_ref.content,
+                extracted_at=sql_ref.extracted_at,
             )
         return None
 
@@ -152,6 +176,8 @@ class SqlCurriculumRepositoryAdapter(CurriculumRepository):
             grade_level_id=study_program_ref.grade_level_id,
             title=study_program_ref.title,
             url=study_program_ref.url,
+            content=study_program_ref.content,
+            extracted_at=study_program_ref.extracted_at,
         )
         self.session.add(sql_ref)
         self.session.commit()

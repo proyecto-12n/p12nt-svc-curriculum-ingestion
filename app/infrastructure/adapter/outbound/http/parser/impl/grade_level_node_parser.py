@@ -46,8 +46,9 @@ class GradeLevelNodeParser(NodeParser[str]):
         return GradeLevel(
             id=generate_id(curriculum_val, modality_val, subject_val, title),
             subject_id=parent_id,
-            title=title,
             url=node.url,
+            title=title,
+            content=node.content,
         ), children
 
     @staticmethod

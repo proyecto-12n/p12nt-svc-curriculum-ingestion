@@ -7,6 +7,7 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
+from datetime import datetime
 from sqlmodel import Field, SQLModel
 
 
@@ -19,3 +20,4 @@ class StudyProgramRef(SQLModel, table=True):
     title: str
     url: str
     content: str = Field(default="")
+    extracted_at: datetime = Field(default_factory=datetime.utcnow)

@@ -56,8 +56,9 @@ class StudyProgramRefNodeParser(NodeParser[str]):
                 curriculum_val, modality_val, subject_val, grade_level_val, title
             ),
             grade_level_id=parent_id,
-            title=title,
             url=node.url,
+            title=title,
+            content=node.content,
         ), children
 
     @staticmethod

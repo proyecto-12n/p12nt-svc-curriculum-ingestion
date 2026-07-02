@@ -15,10 +15,12 @@ from datetime import datetime
 class StudyProgram:
     id: int
     study_program_ref_id: int
-    title: str
     url: str
+
+    title: str
     content: bytes
-    checksum: str = ""
+    checksum: str
+
     extracted_at: datetime = field(default_factory=datetime.now)
 
     @property

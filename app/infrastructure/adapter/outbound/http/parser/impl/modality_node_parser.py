@@ -39,8 +39,9 @@ class ModalityNodeParser(NodeParser[str]):
         return Modality(
             id=generate_id(curriculum_val, title),
             curriculum_id=parent_id,
-            title=title,
             url=node.url,
+            title=title,
+            content=node.content,
         ), children
 
     @staticmethod

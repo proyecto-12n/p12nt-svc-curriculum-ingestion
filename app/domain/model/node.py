@@ -18,5 +18,6 @@ T = TypeVar("T")
 class Node(Generic[T]):
     url: str
     type: ResourceType
-    content: Optional[T] = None
+
     title: Optional[str] = None
+    content: Optional[T] = None

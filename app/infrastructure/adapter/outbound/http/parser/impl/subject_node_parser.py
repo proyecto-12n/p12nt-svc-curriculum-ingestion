@@ -42,8 +42,9 @@ class SubjectNodeParser(NodeParser[str]):
         return Subject(
             id=generate_id(curriculum_val, modality_val, title),
             modality_id=parent_id,
-            title=title,
             url=node.url,
+            title=title,
+            content=node.content,
         ), children
 
     @staticmethod
