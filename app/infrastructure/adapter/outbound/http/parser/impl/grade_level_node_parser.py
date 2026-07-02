@@ -11,18 +11,14 @@ from typing import Tuple, List, Optional
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
-from app.domain.model.grade_level import GradeLevel
+from app.domain.model import MetadataField, GradeLevel
 from app.domain.model.node import Node
 from app.domain.model.resource_type import ResourceType
 from app.infrastructure.adapter.outbound.http.parser.node_parser import NodeParser
-from infrastructure.util.id_generator import generate_id
+from app.infrastructure.util.id_generator import generate_id
 
 
 class GradeLevelNodeParser(NodeParser[str]):
-    CURRICULUM_FIELD = "curriculum"
-    MODALITY_FIELD = "modality"
-    SUBJECT_FIELD = "subject"
-
     def parse(
         self,
         node: Node[str],
@@ -33,15 +29,9 @@ class GradeLevelNodeParser(NodeParser[str]):
         title = GradeLevelNodeParser._extract_title(soup)
         children = GradeLevelNodeParser._extract_nodes(node.url, soup)
 
-        curriculum_val = (
-            metadata.get(GradeLevelNodeParser.CURRICULUM_FIELD) if metadata else None
-        )
-        modality_val = (
-            metadata.get(GradeLevelNodeParser.MODALITY_FIELD) if metadata else None
-        )
-        subject_val = (
-            metadata.get(GradeLevelNodeParser.SUBJECT_FIELD) if metadata else None
-        )
+        curriculum_val = metadata.get(MetadataField.CURRICULUM) if metadata else None
+        modality_val = metadata.get(MetadataField.MODALITY) if metadata else None
+        subject_val = metadata.get(MetadataField.SUBJECT) if metadata else None
 
         return GradeLevel(
             id=generate_id(curriculum_val, modality_val, subject_val, title),

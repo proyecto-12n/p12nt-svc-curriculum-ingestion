@@ -15,6 +15,7 @@ from app.domain.port.outbound.downloader_provider import DownloaderProvider
 from app.domain.model.study_program import StudyProgram
 from app.domain.model.resource_type import ResourceType
 from app.domain.model.node import Node
+from app.domain.model import MetadataField
 
 logger = logging.getLogger(__name__)
 
@@ -247,9 +248,9 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                                     prog_parser = StudyProgramNodeParser()
 
                                     metadata = {
-                                        "modality": modality.title,
-                                        "subject": subject.title,
-                                        "grade_level": grade.title,
+                                        MetadataField.MODALITY.value: modality.title,
+                                        MetadataField.SUBJECT.value: subject.title,
+                                        MetadataField.GRADE_LEVEL.value: grade.title,
                                     }
 
                                     program_model, _ = prog_parser.parse(

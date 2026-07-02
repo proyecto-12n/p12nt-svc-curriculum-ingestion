@@ -13,19 +13,13 @@ from os import path
 from typing import Tuple, List, Optional
 from urllib.parse import urlparse
 
-from app.domain.model.study_program import StudyProgram
+from app.domain.model import MetadataField, StudyProgram
 from app.domain.model.node import Node
 from app.infrastructure.adapter.outbound.http.parser.node_parser import NodeParser
-from infrastructure.util.id_generator import generate_id
+from app.infrastructure.util.id_generator import generate_id
 
 
 class StudyProgramNodeParser(NodeParser[bytes]):
-    CURRICULUM_FIELD = "curriculum"
-    MODALITY_FIELD = "modality"
-    SUBJECT_FIELD = "subject"
-    GRADE_LEVEL_FIELD = "grade-level"
-    STUDY_PROGRAM_REF_FIELD = "study_program_ref"
-
     def parse(
         self,
         node: Node[bytes],
@@ -38,22 +32,12 @@ class StudyProgramNodeParser(NodeParser[bytes]):
         filename = path.basename(parsed_url.path)
         title = filename if filename else ""
 
-        curriculum_val = (
-            metadata.get(StudyProgramNodeParser.CURRICULUM_FIELD) if metadata else None
-        )
-        modality_val = (
-            metadata.get(StudyProgramNodeParser.MODALITY_FIELD) if metadata else None
-        )
-        subject_val = (
-            metadata.get(StudyProgramNodeParser.SUBJECT_FIELD) if metadata else None
-        )
-        grade_level_val = (
-            metadata.get(StudyProgramNodeParser.SUBJECT_FIELD) if metadata else None
-        )
+        curriculum_val = metadata.get(MetadataField.CURRICULUM) if metadata else None
+        modality_val = metadata.get(MetadataField.MODALITY) if metadata else None
+        subject_val = metadata.get(MetadataField.SUBJECT) if metadata else None
+        grade_level_val = metadata.get(MetadataField.GRADE_LEVEL) if metadata else None
         study_program_ref_val = (
-            metadata.get(StudyProgramNodeParser.STUDY_PROGRAM_REF_FIELD)
-            if metadata
-            else None
+            metadata.get(MetadataField.STUDY_PROGRAM_REF) if metadata else None
         )
 
         return StudyProgram(

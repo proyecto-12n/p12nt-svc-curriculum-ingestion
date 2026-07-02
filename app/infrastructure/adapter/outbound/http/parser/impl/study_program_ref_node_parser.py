@@ -8,7 +8,7 @@ All rights reserved.
 """
 
 from typing import Tuple, List, Optional
-from app.domain.model.study_program_ref import StudyProgramRef
+from app.domain.model import MetadataField, StudyProgramRef
 from app.domain.model.node import Node
 from app.domain.model.resource_type import ResourceType
 from app.infrastructure.adapter.outbound.http.parser.node_parser import NodeParser
@@ -16,15 +16,10 @@ from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 
-from infrastructure.util.id_generator import generate_id
+from app.infrastructure.util.id_generator import generate_id
 
 
 class StudyProgramRefNodeParser(NodeParser[str]):
-    CURRICULUM_FIELD = "curriculum"
-    MODALITY_FIELD = "modality"
-    SUBJECT_FIELD = "subject"
-    GRADE_LEVEL_FIELD = "grade-level"
-
     def parse(
         self,
         node: Node[str],
@@ -36,20 +31,10 @@ class StudyProgramRefNodeParser(NodeParser[str]):
         title = StudyProgramRefNodeParser._extract_title(soup)
         children = StudyProgramRefNodeParser._extract_nodes(node.url, soup)
 
-        curriculum_val = (
-            metadata.get(StudyProgramRefNodeParser.CURRICULUM_FIELD)
-            if metadata
-            else None
-        )
-        modality_val = (
-            metadata.get(StudyProgramRefNodeParser.MODALITY_FIELD) if metadata else None
-        )
-        subject_val = (
-            metadata.get(StudyProgramRefNodeParser.SUBJECT_FIELD) if metadata else None
-        )
-        grade_level_val = (
-            metadata.get(StudyProgramRefNodeParser.SUBJECT_FIELD) if metadata else None
-        )
+        curriculum_val = metadata.get(MetadataField.CURRICULUM) if metadata else None
+        modality_val = metadata.get(MetadataField.MODALITY) if metadata else None
+        subject_val = metadata.get(MetadataField.SUBJECT) if metadata else None
+        grade_level_val = metadata.get(MetadataField.GRADE_LEVEL) if metadata else None
 
         return StudyProgramRef(
             id=generate_id(

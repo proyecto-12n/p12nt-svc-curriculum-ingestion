@@ -16,6 +16,7 @@ from app.domain.model.resource_type import ResourceType
 from app.domain.model.pdf_resource import PDFResource
 from app.domain.model.node import Node
 from app.domain.model.curriculum import Curriculum
+from app.domain.model.metadata_field import MetadataField
 
 __all__ = [
     "Modality",
@@ -27,4 +28,5 @@ __all__ = [
     "PDFResource",
     "Node",
     "Curriculum",
+    "MetadataField",
 ]
