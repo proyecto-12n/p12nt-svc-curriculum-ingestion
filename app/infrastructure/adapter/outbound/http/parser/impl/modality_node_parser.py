@@ -34,7 +34,7 @@ class ModalityNodeParser(NodeParser[str]):
         children = ModalityNodeParser._extract_nodes(node.url, soup)
 
         curriculum_val = (
-            metadata.get(ModalityNodeParser.CURRICULUM_FIELD) if metadata else None
+            metadata.get(ModalityNodeParser.CURRICULUM_FIELD) if metadata else ""
         )
         return Modality(
             id=generate_id(curriculum_val, title),
@@ -57,8 +57,7 @@ class ModalityNodeParser(NodeParser[str]):
             if not a:
                 continue
 
-            title = span.get_text(strip=True)
             u = urljoin(base_url, a.get("href"))
-            nodes.append(Node(url=u, type=ResourceType.HTML, title=title))
+            nodes.append(Node(url=u, type=ResourceType.HTML))
 
         return nodes

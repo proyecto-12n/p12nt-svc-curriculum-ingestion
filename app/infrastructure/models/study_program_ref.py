@@ -16,5 +16,6 @@ class StudyProgramRef(SQLModel, table=True):
 
     id: int = Field(primary_key=True)
     grade_level_id: int = Field(foreign_key="curriculum-ingestion.grade_levels.id")
+    title: str
     url: str
     content: str = Field(default="")

@@ -15,6 +15,7 @@ class Modality(SQLModel, table=True):
     __table_args__ = {"schema": "curriculum-ingestion"}
 
     id: int = Field(primary_key=True)
+    curriculum_id: int = Field(foreign_key="curriculum-ingestion.curriculums.id")
     url: str
 
     title: str

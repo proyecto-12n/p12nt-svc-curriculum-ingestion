@@ -8,6 +8,7 @@ All rights reserved.
 """
 
 from typing import Protocol, Optional
+from app.domain.model.curriculum import Curriculum
 from app.domain.model.modality import Modality
 from app.domain.model.subject import Subject
 from app.domain.model.grade_level import GradeLevel
@@ -16,6 +17,12 @@ from app.domain.model.study_program import StudyProgram
 
 
 class CurriculumRepository(Protocol):
+    def find_curriculum_by_url(self, url: str) -> Optional[Curriculum]:
+        pass
+
+    def save_curriculum(self, curriculum: Curriculum) -> Curriculum:
+        pass
+
     def find_modality_by_url(self, url: str) -> Optional[Modality]:
         pass
 

@@ -10,12 +10,11 @@ All rights reserved.
 from sqlmodel import Field, SQLModel
 
 
-class Root(SQLModel, table=True):
-    __tablename__: str = "modalities"
+class Curriculum(SQLModel, table=True):
+    __tablename__ = "curriculums"
     __table_args__ = {"schema": "curriculum-ingestion"}
 
     id: int = Field(primary_key=True)
     url: str
-
     title: str
     content: str = Field(default="")

@@ -8,12 +8,11 @@ All rights reserved.
 """
 
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass
 class Modality:
     id: int
+    curriculum_id: int
     title: str
     url: str
-    curriculum_id: Optional[int] = None

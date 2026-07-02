@@ -69,15 +69,7 @@ class GradeLevelNodeParser(NodeParser[str]):
                 if not a:
                     continue
 
-                h_tag = card.find(["h1", "h2", "h3", "h4", "h5", "h6"])
-                title = h_tag.get_text(strip=True) if h_tag else a.get_text(strip=True)
                 u = urljoin(base_url, a.get("href"))
-                nodes.append(
-                    Node(
-                        url=u,
-                        type=ResourceType.HTML,
-                        title=title,
-                    )
-                )
+                nodes.append(Node(url=u, type=ResourceType.HTML))
 
         return nodes

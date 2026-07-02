@@ -15,4 +15,4 @@ class GradeLevel:
     id: int
     subject_id: int
     title: str
-    url: str = ""
+    url: str

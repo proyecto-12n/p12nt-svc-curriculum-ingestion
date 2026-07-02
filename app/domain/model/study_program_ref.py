@@ -8,11 +8,11 @@ All rights reserved.
 """
 
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass
 class StudyProgramRef:
+    id: int
     grade_level_id: int
+    title: str
     url: str
-    id: Optional[int] = None

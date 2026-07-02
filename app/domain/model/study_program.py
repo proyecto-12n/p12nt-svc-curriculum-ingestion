@@ -9,20 +9,17 @@ All rights reserved.
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional
 
 
 @dataclass
 class StudyProgram:
-    url: str
+    id: int
     study_program_ref_id: int
+    title: str
+    url: str
     content: bytes
     checksum: str = ""
-    status: str = "PENDING"
-    error_log: Optional[str] = None
-    extracted_at: datetime = field(default_factory=datetime.utcnow)
-    version: str = "1.0"
-    id: Optional[int] = None
+    extracted_at: datetime = field(default_factory=datetime.now)
 
     @property
     def md5sum(self) -> str:

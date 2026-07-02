@@ -16,6 +16,8 @@ from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 
+from infrastructure.util.id_generator import generate_id
+
 
 class StudyProgramRefNodeParser(NodeParser[str]):
     CURRICULUM_FIELD = "curriculum"
@@ -31,9 +33,32 @@ class StudyProgramRefNodeParser(NodeParser[str]):
     ) -> Tuple[StudyProgramRef, List[Node]]:
 
         soup = BeautifulSoup(node.content, "html.parser")
+        title = StudyProgramRefNodeParser._extract_title(soup)
         children = StudyProgramRefNodeParser._extract_nodes(node.url, soup)
 
-        return StudyProgramRef(grade_level_id=parent_id, url=node.url), children
+        curriculum_val = (
+            metadata.get(StudyProgramRefNodeParser.CURRICULUM_FIELD)
+            if metadata
+            else None
+        )
+        modality_val = (
+            metadata.get(StudyProgramRefNodeParser.MODALITY_FIELD) if metadata else None
+        )
+        subject_val = (
+            metadata.get(StudyProgramRefNodeParser.SUBJECT_FIELD) if metadata else None
+        )
+        grade_level_val = (
+            metadata.get(StudyProgramRefNodeParser.SUBJECT_FIELD) if metadata else None
+        )
+
+        return StudyProgramRef(
+            id=generate_id(
+                curriculum_val, modality_val, subject_val, grade_level_val, title
+            ),
+            grade_level_id=parent_id,
+            title=title,
+            url=node.url,
+        ), children
 
     @staticmethod
     def _extract_title(soup: BeautifulSoup) -> Optional[str]:
@@ -48,14 +73,7 @@ class StudyProgramRefNodeParser(NodeParser[str]):
             if not a.get("href").lower().endswith(".pdf"):
                 continue
 
-            title = a.get_text(strip=True)
             u = urljoin(base_url, a.get("href"))
-            nodes.append(
-                Node(
-                    url=u,
-                    type=ResourceType.PDF,
-                    title=title,
-                )
-            )
+            nodes.append(Node(url=u, type=ResourceType.PDF))
 
         return nodes

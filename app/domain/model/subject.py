@@ -15,4 +15,4 @@ class Subject:
     id: int
     modality_id: int
     title: str
-    url: str = ""
+    url: str

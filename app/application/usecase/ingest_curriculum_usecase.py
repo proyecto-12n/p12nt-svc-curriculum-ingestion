@@ -114,7 +114,14 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
         root_node = download_content(root_url, ResourceType.HTML)
 
         root_parser = CurriculumNodeParser()
-        _, modality_nodes = root_parser.parse(root_node)
+
+        curriculum = self.repository.find_curriculum_by_url(root_url)
+        if not curriculum:
+            curriculum, modality_nodes = root_parser.parse(root_node)
+            curriculum = self.repository.save_curriculum(curriculum)
+            logger.info(f"Saved Curriculum: {curriculum.title}")
+        else:
+            _, modality_nodes = root_parser.parse(root_node)
 
         # 2. Iterate Modalities
         for mod_node in modality_nodes:
@@ -124,7 +131,9 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
             if not modality:
                 mod_node_data = download_content(mod_url, ResourceType.HTML)
                 mod_parser = ModalityNodeParser()
-                modality_model, subject_nodes = mod_parser.parse(mod_node_data)
+                modality_model, subject_nodes = mod_parser.parse(
+                    mod_node_data, parent_id=curriculum.id
+                )
 
                 if modality_model.title == "Modality" and mod_node.title:
                     modality_model.title = mod_node.title
@@ -134,7 +143,9 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
             else:
                 mod_node_data = download_content(mod_url, ResourceType.HTML)
                 mod_parser = ModalityNodeParser()
-                _, subject_nodes = mod_parser.parse(mod_node_data)
+                _, subject_nodes = mod_parser.parse(
+                    mod_node_data, parent_id=curriculum.id
+                )
 
             # 3. Iterate Subjects (limit to 3 for performance)
             for sub_node in subject_nodes[:3]:
@@ -249,25 +260,28 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                                     program = self.repository.save_study_program(
                                         program_model
                                     )
-                                    status = program.status
-                                    logger.info(
-                                        f"Saved StudyProgram: {program.url} with status {status}"
-                                    )
+                                    logger.info(f"Saved StudyProgram: {program.url}")
                                 except Exception as e:
                                     logger.error(
                                         f"Failed to download/process study program {prog_node.url}: {e}"
                                     )
+                                    from infrastructure.util.id_generator import (
+                                        generate_id,
+                                    )
+                                    from datetime import datetime
+
                                     program_model = StudyProgram(
-                                        url=prog_node.url,
+                                        id=generate_id(prog_node.url),
                                         study_program_ref_id=program_ref.id,
-                                        checksum="",
+                                        title=prog_node.title or "",
+                                        url=prog_node.url,
                                         content=b"",
-                                        status="PENDING",
-                                        error_log=str(e),
+                                        checksum="",
+                                        extracted_at=datetime.now(),
                                     )
                                     self.repository.save_study_program(program_model)
                                     logger.info(
-                                        f"Saved StudyProgram (failed download): {prog_node.url} with status PENDING"
+                                        f"Saved StudyProgram (failed download): {prog_node.url}"
                                     )
 
         logger.info("Ingestion completed successfully.")
