@@ -15,7 +15,7 @@ from app.domain.model.subject import Subject
 from app.domain.model.node import Node
 from app.domain.model.resource_type import ResourceType
 from app.infrastructure.adapter.outbound.http.parser.node_parser import NodeParser
-from infrastructure.util.id_generator import generate_id
+from app.infrastructure.util.id_generator import generate_id
 
 
 class SubjectNodeParser(NodeParser[str]):

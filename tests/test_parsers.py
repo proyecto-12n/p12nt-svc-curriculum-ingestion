@@ -10,6 +10,15 @@ from app.infrastructure.adapter.outbound.http.parser.impl.modality_node_parser i
 from app.infrastructure.adapter.outbound.http.parser.impl.subject_node_parser import (
     SubjectNodeParser,
 )
+from app.infrastructure.adapter.outbound.http.parser.impl.grade_level_node_parser import (
+    GradeLevelNodeParser,
+)
+from app.infrastructure.adapter.outbound.http.parser.impl.study_program_ref_node_parser import (
+    StudyProgramRefNodeParser,
+)
+from app.infrastructure.adapter.outbound.http.parser.impl.study_program_node_parser import (
+    StudyProgramNodeParser,
+)
 
 
 def test_curriculum_node_parser():
@@ -52,9 +61,7 @@ def test_modality_node_parser():
         </body>
     </html>
     """
-    node = Node(
-        url="http://test.url/mod", type=ResourceType.HTML, content=html_content
-    )
+    node = Node(url="http://test.url/mod", type=ResourceType.HTML, content=html_content)
     modality, children = parser.parse(
         node, parent_id=123, metadata={"curriculum": "Curr"}
     )
@@ -79,9 +86,7 @@ def test_subject_node_parser():
         </body>
     </html>
     """
-    node = Node(
-        url="http://test.url/sub", type=ResourceType.HTML, content=html_content
-    )
+    node = Node(url="http://test.url/sub", type=ResourceType.HTML, content=html_content)
     subject, children = parser.parse(
         node, parent_id=10, metadata={"curriculum": "Curr", "modality": "Mod"}
     )
@@ -90,3 +95,92 @@ def test_subject_node_parser():
     assert subject.modality_id == 10
     assert subject.content == html_content
     assert len(children) == 1
+
+
+def test_grade_level_node_parser():
+    parser = GradeLevelNodeParser()
+    html_content = """
+    <html>
+        <body>
+            <h1>1 Básico</h1>
+            <div class="three-grid-content">
+                <div class="card--content">
+                    <span class="badge">Programa de estudio</span>
+                    <a href="/recursos/programa-estudio-matematica-1-basico">Programa</a>
+                </div>
+            </div>
+        </body>
+    </html>
+    """
+    node = Node(
+        url="http://test.url/grade", type=ResourceType.HTML, content=html_content
+    )
+    grade, children = parser.parse(
+        node,
+        parent_id=100,
+        metadata={"curriculum": "Curr", "modality": "Mod", "subject": "Sub"},
+    )
+
+    assert grade.title == "1 Básico"
+    assert grade.subject_id == 100
+    assert grade.content == html_content
+    assert len(children) == 1
+    assert (
+        children[0].url
+        == "http://test.url/recursos/programa-estudio-matematica-1-basico"
+    )
+
+
+def test_study_program_ref_node_parser():
+    parser = StudyProgramRefNodeParser()
+    html_content = """
+    <html>
+        <body>
+            <h1>Programa Matematica</h1>
+            <a href="/sites/default/files/matematica.pdf">PDF Program</a>
+        </body>
+    </html>
+    """
+    node = Node(url="http://test.url/ref", type=ResourceType.HTML, content=html_content)
+    ref, children = parser.parse(
+        node,
+        parent_id=1000,
+        metadata={
+            "curriculum": "Curr",
+            "modality": "Mod",
+            "subject": "Sub",
+            "grade-level": "Grade",
+        },
+    )
+
+    assert ref.title == "Programa Matematica"
+    assert ref.grade_level_id == 1000
+    assert ref.content == html_content
+    assert len(children) == 1
+    assert children[0].url == "http://test.url/sites/default/files/matematica.pdf"
+    assert children[0].type == ResourceType.PDF
+
+
+def test_study_program_node_parser():
+    parser = StudyProgramNodeParser()
+    pdf_content = b"PDF content bytes"
+    node = Node(
+        url="http://test.url/prog.pdf", type=ResourceType.PDF, content=pdf_content
+    )
+    program, children = parser.parse(
+        node,
+        parent_id=2000,
+        metadata={
+            "curriculum": "Curr",
+            "modality": "Mod",
+            "subject": "Sub",
+            "grade-level": "Grade",
+            "study_program_ref": "Ref",
+        },
+    )
+
+    assert program.study_program_ref_id == 2000
+    assert program.title == "prog.pdf"
+    assert program.content == pdf_content
+    assert program.checksum != ""
+    assert len(children) == 0
