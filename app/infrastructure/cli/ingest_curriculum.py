@@ -7,9 +7,8 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-import argparse
 import logging
-from sqlmodel import Session, SQLModel, create_engine
+from sqlmodel import Session, SQLModel
 
 # Import SQLModels to ensure they register in metadata
 
@@ -28,32 +27,11 @@ logger = logging.getLogger(__name__)
 
 
 def run_cli():
-    parser = argparse.ArgumentParser(description="P12NT Curriculum Ingestion CLI")
-    parser.add_argument(
-        "--db-url", default=None, help="Database URL connection string."
-    )
-    parser.add_argument(
-        "--sqlite",
-        action="store_true",
-        help="Force the use of a local SQLite database (curriculum_cache.db).",
-    )
-    args = parser.parse_args()
-
     # Database setup
-    if args.sqlite:
-        db_url = "sqlite:///curriculum_cache.db"
-        logger.info(f"Using database: {db_url}")
-        engine = create_engine(db_url)
-    elif args.db_url:
-        db_url = args.db_url
-        logger.info(f"Using database: {db_url}")
-        engine = create_engine(db_url)
-    else:
-        from app.config import settings
+    from app.infrastructure.database import engine
 
-        db_url = settings.DATABASE_URL
-        logger.info("Using DB configuration from .env file")
-        engine = create_engine(db_url)
+    db_url = str(engine.url)
+    logger.info("Using database configuration from app/infrastructure/database.py")
 
     # In PostgreSQL, we must ensure schema exists before creating tables
     if "postgresql" in db_url:
