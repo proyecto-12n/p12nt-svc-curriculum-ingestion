@@ -12,23 +12,13 @@ from typing import Dict
 from app.domain.port.outbound.node_parser_provider import NodeParserProvider
 from app.domain.model.curriculum_node_type import CurriculumNodeType
 from app.infrastructure.adapter.outbound.http.parser.node_parser import NodeParser
-from app.infrastructure.adapter.outbound.http.parser.impl.curriculum_node_parser import (
+from app.infrastructure.adapter.outbound.http.parser.impl import (
     CurriculumNodeParser,
-)
-from app.infrastructure.adapter.outbound.http.parser.impl.modality_node_parser import (
-    ModalityNodeParser,
-)
-from app.infrastructure.adapter.outbound.http.parser.impl.subject_node_parser import (
-    SubjectNodeParser,
-)
-from app.infrastructure.adapter.outbound.http.parser.impl.grade_level_node_parser import (
     GradeLevelNodeParser,
-)
-from app.infrastructure.adapter.outbound.http.parser.impl.study_program_ref_node_parser import (
-    StudyProgramRefNodeParser,
-)
-from app.infrastructure.adapter.outbound.http.parser.impl.study_program_node_parser import (
+    ModalityNodeParser,
     StudyProgramNodeParser,
+    StudyProgramRefNodeParser,
+    SubjectNodeParser,
 )
 
 

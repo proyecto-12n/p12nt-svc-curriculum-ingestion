@@ -12,6 +12,14 @@ try:
 except ImportError:
     PyMuPDFPDFConverter = None
 
+try:
+    from app.infrastructure.adapter.external.pdf_converter.markitdown_pdf_converter import (
+        MarkItDownPDFConverter,
+    )
+except ImportError:
+    MarkItDownPDFConverter = None
+
 __all__ = [
     "PyMuPDFPDFConverter",
+    "MarkItDownPDFConverter",
 ]
