@@ -32,7 +32,7 @@ class CurriculumNodeParser(NodeParser[str]):
         children = CurriculumNodeParser._extract_nodes(node.url, soup)
 
         return Curriculum(
-            id=generate_id(title), url=node.url, title=title, content=node.content
+            id=generate_id(node.url), url=node.url, title=title, content=node.content
         ), children
 
     @staticmethod

@@ -11,7 +11,7 @@ from typing import Tuple, List, Optional
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
-from app.domain.model import MetadataField, GradeLevel
+from app.domain.model import GradeLevel
 from app.domain.model.node import Node
 from app.domain.model.resource_type import ResourceType
 from app.infrastructure.adapter.outbound.http.parser.node_parser import NodeParser
@@ -29,12 +29,8 @@ class GradeLevelNodeParser(NodeParser[str]):
         title = GradeLevelNodeParser._extract_title(soup)
         children = GradeLevelNodeParser._extract_nodes(node.url, soup)
 
-        curriculum_val = metadata.get(MetadataField.CURRICULUM) if metadata else None
-        modality_val = metadata.get(MetadataField.MODALITY) if metadata else None
-        subject_val = metadata.get(MetadataField.SUBJECT) if metadata else None
-
         return GradeLevel(
-            id=generate_id(curriculum_val, modality_val, subject_val, title),
+            id=generate_id(node.url),
             subject_id=parent_id,
             url=node.url,
             title=title,

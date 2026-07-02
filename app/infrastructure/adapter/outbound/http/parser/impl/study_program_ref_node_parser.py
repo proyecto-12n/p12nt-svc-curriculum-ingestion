@@ -8,7 +8,7 @@ All rights reserved.
 """
 
 from typing import Tuple, List, Optional
-from app.domain.model import MetadataField, StudyProgramRef
+from app.domain.model import StudyProgramRef
 from app.domain.model.node import Node
 from app.domain.model.resource_type import ResourceType
 from app.infrastructure.adapter.outbound.http.parser.node_parser import NodeParser
@@ -30,16 +30,8 @@ class StudyProgramRefNodeParser(NodeParser[str]):
         soup = BeautifulSoup(node.content, "html.parser")
         title = StudyProgramRefNodeParser._extract_title(soup)
         children = StudyProgramRefNodeParser._extract_nodes(node.url, soup)
-
-        curriculum_val = metadata.get(MetadataField.CURRICULUM) if metadata else None
-        modality_val = metadata.get(MetadataField.MODALITY) if metadata else None
-        subject_val = metadata.get(MetadataField.SUBJECT) if metadata else None
-        grade_level_val = metadata.get(MetadataField.GRADE_LEVEL) if metadata else None
-
         return StudyProgramRef(
-            id=generate_id(
-                curriculum_val, modality_val, subject_val, grade_level_val, title
-            ),
+            id=generate_id(node.url),
             grade_level_id=parent_id,
             url=node.url,
             title=title,

@@ -12,7 +12,7 @@ from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 
-from app.domain.model import MetadataField, Modality
+from app.domain.model import Modality
 from app.domain.model.node import Node
 from app.domain.model.resource_type import ResourceType
 from app.infrastructure.adapter.outbound.http.parser.node_parser import NodeParser
@@ -30,10 +30,8 @@ class ModalityNodeParser(NodeParser[str]):
         soup = BeautifulSoup(node.content, "html.parser")
         title = ModalityNodeParser._extract_title(soup)
         children = ModalityNodeParser._extract_nodes(node.url, soup)
-
-        curriculum_val = metadata.get(MetadataField.CURRICULUM) if metadata else ""
         return Modality(
-            id=generate_id(curriculum_val, title),
+            id=generate_id(node.url),
             curriculum_id=parent_id,
             url=node.url,
             title=title,

@@ -11,7 +11,7 @@ from typing import Tuple, List, Optional
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
-from app.domain.model import MetadataField, Subject
+from app.domain.model import Subject
 from app.domain.model.node import Node
 from app.domain.model.resource_type import ResourceType
 from app.infrastructure.adapter.outbound.http.parser.node_parser import NodeParser
@@ -29,11 +29,8 @@ class SubjectNodeParser(NodeParser[str]):
         soup = BeautifulSoup(node.content, "html.parser")
         title = SubjectNodeParser._extract_title(soup)
         children = SubjectNodeParser._extract_nodes(node.url, soup)
-
-        curriculum_val = metadata.get(MetadataField.CURRICULUM) if metadata else None
-        modality_val = metadata.get(MetadataField.MODALITY) if metadata else None
         return Subject(
-            id=generate_id(curriculum_val, modality_val, title),
+            id=generate_id(node.url),
             modality_id=parent_id,
             url=node.url,
             title=title,

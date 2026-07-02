@@ -13,7 +13,7 @@ from os import path
 from typing import Tuple, List, Optional
 from urllib.parse import urlparse
 
-from app.domain.model import MetadataField, StudyProgram
+from app.domain.model import StudyProgram
 from app.domain.model.node import Node
 from app.infrastructure.adapter.outbound.http.parser.node_parser import NodeParser
 from app.infrastructure.util.id_generator import generate_id
@@ -31,24 +31,8 @@ class StudyProgramNodeParser(NodeParser[bytes]):
         parsed_url = urlparse(node.url)
         filename = path.basename(parsed_url.path)
         title = filename if filename else ""
-
-        curriculum_val = metadata.get(MetadataField.CURRICULUM) if metadata else None
-        modality_val = metadata.get(MetadataField.MODALITY) if metadata else None
-        subject_val = metadata.get(MetadataField.SUBJECT) if metadata else None
-        grade_level_val = metadata.get(MetadataField.GRADE_LEVEL) if metadata else None
-        study_program_ref_val = (
-            metadata.get(MetadataField.STUDY_PROGRAM_REF) if metadata else None
-        )
-
         return StudyProgram(
-            id=generate_id(
-                curriculum_val,
-                modality_val,
-                subject_val,
-                grade_level_val,
-                study_program_ref_val,
-                title,
-            ),
+            id=generate_id(node.url),
             study_program_ref_id=parent_id,
             url=node.url,
             title=title,
