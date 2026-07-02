@@ -198,33 +198,3 @@ def test_run_cli_postgresql_dialect():
             mock_usecase.execute.assert_called_once()
             mock_sqlmodel.metadata.create_all.assert_called_once_with(mock_engine)
             assert mock_text is not None
-
-
-def test_run_cli_sqlite_dialect():
-    with (
-        patch("app.infrastructure.cli.ingest_curriculum.Session") as mock_session_class,
-        patch("app.infrastructure.cli.ingest_curriculum.SQLModel") as mock_sqlmodel,
-        patch(
-            "app.infrastructure.cli.ingest_curriculum.IngestCurriculumUseCaseImpl"
-        ) as mock_usecase_class,
-    ):
-        mock_engine = MagicMock()
-        mock_engine.url = "sqlite:///:memory:"
-        mock_engine.dialect.name = "sqlite"
-
-        mock_session = MagicMock()
-        mock_session_class.return_value.__enter__.return_value = mock_session
-
-        mock_usecase = MagicMock()
-        mock_usecase_class.return_value = mock_usecase
-
-        mock_table = MagicMock()
-        mock_table.schema = "curriculum-ingestion"
-        mock_sqlmodel.metadata.tables.values.return_value = [mock_table]
-
-        with patch("app.infrastructure.database.engine", new=mock_engine):
-            run_cli()
-
-            assert mock_table.schema is None
-            mock_usecase.execute.assert_called_once()
-            mock_sqlmodel.metadata.create_all.assert_called_once_with(mock_engine)

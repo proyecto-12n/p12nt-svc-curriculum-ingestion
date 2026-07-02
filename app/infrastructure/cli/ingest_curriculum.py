@@ -41,11 +41,6 @@ def run_cli():
             conn.execute(text('CREATE SCHEMA IF NOT EXISTS "curriculum-ingestion"'))
             conn.commit()
 
-    # For SQLite, remove schema attribute to prevent errors
-    if engine.dialect.name == "sqlite":
-        for table in SQLModel.metadata.tables.values():
-            table.schema = None
-
     # Create tables
     SQLModel.metadata.create_all(engine)
     logger.info("Database schema and tables initialized.")
