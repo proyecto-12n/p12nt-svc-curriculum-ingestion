@@ -185,7 +185,6 @@ def test_run_cli_sqlite():
             "app.infrastructure.cli.ingest_curriculum.create_engine"
         ) as mock_create_engine,
         patch("app.infrastructure.cli.ingest_curriculum.Session") as mock_session_class,
-        patch("app.infrastructure.cli.ingest_curriculum.SQLModel") as mock_sqlmodel,
         patch(
             "app.infrastructure.cli.ingest_curriculum.IngestCurriculumUseCaseImpl"
         ) as mock_usecase_class,
@@ -243,11 +242,7 @@ def test_run_cli_default():
 
     with (
         patch("argparse.ArgumentParser.parse_args", return_value=mock_args),
-        patch(
-            "app.infrastructure.cli.ingest_curriculum.create_engine"
-        ) as mock_create_engine,
         patch("app.infrastructure.cli.ingest_curriculum.Session") as mock_session_class,
-        patch("app.infrastructure.cli.ingest_curriculum.SQLModel") as mock_sqlmodel,
         patch(
             "app.infrastructure.cli.ingest_curriculum.IngestCurriculumUseCaseImpl"
         ) as mock_usecase_class,

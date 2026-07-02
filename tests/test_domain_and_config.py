@@ -44,8 +44,8 @@ def test_log_execution_time(caplog):
 def test_settings():
     s = Settings(PROJECT_NAME="test-project")
     assert s.PROJECT_NAME == "test-project"
-    assert s.Config.env_file == ".env"
-    assert s.Config.case_sensitive is True
+    assert s.model_config.get("env_file") == ".env"
+    assert s.model_config.get("case_sensitive") is True
 
 
 def test_get_db():

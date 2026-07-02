@@ -20,22 +20,22 @@ from app.domain.port.outbound.curriculum_repository import CurriculumRepository
 from app.domain.port.outbound.downloader_provider import DownloaderProvider
 from app.infrastructure.util.id_generator import generate_id
 
-from infrastructure.adapter.outbound.http.parser.impl.curriculum_node_parser import (
+from app.infrastructure.adapter.outbound.http.parser.impl.curriculum_node_parser import (
     CurriculumNodeParser,
 )
-from infrastructure.adapter.outbound.http.parser.impl.grade_level_node_parser import (
+from app.infrastructure.adapter.outbound.http.parser.impl.grade_level_node_parser import (
     GradeLevelNodeParser,
 )
-from infrastructure.adapter.outbound.http.parser.impl.modality_node_parser import (
+from app.infrastructure.adapter.outbound.http.parser.impl.modality_node_parser import (
     ModalityNodeParser,
 )
-from infrastructure.adapter.outbound.http.parser.impl.study_program_node_parser import (
+from app.infrastructure.adapter.outbound.http.parser.impl.study_program_node_parser import (
     StudyProgramNodeParser,
 )
-from infrastructure.adapter.outbound.http.parser.impl.study_program_ref_node_parser import (
+from app.infrastructure.adapter.outbound.http.parser.impl.study_program_ref_node_parser import (
     StudyProgramRefNodeParser,
 )
-from infrastructure.adapter.outbound.http.parser.impl.subject_node_parser import (
+from app.infrastructure.adapter.outbound.http.parser.impl.subject_node_parser import (
     SubjectNodeParser,
 )
 
