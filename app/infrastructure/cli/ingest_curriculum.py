@@ -49,10 +49,11 @@ def run_cli():
         logger.info(f"Using database: {db_url}")
         engine = create_engine(db_url)
     else:
-        from app.infrastructure.database import engine
+        from app.config import settings
 
-        db_url = str(engine.url)
-        logger.info("Using API database connection")
+        db_url = settings.DATABASE_URL
+        logger.info("Using DB configuration from .env file")
+        engine = create_engine(db_url)
 
     # In PostgreSQL, we must ensure schema exists before creating tables
     if "postgresql" in db_url:

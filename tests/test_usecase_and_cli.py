@@ -245,19 +245,26 @@ def test_run_cli_default():
 
     with (
         patch("argparse.ArgumentParser.parse_args", return_value=mock_args),
+        patch(
+            "app.infrastructure.cli.ingest_curriculum.create_engine"
+        ) as mock_create_engine,
         patch("app.infrastructure.cli.ingest_curriculum.Session") as mock_session_class,
+        patch("app.infrastructure.cli.ingest_curriculum.SQLModel") as mock_sqlmodel,
         patch(
             "app.infrastructure.cli.ingest_curriculum.IngestCurriculumUseCaseImpl"
         ) as mock_usecase_class,
     ):
-        # Import engine from database
         mock_engine = MagicMock()
-        mock_engine.url = "sqlite:///:memory:"
         mock_engine.dialect.name = "sqlite"
+        mock_create_engine.return_value = mock_engine
 
         mock_session = MagicMock()
         mock_session_class.return_value.__enter__.return_value = mock_session
 
-        with patch("app.infrastructure.database.engine", new=mock_engine):
-            run_cli()
-            mock_usecase_class.return_value.execute.assert_called_once()
+        run_cli()
+
+        from app.config import settings
+
+        mock_create_engine.assert_called_once_with(settings.DATABASE_URL)
+        mock_usecase_class.return_value.execute.assert_called_once()
+        assert mock_sqlmodel is not None
