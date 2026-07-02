@@ -21,5 +21,5 @@ class OllamaModelFactory(LLMModelFactory):
     """
 
     def create_model(self, settings: Settings) -> Model:
-        provider = OllamaProvider(base_url=settings.llm_base_url_ollama)
-        return OllamaModel(model_name=settings.llm_model_name_ollama, provider=provider)
+        provider = OllamaProvider(base_url=settings.ollama_llm_base_url)
+        return OllamaModel(model_name=settings.ollama_llm_model_name, provider=provider)

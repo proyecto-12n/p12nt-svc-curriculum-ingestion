@@ -11,11 +11,15 @@ class Settings(BaseSettings):
     # LLM Settings for external study program parsing agent
     llm_agent_parser: str = "gemini"
     gemini_api_key: str | None = None
-    llm_model_name_gemini: str = "gemini-1.5-flash"
-    llm_base_url_ollama: str = "http://localhost:11434"
-    llm_model_name_ollama: str = "llama3"
+    gemini_llm_model_name: str = "gemini-1.5-flash"
 
-    model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
+    ollama_llm_base_url: str = "http://localhost:11434"
+    ollama_llm_model_name: str = "llama3"
+
+    # PDF Converter settings
+    pdf_converter: str = "pymupdf4llm"
+
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False)
 
 
 settings = Settings()

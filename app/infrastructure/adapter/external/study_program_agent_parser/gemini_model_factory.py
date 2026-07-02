@@ -24,4 +24,4 @@ class GeminiModelFactory(LLMModelFactory):
         if not settings.gemini_api_key:
             raise ValueError("GEMINI_API_KEY is not set or provided.")
         google_provider = GoogleProvider(api_key=settings.gemini_api_key)
-        return GoogleModel(settings.llm_model_name_gemini, provider=google_provider)
+        return GoogleModel(settings.gemini_llm_model_name, provider=google_provider)

@@ -159,6 +159,20 @@ def test_pdf_converter_provider():
         pymu_conv = provider.get_converter("pymupdf4llm")
         assert pymu_conv == mock_pymupdf_inst
 
+        # Test default configuration resolution
+        from app.config import settings
+
+        settings.pdf_converter = "pymupdf4llm"
+        default_conv = provider.get_converter()
+        assert default_conv == mock_pymupdf_inst
+
+        settings.pdf_converter = "markitdown"
+        default_conv_override = provider.get_converter()
+        assert default_conv_override == mock_mid_inst
+
+        # Restore setting to default
+        settings.pdf_converter = "pymupdf4llm"
+
         with pytest.raises(ValueError, match="No PDF converter found with name"):
             provider.get_converter("invalid_name")
 
@@ -179,7 +193,7 @@ def test_ollama_model_factory():
 
         factory = OllamaModelFactory()
         settings = Settings(
-            llm_base_url_ollama="http://test-ollama", llm_model_name_ollama="my-llama"
+            ollama_llm_base_url="http://test-ollama", ollama_llm_model_name="my-llama"
         )
         result = factory.create_model(settings)
 
@@ -206,7 +220,7 @@ def test_gemini_model_factory():
 
         factory = GeminiModelFactory()
         settings = Settings(
-            gemini_api_key="secret-key", llm_model_name_gemini="gemini-test"
+            gemini_api_key="secret-key", gemini_llm_model_name="gemini-test"
         )
         result = factory.create_model(settings)
 

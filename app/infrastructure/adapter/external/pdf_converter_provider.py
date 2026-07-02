@@ -23,7 +23,12 @@ class PDFConverterProvider(PDFConverterProviderPort):
     def __init__(self):
         pass
 
-    def get_converter(self, provider_name: str) -> PDFConverter:
+    def get_converter(self, provider_name: str | None = None) -> PDFConverter:
+        if provider_name is None:
+            from app.config import settings
+
+            provider_name = settings.pdf_converter
+
         name = provider_name.lower()
         if name == "markitdown":
             from app.infrastructure.adapter.external.pdf_converter.markitdown_pdf_converter import (
