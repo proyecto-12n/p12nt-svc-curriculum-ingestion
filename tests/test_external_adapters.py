@@ -122,15 +122,10 @@ def test_markitdown_pdf_converter():
     mock_response.markdown = "markdown from markitdown"
     mock_mid.convert_stream.return_value = mock_response
 
-    with (
-        patch(
-            "app.infrastructure.adapter.external.pdf_converter.markitdown_pdf_converter.MarkItDown",
-            return_value=mock_mid,
-        ) as mock_mid_class,
-        patch(
-            "app.infrastructure.adapter.external.pdf_converter.markitdown_pdf_converter.StreamInfo"
-        ) as mock_stream_info,
-    ):
+    with patch(
+        "app.infrastructure.adapter.external.pdf_converter.markitdown_pdf_converter.MarkItDown",
+        return_value=mock_mid,
+    ) as mock_mid_class:
         converter = MarkItDownPDFConverter()
         res = PDFResource(content=b"bytes")
         result = converter.convert(res)

@@ -1,20 +1,17 @@
 # -*- coding: utf-8 -*-
-import os
-import sys
 
 # Add 'app' directory to sys.path to resolve 'infrastructure' imports when running tests from root
-app_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "app"))
-if app_dir not in sys.path:
-    sys.path.insert(0, app_dir)
+
 
 from unittest.mock import MagicMock, patch
+
 from sqlmodel import SQLModel, create_engine, Session
 
-from app.domain.model.node import Node
-from app.domain.model.resource_type import ResourceType
 from app.application.usecase.ingest_curriculum_usecase import (
     IngestCurriculumUseCaseImpl,
 )
+from app.domain.model.node import Node
+from app.domain.model.resource_type import ResourceType
 from app.infrastructure.adapter.outbound.db.sql_curriculum_repository_adapter import (
     SqlCurriculumRepositoryAdapter,
 )
@@ -229,10 +226,16 @@ def test_run_cli_postgresql():
         mock_session = MagicMock()
         mock_session_class.return_value.__enter__.return_value = mock_session
 
+        mock_usecase = MagicMock()
+        mock_usecase_class.return_value = mock_usecase
+
         run_cli()
 
         mock_create_engine.assert_called_once_with("postgresql://localhost:5432/test")
         mock_engine.connect.assert_called_once()
+        mock_usecase.execute.assert_called_once()
+        assert mock_sqlmodel is not None
+        assert mock_text is not None
 
 
 def test_run_cli_default():
