@@ -12,9 +12,7 @@ from app.application.usecase.ingest_curriculum_usecase import (
 )
 from app.domain.model.node import Node
 from app.domain.model.resource_type import ResourceType
-from app.infrastructure.adapter.outbound.db.sql_curriculum_repository_adapter import (
-    SqlCurriculumRepositoryAdapter,
-)
+from app.infrastructure.adapter.outbound.db import SqlCurriculumRepositoryAdapter
 from app.infrastructure.cli.ingest_curriculum import run_cli
 
 

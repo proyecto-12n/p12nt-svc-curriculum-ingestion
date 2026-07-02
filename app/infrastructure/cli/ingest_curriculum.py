@@ -13,9 +13,7 @@ from sqlmodel import Session, SQLModel
 # Import SQLModels to ensure they register in metadata
 
 # Adapters & Use Case
-from app.infrastructure.adapter.outbound.db.sql_curriculum_repository_adapter import (
-    SqlCurriculumRepositoryAdapter,
-)
+from app.infrastructure.adapter.outbound.db import SqlCurriculumRepositoryAdapter
 from app.application.usecase.ingest_curriculum_usecase import (
     IngestCurriculumUseCaseImpl,
 )

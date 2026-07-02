@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 import pytest
 from sqlmodel import SQLModel, create_engine, Session
-from app.infrastructure.adapter.outbound.db.sql_curriculum_repository_adapter import (
-    SqlCurriculumRepositoryAdapter,
+from app.infrastructure.adapter.outbound.db import SqlCurriculumRepositoryAdapter
+from app.domain.model import (
+    Curriculum,
+    Modality,
+    Subject,
+    GradeLevel,
+    StudyProgram,
+    StudyProgramRef,
 )
-from app.domain.model.curriculum import Curriculum
-from app.domain.model.modality import Modality
-from app.domain.model.subject import Subject
-from app.domain.model.grade_level import GradeLevel
-from app.domain.model.study_program_ref import StudyProgramRef
-from app.domain.model.study_program import StudyProgram
 
 
 @pytest.fixture(name="session")
