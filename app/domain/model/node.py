@@ -10,6 +10,7 @@ All rights reserved.
 from dataclasses import dataclass
 from typing import Generic, TypeVar, Optional
 from app.domain.model.resource_type import ResourceType
+from app.domain.model.curriculum_node_type import CurriculumNodeType
 
 T = TypeVar("T")
 
@@ -18,6 +19,7 @@ T = TypeVar("T")
 class Node(Generic[T]):
     url: str
     type: ResourceType
+    level: Optional[CurriculumNodeType] = None
 
     title: Optional[str] = None
     content: Optional[T] = None

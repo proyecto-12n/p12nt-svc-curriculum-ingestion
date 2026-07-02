@@ -10,7 +10,7 @@ All rights reserved.
 from enum import Enum
 
 
-class MetadataField(str, Enum):
+class CurriculumNodeType(str, Enum):
     CURRICULUM = "curriculum"
     MODALITY = "modality"
     SUBJECT = "subject"

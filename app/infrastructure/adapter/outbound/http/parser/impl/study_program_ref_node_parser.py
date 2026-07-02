@@ -17,6 +17,7 @@ from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 
 from app.infrastructure.util.id_generator import generate_id
+from app.domain.model.curriculum_node_type import CurriculumNodeType
 
 
 class StudyProgramRefNodeParser(NodeParser[str]):
@@ -51,6 +52,10 @@ class StudyProgramRefNodeParser(NodeParser[str]):
                 continue
 
             u = urljoin(base_url, a.get("href"))
-            nodes.append(Node(url=u, type=ResourceType.PDF))
+            nodes.append(
+                Node(
+                    url=u, type=ResourceType.PDF, level=CurriculumNodeType.STUDY_PROGRAM
+                )
+            )
 
         return nodes

@@ -7,7 +7,7 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from typing import Tuple, List, Any, Optional, TypeVar, Protocol
+from typing import Tuple, List, Any, TypeVar, Protocol
 from app.domain.model.node import Node
 
 T = TypeVar("T")

@@ -10,7 +10,7 @@ All rights reserved.
 from hashlib import sha256
 from datetime import datetime
 from os import path
-from typing import Tuple, List, Optional
+from typing import Tuple, List
 from urllib.parse import urlparse
 
 from app.domain.model import StudyProgram

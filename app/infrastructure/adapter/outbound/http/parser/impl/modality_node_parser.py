@@ -17,6 +17,7 @@ from app.domain.model.node import Node
 from app.domain.model.resource_type import ResourceType
 from app.infrastructure.adapter.outbound.http.parser.node_parser import NodeParser
 from app.infrastructure.util.id_generator import generate_id
+from app.domain.model.curriculum_node_type import CurriculumNodeType
 
 
 class ModalityNodeParser(NodeParser[str]):
@@ -52,6 +53,8 @@ class ModalityNodeParser(NodeParser[str]):
                 continue
 
             u = urljoin(base_url, a.get("href"))
-            nodes.append(Node(url=u, type=ResourceType.HTML))
+            nodes.append(
+                Node(url=u, type=ResourceType.HTML, level=CurriculumNodeType.SUBJECT)
+            )
 
         return nodes

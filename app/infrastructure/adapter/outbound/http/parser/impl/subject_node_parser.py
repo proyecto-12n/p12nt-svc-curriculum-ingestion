@@ -16,6 +16,7 @@ from app.domain.model.node import Node
 from app.domain.model.resource_type import ResourceType
 from app.infrastructure.adapter.outbound.http.parser.node_parser import NodeParser
 from app.infrastructure.util.id_generator import generate_id
+from app.domain.model.curriculum_node_type import CurriculumNodeType
 
 
 class SubjectNodeParser(NodeParser[str]):
@@ -48,13 +49,12 @@ class SubjectNodeParser(NodeParser[str]):
         for subject_soup in soup.find_all("div", class_="cursos-wrapper"):
             for grade_soup in subject_soup.find_all("div", class_="grade-wrapper"):
                 for a in grade_soup.find_all("a", href=True):
-                    title = a.get_text(strip=True)
                     u = urljoin(base_url, a.get("href"))
                     nodes.append(
                         Node(
                             url=u,
                             type=ResourceType.HTML,
-                            title=title,
+                            level=CurriculumNodeType.GRADE_LEVEL,
                         )
                     )
         return nodes

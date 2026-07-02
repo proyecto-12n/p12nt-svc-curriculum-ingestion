@@ -81,9 +81,13 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
         entity = find_fn()
 
         if entity:
-            stored_node = Node(url=entity.url, type=resource_type, content=entity.content)
+            stored_node = Node(
+                url=entity.url, type=resource_type, content=entity.content
+            )
             _, children = parser.parse(stored_node, parent_id)
-            logger.debug(f"Found existing {type(entity).__name__}: {getattr(entity, 'title', entity.url)}")
+            logger.debug(
+                f"Found existing {type(entity).__name__}: {getattr(entity, 'title', entity.url)}"
+            )
             return entity, children
 
         node_data = self._download_content(abs_url, resource_type)
@@ -93,7 +97,9 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
             model.title = title_hint
 
         entity = save_fn(model)
-        logger.info(f"Saved {type(entity).__name__}: {getattr(entity, 'title', entity.url)}")
+        logger.info(
+            f"Saved {type(entity).__name__}: {getattr(entity, 'title', entity.url)}"
+        )
         return entity, children
 
     def _resolve_study_program(self, prog_node: Node, program_ref: Any):
@@ -125,9 +131,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                 extracted_at=datetime.now(),
             )
             self.repository.save_study_program(program_model)
-            logger.info(
-                f"Saved StudyProgram (failed download): {prog_node.url}"
-            )
+            logger.info(f"Saved StudyProgram (failed download): {prog_node.url}")
 
     def execute(self) -> None:
         logger.info("Starting ingestion of curriculum data...")
@@ -161,8 +165,10 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                     subject, grade_nodes = self._resolve_node(
                         url=sub_node.url,
                         resource_type=ResourceType.HTML,
-                        find_fn=lambda: self.repository.find_subject_by_title_and_modality(
-                            sub_node.title, modality.id
+                        find_fn=lambda: (
+                            self.repository.find_subject_by_title_and_modality(
+                                sub_node.title, modality.id
+                            )
                         ),
                         save_fn=self.repository.save_subject,
                         parser=SubjectNodeParser(),
@@ -178,8 +184,10 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                         grade, ref_nodes = self._resolve_node(
                             url=grade_node.url,
                             resource_type=ResourceType.HTML,
-                            find_fn=lambda: self.repository.find_grade_level_by_title_and_subject(
-                                grade_node.title, subject.id
+                            find_fn=lambda: (
+                                self.repository.find_grade_level_by_title_and_subject(
+                                    grade_node.title, subject.id
+                                )
                             ),
                             save_fn=self.repository.save_grade_level,
                             parser=GradeLevelNodeParser(),
@@ -187,7 +195,9 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                             title_hint=grade_node.title,
                         )
                     except Exception as e:
-                        logger.error(f"Failed to resolve grade level node {grade_node.url}: {e}")
+                        logger.error(
+                            f"Failed to resolve grade level node {grade_node.url}: {e}"
+                        )
                         continue
 
                     for ref_node in ref_nodes:
@@ -195,20 +205,22 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                             program_ref, prog_nodes = self._resolve_node(
                                 url=ref_node.url,
                                 resource_type=ref_node.type,
-                                find_fn=lambda: self.repository.find_study_program_ref_by_url(
-                                    ref_node.url
+                                find_fn=lambda: (
+                                    self.repository.find_study_program_ref_by_url(
+                                        ref_node.url
+                                    )
                                 ),
                                 save_fn=self.repository.save_study_program_ref,
                                 parser=StudyProgramRefNodeParser(),
                                 parent_id=grade.id,
                             )
                         except Exception as e:
-                            logger.error(f"Failed to resolve study program ref node {ref_node.url}: {e}")
+                            logger.error(
+                                f"Failed to resolve study program ref node {ref_node.url}: {e}"
+                            )
                             continue
 
                         for prog_node in prog_nodes:
-                            self._resolve_study_program(
-                                prog_node, program_ref
-                            )
+                            self._resolve_study_program(prog_node, program_ref)
 
         logger.info("Ingestion completed successfully.")

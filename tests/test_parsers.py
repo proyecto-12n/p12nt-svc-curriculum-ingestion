@@ -62,9 +62,7 @@ def test_modality_node_parser():
     </html>
     """
     node = Node(url="http://test.url/mod", type=ResourceType.HTML, content=html_content)
-    modality, children = parser.parse(
-        node, 123
-    )
+    modality, children = parser.parse(node, 123)
 
     assert modality.title == "Educacion Parvularia"
     assert modality.curriculum_id == 123
@@ -87,9 +85,7 @@ def test_subject_node_parser():
     </html>
     """
     node = Node(url="http://test.url/sub", type=ResourceType.HTML, content=html_content)
-    subject, children = parser.parse(
-        node, 10
-    )
+    subject, children = parser.parse(node, 10)
 
     assert subject.title == "Matemáticas"
     assert subject.modality_id == 10
