@@ -54,6 +54,4 @@ def test_http_node_parser_provider_adapter_invalid_discriminator():
     with pytest.raises(ValueError) as excinfo:
         provider.get_parser("invalid_type")  # type: ignore
 
-    assert "No parser configured for discriminator: invalid_type" in str(
-        excinfo.value
-    )
+    assert "No parser configured for discriminator: invalid_type" in str(excinfo.value)
