@@ -11,10 +11,10 @@ from typing import Protocol
 
 
 class IngestCurriculumUseCase(Protocol):
-    def execute(self, force_mock: bool = False) -> None:
+    def execute(self) -> None:
         """Starts the ingestion process to scrape curriculum.cl/curriculum
 
         If a node is already present in the database, it skips fetching it.
-        If any extraction fails, logs the error and registers the node in a 'PENDING' or 'ERROR' state.
+        If any extraction fails, logs the error and skips the node/branch.
         """
         pass

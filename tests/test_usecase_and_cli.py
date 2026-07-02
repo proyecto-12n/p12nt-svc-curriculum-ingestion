@@ -11,6 +11,8 @@ import pytest
 from unittest.mock import MagicMock, AsyncMock, patch
 from sqlmodel import SQLModel, create_engine, Session
 
+from app.domain.model.node import Node
+from app.domain.model.resource_type import ResourceType
 from app.application.usecase.ingest_curriculum_usecase import IngestCurriculumUseCaseImpl
 from app.infrastructure.adapter.outbound.db.sql_curriculum_repository_adapter import (
     SqlCurriculumRepositoryAdapter,
@@ -83,8 +85,7 @@ def mock_get_mock_content(url: str) -> str | bytes:
     return ""
 
 
-@patch("app.application.usecase.ingest_curriculum_usecase.get_mock_content", side_effect=mock_get_mock_content)
-def test_ingest_curriculum_usecase_with_force_mock(mock_content):
+def test_ingest_curriculum_usecase_with_force_mock():
     # Setup in-memory SQLite database
     engine = create_engine("sqlite:///:memory:")
     for table in SQLModel.metadata.tables.values():
@@ -93,12 +94,23 @@ def test_ingest_curriculum_usecase_with_force_mock(mock_content):
     
     with Session(engine) as session:
         repository = SqlCurriculumRepositoryAdapter(session)
-        downloader_provider = DownloaderProvider()
+        
+        # Setup mock downloader
+        async def mock_download(url, timeout=10.0):
+            content = mock_get_mock_content(url)
+            res_type = ResourceType.PDF if (url.endswith(".pdf") or "programa" in url) else ResourceType.HTML
+            return Node(url=url, type=res_type, content=content)
+            
+        mock_downloader = MagicMock()
+        mock_downloader.download = mock_download
+        
+        downloader_provider = MagicMock()
+        downloader_provider.get_downloader.return_value = mock_downloader
         
         use_case = IngestCurriculumUseCaseImpl(repository, downloader_provider)
         
-        # Execute with force_mock=True
-        use_case.execute(force_mock=True)
+        # Execute
+        use_case.execute()
         
         # Verify that data was ingested in the database
         curr = repository.find_curriculum_by_url("https://www.curriculumnacional.cl/curriculum")
@@ -109,12 +121,11 @@ def test_ingest_curriculum_usecase_with_force_mock(mock_content):
         mod = repository.find_modality_by_url("https://www.curriculumnacional.cl/curriculum/basica")
         assert mod is not None
         
-        # Check that we can run again and it uses existing records (coverage for not-null/already exists paths)
-        use_case.execute(force_mock=True)
+        # Check that we can run again and it uses existing records
+        use_case.execute()
 
 
-@patch("app.application.usecase.ingest_curriculum_usecase.get_mock_content", side_effect=mock_get_mock_content)
-def test_ingest_curriculum_usecase_downloader_failure_fallback(mock_content):
+def test_ingest_curriculum_usecase_downloader_failure_fallback():
     engine = create_engine("sqlite:///:memory:")
     for table in SQLModel.metadata.tables.values():
         table.schema = None
@@ -123,21 +134,31 @@ def test_ingest_curriculum_usecase_downloader_failure_fallback(mock_content):
     with Session(engine) as session:
         repository = SqlCurriculumRepositoryAdapter(session)
         
-        # Mock downloader provider to raise an error when download is called
+        # Mock downloader provider to raise an error when PDF download is called
+        async def mock_download(url, timeout=10.0):
+            if url.endswith(".pdf") or "programa" in url:
+                raise Exception("Connection reset by peer")
+            content = mock_get_mock_content(url)
+            return Node(url=url, type=ResourceType.HTML, content=content)
+            
         mock_downloader = MagicMock()
-        mock_downloader.download = AsyncMock(side_effect=Exception("Connection reset by peer"))
+        mock_downloader.download = mock_download
         
         mock_downloader_provider = MagicMock()
         mock_downloader_provider.get_downloader.return_value = mock_downloader
         
         use_case = IngestCurriculumUseCaseImpl(repository, mock_downloader_provider)
         
-        # Run with force_mock=False to trigger download and fallback on error
-        use_case.execute(force_mock=False)
+        use_case.execute()
         
-        # Verify fallback still populated database
+        # Verify fallback still populated database structures
         curr = repository.find_curriculum_by_url("https://www.curriculumnacional.cl/curriculum")
         assert curr is not None
+        
+        # Verify empty placeholder program was saved on PDF failure
+        prog = repository.find_study_program_by_url("https://www.curriculumnacional.cl/curriculum/basica/matematica/1g/ref/programa.pdf")
+        assert prog is not None
+        assert prog.content == b""
 
 
 def test_run_cli_sqlite():

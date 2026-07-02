@@ -45,42 +45,6 @@ _DEFAULT_TITLES = {"Modality", "Subject", "GradeLevel"}
 _ROOT_URL = "https://www.curriculumnacional.cl/curriculum"
 
 
-def get_mock_content(url: str) -> Any:
-    if "/curriculum" in url and url.endswith("/curriculum"):
-        return """
-        <title>Curriculum Nacional</title>
-        <a href="/curriculum/basica">Educación Regular Básica</a>
-        <a href="/curriculum/media">Educación Regular Media</a>
-        """
-    elif url.endswith("/basica") or url.endswith("/media"):
-        is_basica = "basica" in url
-        prefix = "/curriculum/basica" if is_basica else "/curriculum/media"
-        return f"""
-        <h1>Educación Regular</h1>
-        <a href="{prefix}/matematica">Matemática</a>
-        <a href="{prefix}/lenguaje">Lenguaje y Comunicación</a>
-        <a href="{prefix}/ciencias">Ciencias Naturales</a>
-        """
-    elif "/matematica" in url or "/lenguaje" in url or "/ciencias" in url:
-        is_basica = "basica" in url
-        g1 = "1° Básico" if is_basica else "I° Medio"
-        g2 = "2° Básico" if is_basica else "II° Medio"
-        return f"""
-        <h1>Asignatura</h1>
-        <a href="{url}/1g">{g1}</a>
-        <a href="{url}/2g">{g2}</a>
-        """
-    elif url.endswith("/1g") or url.endswith("/2g"):
-        return f"""
-        <h1>Grado</h1>
-        <a href="{url}/programa_de_estudio_pdf">Descargar PDF</a>
-        """
-    elif "programa_de_estudio_pdf" in url:
-        return b"# Programa de Estudio\n\nContenido de prueba."
-    else:
-        return ""
-
-
 class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
     def __init__(
         self,
@@ -96,22 +60,12 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
             return "https://www.curriculumnacional.cl" + url
         return url
 
-    def _download_content(self, url: str, res_type: ResourceType, force_mock: bool = False) -> Node[Any]:
-        if force_mock:
-            content = get_mock_content(url)
-            return Node(url=url, type=res_type, content=content)
-        try:
-            downloader = self.downloader_provider.get_downloader(res_type)
-            node_res = asyncio.run(downloader.download(url, timeout=10.0))
-            if isinstance(node_res, Node):
-                return node_res
-            return Node(url=url, type=res_type, content=node_res)
-        except Exception as e:
-            logger.warning(
-                f"Download failed for {url}: {e}. Falling back to mock content."
-            )
-            content = get_mock_content(url)
-            return Node(url=url, type=res_type, content=content)
+    def _download_content(self, url: str, res_type: ResourceType) -> Node[Any]:
+        downloader = self.downloader_provider.get_downloader(res_type)
+        node_res = asyncio.run(downloader.download(url, timeout=10.0))
+        if isinstance(node_res, Node):
+            return node_res
+        return Node(url=url, type=res_type, content=node_res)
 
     def _resolve_node(
         self,
@@ -122,7 +76,6 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
         parser: Any,
         parent_id: int,
         title_hint: str = None,
-        force_mock: bool = False,
     ) -> Tuple[Any, List[Node]]:
         abs_url = self._absolute_url(url)
         entity = find_fn()
@@ -133,7 +86,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
             logger.debug(f"Found existing {type(entity).__name__}: {getattr(entity, 'title', entity.url)}")
             return entity, children
 
-        node_data = self._download_content(abs_url, resource_type, force_mock)
+        node_data = self._download_content(abs_url, resource_type)
         model, children = parser.parse(node_data, parent_id)
 
         if title_hint and hasattr(model, "title") and model.title in _DEFAULT_TITLES:
@@ -143,14 +96,14 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
         logger.info(f"Saved {type(entity).__name__}: {getattr(entity, 'title', entity.url)}")
         return entity, children
 
-    def _resolve_study_program(self, prog_node: Node, program_ref: Any, force_mock: bool):
+    def _resolve_study_program(self, prog_node: Node, program_ref: Any):
         prog_url = self._absolute_url(prog_node.url)
         program = self.repository.find_study_program_by_url(prog_node.url)
         if program:
             return
 
         try:
-            prog_node_data = self._download_content(prog_url, prog_node.type, force_mock)
+            prog_node_data = self._download_content(prog_url, prog_node.type)
             prog_parser = StudyProgramNodeParser()
             program_model, _ = prog_parser.parse(
                 prog_node_data,
@@ -176,7 +129,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                 f"Saved StudyProgram (failed download): {prog_node.url}"
             )
 
-    def execute(self, force_mock: bool = False) -> None:
+    def execute(self) -> None:
         logger.info("Starting ingestion of curriculum data...")
 
         curriculum, modality_nodes = self._resolve_node(
@@ -186,65 +139,76 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
             save_fn=self.repository.save_curriculum,
             parser=CurriculumNodeParser(),
             parent_id=0,
-            force_mock=force_mock,
         )
 
         for mod_node in modality_nodes:
-            modality, subject_nodes = self._resolve_node(
-                url=mod_node.url,
-                resource_type=ResourceType.HTML,
-                find_fn=lambda: self.repository.find_modality_by_url(mod_node.url),
-                save_fn=self.repository.save_modality,
-                parser=ModalityNodeParser(),
-                parent_id=curriculum.id,
-                title_hint=mod_node.title,
-                force_mock=force_mock,
-            )
+            try:
+                modality, subject_nodes = self._resolve_node(
+                    url=mod_node.url,
+                    resource_type=ResourceType.HTML,
+                    find_fn=lambda: self.repository.find_modality_by_url(mod_node.url),
+                    save_fn=self.repository.save_modality,
+                    parser=ModalityNodeParser(),
+                    parent_id=curriculum.id,
+                    title_hint=mod_node.title,
+                )
+            except Exception as e:
+                logger.error(f"Failed to resolve modality node {mod_node.url}: {e}")
+                continue
 
             for sub_node in subject_nodes[:3]:
-                subject, grade_nodes = self._resolve_node(
-                    url=sub_node.url,
-                    resource_type=ResourceType.HTML,
-                    find_fn=lambda: self.repository.find_subject_by_title_and_modality(
-                        sub_node.title, modality.id
-                    ),
-                    save_fn=self.repository.save_subject,
-                    parser=SubjectNodeParser(),
-                    parent_id=modality.id,
-                    title_hint=sub_node.title,
-                    force_mock=force_mock,
-                )
+                try:
+                    subject, grade_nodes = self._resolve_node(
+                        url=sub_node.url,
+                        resource_type=ResourceType.HTML,
+                        find_fn=lambda: self.repository.find_subject_by_title_and_modality(
+                            sub_node.title, modality.id
+                        ),
+                        save_fn=self.repository.save_subject,
+                        parser=SubjectNodeParser(),
+                        parent_id=modality.id,
+                        title_hint=sub_node.title,
+                    )
+                except Exception as e:
+                    logger.error(f"Failed to resolve subject node {sub_node.url}: {e}")
+                    continue
 
                 for grade_node in grade_nodes[:2]:
-                    grade, ref_nodes = self._resolve_node(
-                        url=grade_node.url,
-                        resource_type=ResourceType.HTML,
-                        find_fn=lambda: self.repository.find_grade_level_by_title_and_subject(
-                            grade_node.title, subject.id
-                        ),
-                        save_fn=self.repository.save_grade_level,
-                        parser=GradeLevelNodeParser(),
-                        parent_id=subject.id,
-                        title_hint=grade_node.title,
-                        force_mock=force_mock,
-                    )
+                    try:
+                        grade, ref_nodes = self._resolve_node(
+                            url=grade_node.url,
+                            resource_type=ResourceType.HTML,
+                            find_fn=lambda: self.repository.find_grade_level_by_title_and_subject(
+                                grade_node.title, subject.id
+                            ),
+                            save_fn=self.repository.save_grade_level,
+                            parser=GradeLevelNodeParser(),
+                            parent_id=subject.id,
+                            title_hint=grade_node.title,
+                        )
+                    except Exception as e:
+                        logger.error(f"Failed to resolve grade level node {grade_node.url}: {e}")
+                        continue
 
                     for ref_node in ref_nodes:
-                        program_ref, prog_nodes = self._resolve_node(
-                            url=ref_node.url,
-                            resource_type=ref_node.type,
-                            find_fn=lambda: self.repository.find_study_program_ref_by_url(
-                                ref_node.url
-                            ),
-                            save_fn=self.repository.save_study_program_ref,
-                            parser=StudyProgramRefNodeParser(),
-                            parent_id=grade.id,
-                            force_mock=force_mock,
-                        )
+                        try:
+                            program_ref, prog_nodes = self._resolve_node(
+                                url=ref_node.url,
+                                resource_type=ref_node.type,
+                                find_fn=lambda: self.repository.find_study_program_ref_by_url(
+                                    ref_node.url
+                                ),
+                                save_fn=self.repository.save_study_program_ref,
+                                parser=StudyProgramRefNodeParser(),
+                                parent_id=grade.id,
+                            )
+                        except Exception as e:
+                            logger.error(f"Failed to resolve study program ref node {ref_node.url}: {e}")
+                            continue
 
                         for prog_node in prog_nodes:
                             self._resolve_study_program(
-                                prog_node, program_ref, force_mock
+                                prog_node, program_ref
                             )
 
         logger.info("Ingestion completed successfully.")
