@@ -8,7 +8,7 @@ All rights reserved.
 """
 
 from dataclasses import dataclass
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, Optional
 from app.domain.model.resource_type import ResourceType
 
 T = TypeVar("T")
@@ -17,5 +17,6 @@ T = TypeVar("T")
 @dataclass
 class Node(Generic[T]):
     url: str
-    resource_type: ResourceType
-    content: T
+    type: ResourceType
+    content: Optional[T] = None
+    title: Optional[str] = None

@@ -19,6 +19,4 @@ class HTMLDownloader(ContentDownloader[str]):
             response = await client.get(url, follow_redirects=True)
             response.raise_for_status()
             soup = BeautifulSoup(response.text, "html.parser")
-            return Node(
-                url=url, resource_type=ResourceType.HTML, content=soup.prettify()
-            )
+            return Node(url=url, type=ResourceType.HTML, content=soup.prettify())

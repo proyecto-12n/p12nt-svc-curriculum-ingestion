@@ -17,6 +17,4 @@ class PDFDownloader(ContentDownloader[bytes]):
         async with httpx.AsyncClient(timeout=timeout) as client:
             response = await client.get(url, follow_redirects=True)
             response.raise_for_status()
-            return Node(
-                url=url, resource_type=ResourceType.PDF, content=response.content
-            )
+            return Node(url=url, type=ResourceType.PDF, content=response.content)

@@ -5,7 +5,7 @@ This file is part of the NP Collector Curriculum project.
 Unauthorized copying of this file, via any medium is strictly prohibited.
 """
 
-from typing import Dict, Callable
+from typing import Dict
 
 from app.domain.port.outbound.content_downloader import ContentDownloader
 from app.domain.port.outbound.downloader_provider import (

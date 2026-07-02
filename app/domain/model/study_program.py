@@ -16,10 +16,14 @@ from typing import Optional
 class StudyProgram:
     url: str
     study_program_ref_id: int
-    md5sum: str
     content: bytes
+    checksum: str = ""
     status: str = "PENDING"
     error_log: Optional[str] = None
     extracted_at: datetime = field(default_factory=datetime.utcnow)
     version: str = "1.0"
     id: Optional[int] = None
+
+    @property
+    def md5sum(self) -> str:
+        return self.checksum

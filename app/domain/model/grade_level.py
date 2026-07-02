@@ -8,11 +8,11 @@ All rights reserved.
 """
 
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass
 class GradeLevel:
-    title: str
+    id: int
     subject_id: int
-    id: Optional[int] = None
+    title: str
+    url: str = ""

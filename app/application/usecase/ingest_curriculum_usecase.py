@@ -68,41 +68,41 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
         logger.info("Starting ingestion of curriculum data...")
 
         import asyncio
-        from app.infrastructure.adapter.outbound.http.parser.root_html_parser import (
-            RootHTMLParser,
+        from infrastructure.adapter.outbound.http.parser.impl.curriculum_node_parser import (
+            CurriculumNodeParser,
         )
-        from app.infrastructure.adapter.outbound.http.parser.modality_html_parser import (
-            ModalityHTMLParser,
+        from infrastructure.adapter.outbound.http.parser.impl.modality_node_parser import (
+            ModalityNodeParser,
         )
-        from app.infrastructure.adapter.outbound.http.parser.subject_html_parser import (
-            SubjectHTMLParser,
+        from infrastructure.adapter.outbound.http.parser.impl.subject_node_parser import (
+            SubjectNodeParser,
         )
-        from app.infrastructure.adapter.outbound.http.parser.grade_level_html_parser import (
-            GradeLevelHTMLParser,
+        from infrastructure.adapter.outbound.http.parser.impl.grade_level_node_parser import (
+            GradeLevelNodeParser,
         )
-        from app.infrastructure.adapter.outbound.http.parser.study_program_ref_html_parser import (
-            StudyProgramRefHTMLParser,
+        from infrastructure.adapter.outbound.http.parser.impl.study_program_ref_node_parser import (
+            StudyProgramRefNodeParser,
         )
-        from app.infrastructure.adapter.outbound.http.parser.study_program_html_parser import (
-            StudyProgramHTMLParser,
+        from infrastructure.adapter.outbound.http.parser.impl.study_program_node_parser import (
+            StudyProgramNodeParser,
         )
 
         def download_content(url: str, res_type: ResourceType) -> Node[Any]:
             if force_mock:
                 content = get_mock_content(url)
-                return Node(url=url, resource_type=res_type, content=content)
+                return Node(url=url, type=res_type, content=content)
             try:
                 downloader = self.downloader_provider.get_downloader(res_type)
                 node_res = asyncio.run(downloader.download(url, timeout=10.0))
                 if isinstance(node_res, Node):
                     return node_res
-                return Node(url=url, resource_type=res_type, content=node_res)
+                return Node(url=url, type=res_type, content=node_res)
             except Exception as e:
                 logger.warning(
                     f"Download failed for {url}: {e}. Falling back to mock content."
                 )
                 content = get_mock_content(url)
-                return Node(url=url, resource_type=res_type, content=content)
+                return Node(url=url, type=res_type, content=content)
 
         def get_absolute_url(url: str) -> str:
             if not url.startswith("http"):
@@ -113,7 +113,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
         root_url = "https://www.curriculumnacional.cl/curriculum"
         root_node = download_content(root_url, ResourceType.HTML)
 
-        root_parser = RootHTMLParser()
+        root_parser = CurriculumNodeParser()
         _, modality_nodes = root_parser.parse(root_node)
 
         # 2. Iterate Modalities
@@ -123,7 +123,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
             modality = self.repository.find_modality_by_url(mod_node.url)
             if not modality:
                 mod_node_data = download_content(mod_url, ResourceType.HTML)
-                mod_parser = ModalityHTMLParser()
+                mod_parser = ModalityNodeParser()
                 modality_model, subject_nodes = mod_parser.parse(mod_node_data)
 
                 if modality_model.title == "Modality" and mod_node.title:
@@ -133,7 +133,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                 logger.info(f"Saved Modality: {modality.title}")
             else:
                 mod_node_data = download_content(mod_url, ResourceType.HTML)
-                mod_parser = ModalityHTMLParser()
+                mod_parser = ModalityNodeParser()
                 _, subject_nodes = mod_parser.parse(mod_node_data)
 
             # 3. Iterate Subjects (limit to 3 for performance)
@@ -145,7 +145,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                 )
                 if not subject:
                     sub_node_data = download_content(sub_url, ResourceType.HTML)
-                    sub_parser = SubjectHTMLParser()
+                    sub_parser = SubjectNodeParser()
                     subject_model, grade_nodes = sub_parser.parse(
                         sub_node_data, parent_id=modality.id
                     )
@@ -159,7 +159,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                     )
                 else:
                     sub_node_data = download_content(sub_url, ResourceType.HTML)
-                    sub_parser = SubjectHTMLParser()
+                    sub_parser = SubjectNodeParser()
                     _, grade_nodes = sub_parser.parse(
                         sub_node_data, parent_id=modality.id
                     )
@@ -173,7 +173,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                     )
                     if not grade:
                         grade_node_data = download_content(grade_url, ResourceType.HTML)
-                        grade_parser = GradeLevelHTMLParser()
+                        grade_parser = GradeLevelNodeParser()
                         grade_model, ref_nodes = grade_parser.parse(
                             grade_node_data, parent_id=subject.id
                         )
@@ -187,7 +187,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                         )
                     else:
                         grade_node_data = download_content(grade_url, ResourceType.HTML)
-                        grade_parser = GradeLevelHTMLParser()
+                        grade_parser = GradeLevelNodeParser()
                         _, ref_nodes = grade_parser.parse(
                             grade_node_data, parent_id=subject.id
                         )
@@ -200,10 +200,8 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                             ref_node.url
                         )
                         if not program_ref:
-                            ref_node_data = download_content(
-                                ref_url, ref_node.resource_type
-                            )
-                            ref_parser = StudyProgramRefHTMLParser()
+                            ref_node_data = download_content(ref_url, ref_node.type)
+                            ref_parser = StudyProgramRefNodeParser()
                             ref_model, prog_nodes = ref_parser.parse(
                                 ref_node_data, parent_id=grade.id
                             )
@@ -213,11 +211,11 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                             )
                             logger.info(f"Saved StudyProgramRef: {program_ref.url}")
                         else:
-                            ref_parser = StudyProgramRefHTMLParser()
+                            ref_parser = StudyProgramRefNodeParser()
                             _, prog_nodes = ref_parser.parse(
                                 Node(
                                     url=program_ref.url,
-                                    resource_type=ref_node.resource_type,
+                                    type=ref_node.type,
                                     content=b"",
                                 ),
                                 parent_id=grade.id,
@@ -233,9 +231,9 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                             if not program:
                                 try:
                                     prog_node_data = download_content(
-                                        prog_url, prog_node.resource_type
+                                        prog_url, prog_node.type
                                     )
-                                    prog_parser = StudyProgramHTMLParser()
+                                    prog_parser = StudyProgramNodeParser()
 
                                     metadata = {
                                         "modality": modality.title,
@@ -262,7 +260,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                                     program_model = StudyProgram(
                                         url=prog_node.url,
                                         study_program_ref_id=program_ref.id,
-                                        md5sum="",
+                                        checksum="",
                                         content=b"",
                                         status="PENDING",
                                         error_log=str(e),

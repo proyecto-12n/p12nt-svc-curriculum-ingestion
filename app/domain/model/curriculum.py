@@ -12,7 +12,7 @@ from typing import Optional
 
 
 @dataclass
-class Root:
+class Curriculum:
     title: str
     url: str
     id: Optional[int] = None

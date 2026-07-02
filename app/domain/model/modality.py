@@ -13,6 +13,7 @@ from typing import Optional
 
 @dataclass
 class Modality:
+    id: int
     title: str
     url: str
-    id: Optional[int] = None
+    curriculum_id: Optional[int] = None
