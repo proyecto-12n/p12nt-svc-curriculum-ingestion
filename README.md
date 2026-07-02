@@ -1,4 +1,4 @@
-﻿# p12nt-svc-curriculum-service
+# p12nt-svc-curriculum-service
 
 Servicio backend de **curriculum** en la plataforma **12NT**.
 
@@ -32,3 +32,21 @@ Este servicio sigue la **Arquitectura Hexagonal (Ports & Adapters)** para garant
    python app/main.py
    ```
 4. Acceder al Swagger de documentación en: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+### Ejecutar el Proceso de Ingesta (CLI)
+Para correr el scraper y parsear los datos del currículum, ejecuta el comando CLI desde la raíz del proyecto:
+
+- **Ejecución básica (usando la base de datos configurada en la API)**:
+  ```bash
+  python -m app.infrastructure.cli.ingest_curriculum
+  ```
+
+- **Forzar base de datos SQLite local (`curriculum_cache.db`)**:
+  ```bash
+  python -m app.infrastructure.cli.ingest_curriculum --sqlite
+  ```
+
+- **Usar una base de datos específica (e.g. PostgreSQL)**:
+  ```bash
+  python -m app.infrastructure.cli.ingest_curriculum --db-url "postgresql://username:password@localhost:5432/db_name"
+  ```
