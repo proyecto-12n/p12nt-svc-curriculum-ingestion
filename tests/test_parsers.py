@@ -39,7 +39,7 @@ def test_curriculum_node_parser():
     node = Node(
         url="http://test.url/curr", type=ResourceType.HTML, content=html_content
     )
-    curriculum, children = parser.parse(node)
+    curriculum, children = parser.parse(node, 0)
 
     assert curriculum.title == "Bases Curriculares"
     assert curriculum.content == html_content
@@ -63,7 +63,7 @@ def test_modality_node_parser():
     """
     node = Node(url="http://test.url/mod", type=ResourceType.HTML, content=html_content)
     modality, children = parser.parse(
-        node, parent_id=123, metadata={"curriculum": "Curr"}
+        node, 123
     )
 
     assert modality.title == "Educacion Parvularia"
@@ -88,7 +88,7 @@ def test_subject_node_parser():
     """
     node = Node(url="http://test.url/sub", type=ResourceType.HTML, content=html_content)
     subject, children = parser.parse(
-        node, parent_id=10, metadata={"curriculum": "Curr", "modality": "Mod"}
+        node, 10
     )
 
     assert subject.title == "Matemáticas"
@@ -117,8 +117,7 @@ def test_grade_level_node_parser():
     )
     grade, children = parser.parse(
         node,
-        parent_id=100,
-        metadata={"curriculum": "Curr", "modality": "Mod", "subject": "Sub"},
+        100,
     )
 
     assert grade.title == "1 Básico"
@@ -144,13 +143,7 @@ def test_study_program_ref_node_parser():
     node = Node(url="http://test.url/ref", type=ResourceType.HTML, content=html_content)
     ref, children = parser.parse(
         node,
-        parent_id=1000,
-        metadata={
-            "curriculum": "Curr",
-            "modality": "Mod",
-            "subject": "Sub",
-            "grade-level": "Grade",
-        },
+        1000,
     )
 
     assert ref.title == "Programa Matematica"
@@ -169,14 +162,7 @@ def test_study_program_node_parser():
     )
     program, children = parser.parse(
         node,
-        parent_id=2000,
-        metadata={
-            "curriculum": "Curr",
-            "modality": "Mod",
-            "subject": "Sub",
-            "grade-level": "Grade",
-            "study_program_ref": "Ref",
-        },
+        2000,
     )
 
     assert program.study_program_ref_id == 2000

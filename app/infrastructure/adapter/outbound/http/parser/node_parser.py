@@ -17,8 +17,7 @@ class NodeParser(Protocol[T]):
     def parse(
         self,
         node: Node[T],
-        parent_id: Optional[int] = None,
-        metadata: Optional[dict] = None,
+        parent_id: int,
     ) -> Tuple[Any, List[Node]]:
         """
         Parses the downloaded content of a node.

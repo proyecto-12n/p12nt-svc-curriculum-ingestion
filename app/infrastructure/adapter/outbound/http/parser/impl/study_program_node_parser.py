@@ -23,8 +23,7 @@ class StudyProgramNodeParser(NodeParser[bytes]):
     def parse(
         self,
         node: Node[bytes],
-        parent_id: Optional[int] = None,
-        metadata: Optional[dict] = None,
+        parent_id: int,
     ) -> Tuple[StudyProgram, List[Node]]:
         checksum = sha256(node.content)
 

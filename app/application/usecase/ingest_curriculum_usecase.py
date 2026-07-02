@@ -118,11 +118,11 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
 
         curriculum = self.repository.find_curriculum_by_url(root_url)
         if not curriculum:
-            curriculum, modality_nodes = root_parser.parse(root_node)
+            curriculum, modality_nodes = root_parser.parse(root_node, 0)
             curriculum = self.repository.save_curriculum(curriculum)
             logger.info(f"Saved Curriculum: {curriculum.title}")
         else:
-            _, modality_nodes = root_parser.parse(root_node)
+            _, modality_nodes = root_parser.parse(root_node, 0)
 
         # 2. Iterate Modalities
         for mod_node in modality_nodes:
@@ -133,7 +133,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                 mod_node_data = download_content(mod_url, ResourceType.HTML)
                 mod_parser = ModalityNodeParser()
                 modality_model, subject_nodes = mod_parser.parse(
-                    mod_node_data, parent_id=curriculum.id
+                    mod_node_data, curriculum.id
                 )
 
                 if modality_model.title == "Modality" and mod_node.title:
@@ -145,7 +145,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                 mod_node_data = download_content(mod_url, ResourceType.HTML)
                 mod_parser = ModalityNodeParser()
                 _, subject_nodes = mod_parser.parse(
-                    mod_node_data, parent_id=curriculum.id
+                    mod_node_data, curriculum.id
                 )
 
             # 3. Iterate Subjects (limit to 3 for performance)
@@ -159,7 +159,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                     sub_node_data = download_content(sub_url, ResourceType.HTML)
                     sub_parser = SubjectNodeParser()
                     subject_model, grade_nodes = sub_parser.parse(
-                        sub_node_data, parent_id=modality.id
+                        sub_node_data, modality.id
                     )
 
                     if subject_model.title == "Subject" and sub_node.title:
@@ -173,7 +173,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                     sub_node_data = download_content(sub_url, ResourceType.HTML)
                     sub_parser = SubjectNodeParser()
                     _, grade_nodes = sub_parser.parse(
-                        sub_node_data, parent_id=modality.id
+                        sub_node_data, modality.id
                     )
 
                 # 4. Iterate Grade Levels (limit to 2 for performance)
@@ -187,7 +187,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                         grade_node_data = download_content(grade_url, ResourceType.HTML)
                         grade_parser = GradeLevelNodeParser()
                         grade_model, ref_nodes = grade_parser.parse(
-                            grade_node_data, parent_id=subject.id
+                            grade_node_data, subject.id
                         )
 
                         if grade_model.title == "GradeLevel" and grade_node.title:
@@ -201,7 +201,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                         grade_node_data = download_content(grade_url, ResourceType.HTML)
                         grade_parser = GradeLevelNodeParser()
                         _, ref_nodes = grade_parser.parse(
-                            grade_node_data, parent_id=subject.id
+                            grade_node_data, subject.id
                         )
 
                     # 5. Iterate Study Program References
@@ -215,7 +215,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                             ref_node_data = download_content(ref_url, ref_node.type)
                             ref_parser = StudyProgramRefNodeParser()
                             ref_model, prog_nodes = ref_parser.parse(
-                                ref_node_data, parent_id=grade.id
+                                ref_node_data, grade.id
                             )
 
                             program_ref = self.repository.save_study_program_ref(
@@ -230,7 +230,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                                     type=ref_node.type,
                                     content=b"",
                                 ),
-                                parent_id=grade.id,
+                                grade.id,
                             )
 
                         # 6. Iterate and Parse Study Program Content
@@ -255,8 +255,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
 
                                     program_model, _ = prog_parser.parse(
                                         prog_node_data,
-                                        parent_id=program_ref.id,
-                                        metadata=metadata,
+                                        program_ref.id,
                                     )
                                     program = self.repository.save_study_program(
                                         program_model

@@ -23,8 +23,7 @@ class ModalityNodeParser(NodeParser[str]):
     def parse(
         self,
         node: Node[str],
-        parent_id: Optional[int] = None,
-        metadata: Optional[dict] = None,
+        parent_id: int,
     ) -> Tuple[Modality, List[Node]]:
 
         soup = BeautifulSoup(node.content, "html.parser")
