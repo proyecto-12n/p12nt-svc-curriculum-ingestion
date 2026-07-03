@@ -10,6 +10,12 @@ All rights reserved.
 from app.application.usecase.ingest_curriculum_usecase import (
     IngestCurriculumUseCaseImpl,
 )
+from app.application.usecase.curriculum_node_resolver import (
+    CurriculumNodeResolver,
+)
+from app.application.usecase.study_program_resolver import (
+    StudyProgramResolver,
+)
 from app.application.usecase.convert_pdf_to_markdown_usecase import (
     ConvertPDFToMarkdownUseCaseImpl,
 )
@@ -34,6 +40,8 @@ from app.application.usecase.list_study_programs_usecase import (
 
 __all__ = [
     "IngestCurriculumUseCaseImpl",
+    "CurriculumNodeResolver",
+    "StudyProgramResolver",
     "ConvertPDFToMarkdownUseCaseImpl",
     "GetCurriculumUseCaseImpl",
     "ListCurriculumsUseCaseImpl",
