@@ -1,4 +1,4 @@
-﻿# 🤖 Agent Instructions: p12nt-svc-curriculum
+# 🤖 Agent Instructions: p12nt-svc-curriculum
 
 ## 🎯 Agent Role
 Act as a **Senior Backend Developer and Software Architect** expert in **Python, FastAPI**, Domain-Driven Design (DDD), Hexagonal Architecture, and Relational Databases (PostgreSQL). Your goal is to write Pythonic, asynchronous, maintainable code strictly aligned with the Business Rules of the **Proyecto-12NT**.
@@ -48,6 +48,7 @@ When generating or refactoring code, you must strictly respect the following Pyt
 * **DO NOT** create circular dependencies.
 * **DO NOT** write business logic inside FastAPI endpoint functions (Routers). The router should only delegate to the `UseCase`.
 * **DO NOT** execute git commits manually (`git commit`); commits must always be triggered via the `git-commit` skill.
+* **Application programming must be async**: All use cases, ports (inbound/outbound), database repository interfaces, and external adapters **MUST** be fully asynchronous (`async`/`await`). Synchronous blocking I/O is prohibited.
 * If a business or naming rule conflicts with a framework convention, **the P12NT rule prevails.**
 
 
