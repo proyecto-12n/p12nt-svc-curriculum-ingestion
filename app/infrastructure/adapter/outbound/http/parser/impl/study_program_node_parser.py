@@ -29,7 +29,24 @@ class StudyProgramNodeParser(NodeParser[bytes]):
 
         parsed_url = urlparse(node.url)
         filename = path.basename(parsed_url.path)
-        title = filename if filename else ""
+
+        title = None
+        try:
+            from io import BytesIO
+            from fitz import Document
+
+            with Document(stream=BytesIO(node.content), filetype="pdf") as doc:
+                metadata = doc.metadata
+                if metadata:
+                    title = metadata.get("title")
+        except Exception:
+            pass
+
+        if not isinstance(title, str) or not title.strip():
+            title, _ = path.splitext(filename) if filename else ("", "")
+        else:
+            title = title.strip()
+
         return StudyProgram(
             id=generate_id(node.url),
             study_program_ref_id=parent_id,

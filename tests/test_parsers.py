@@ -162,7 +162,24 @@ def test_study_program_node_parser():
     )
 
     assert program.study_program_ref_id == 2000
-    assert program.title == "prog.pdf"
+    assert program.title == "prog"
     assert program.content == pdf_content
     assert program.checksum != ""
     assert len(children) == 0
+
+    # Test using PDF metadata title
+    from unittest.mock import patch, MagicMock
+
+    mock_doc = MagicMock()
+    mock_doc.metadata = {"title": "My Extracted PDF Title"}
+    mock_doc.__enter__.return_value = mock_doc
+
+    with patch(
+        "fitz.Document",
+        return_value=mock_doc,
+    ):
+        program, children = parser.parse(
+            node,
+            2000,
+        )
+        assert program.title == "My Extracted PDF Title"
