@@ -26,7 +26,19 @@ class StudyProgramNodeParser(NodeParser[bytes]):
         parent_id: int,
     ) -> Tuple[StudyProgram, List[Node]]:
         checksum = sha256(node.content)
+        title = self._calculate_title(node)
 
+        return StudyProgram(
+            id=generate_id(node.url),
+            study_program_ref_id=parent_id,
+            url=node.url,
+            title=title,
+            content=node.content,
+            checksum=checksum.hexdigest(),
+            extracted_at=datetime.now(),
+        ), []
+
+    def _calculate_title(self, node: Node[bytes]) -> str:
         parsed_url = urlparse(node.url)
         filename = path.basename(parsed_url.path)
 
@@ -47,12 +59,4 @@ class StudyProgramNodeParser(NodeParser[bytes]):
         else:
             title = title.strip()
 
-        return StudyProgram(
-            id=generate_id(node.url),
-            study_program_ref_id=parent_id,
-            url=node.url,
-            title=title,
-            content=node.content,
-            checksum=checksum.hexdigest(),
-            extracted_at=datetime.now(),
-        ), []
+        return title

@@ -41,5 +41,3 @@ python -m app.infrastructure.cli.ingest_curriculum
 ```
 
 El script de ingesta inicializa el esquema de base de datos y ejecuta el flujo utilizando las configuraciones declaradas en el archivo `.env`.
-
-
