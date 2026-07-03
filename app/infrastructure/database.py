@@ -17,3 +17,28 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+def init_db() -> None:
+    """Initialize database schema and tables."""
+    import logging
+    from sqlmodel import SQLModel
+
+    # Import all models to ensure they register in SQLModel.metadata
+    import app.infrastructure.models  # noqa: F401
+
+    logger = logging.getLogger(__name__)
+    db_url_str = str(engine.url)
+    logger.info("Using database configuration from app/infrastructure/database.py")
+
+    # In PostgreSQL, we must ensure schema exists before creating tables
+    if "postgresql" in db_url_str:
+        from sqlalchemy import text
+
+        with engine.connect() as conn:
+            conn.execute(text('CREATE SCHEMA IF NOT EXISTS "curriculum-ingestion"'))
+            conn.commit()
+
+    # Create tables
+    SQLModel.metadata.create_all(engine)
+    logger.info("Database schema and tables initialized.")

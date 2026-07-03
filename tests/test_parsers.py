@@ -1,22 +1,19 @@
 # -*- coding: utf-8 -*-
+import importlib.util
+import sys
+from unittest.mock import MagicMock
+
+if importlib.util.find_spec("pymupdf") is None:
+    sys.modules["pymupdf"] = MagicMock()
+
 from app.domain.model.node import Node
 from app.domain.model.resource_type import ResourceType
-from app.infrastructure.adapter.outbound.http.parser.impl.curriculum_node_parser import (
+from app.infrastructure.adapter.outbound.http.parser.impl import (
     CurriculumNodeParser,
-)
-from app.infrastructure.adapter.outbound.http.parser.impl.modality_node_parser import (
     ModalityNodeParser,
-)
-from app.infrastructure.adapter.outbound.http.parser.impl.subject_node_parser import (
     SubjectNodeParser,
-)
-from app.infrastructure.adapter.outbound.http.parser.impl.grade_level_node_parser import (
     GradeLevelNodeParser,
-)
-from app.infrastructure.adapter.outbound.http.parser.impl.study_program_ref_node_parser import (
     StudyProgramRefNodeParser,
-)
-from app.infrastructure.adapter.outbound.http.parser.impl.study_program_node_parser import (
     StudyProgramNodeParser,
 )
 

@@ -7,10 +7,22 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from app.infrastructure.adapter.outbound.db import SqlCurriculumRepositoryAdapter
+from app.infrastructure.adapter.outbound.db import (
+    SqlCurriculumRepositoryAdapter,
+    SqlModalityRepositoryAdapter,
+    SqlSubjectRepositoryAdapter,
+    SqlGradeLevelRepositoryAdapter,
+    SqlStudyProgramRefRepositoryAdapter,
+    SqlStudyProgramRepositoryAdapter,
+)
 from app.infrastructure.adapter.outbound.http import HttpNodeParserProviderAdapter
 
 __all__ = [
     "SqlCurriculumRepositoryAdapter",
+    "SqlModalityRepositoryAdapter",
+    "SqlSubjectRepositoryAdapter",
+    "SqlGradeLevelRepositoryAdapter",
+    "SqlStudyProgramRefRepositoryAdapter",
+    "SqlStudyProgramRepositoryAdapter",
     "HttpNodeParserProviderAdapter",
 ]

@@ -10,7 +10,11 @@ All rights reserved.
 from app.domain.port.inbound.ingest_curriculum_use_case import (
     IngestCurriculumUseCase,
 )
+from app.domain.port.inbound.convert_pdf_to_markdown_use_case import (
+    ConvertPDFToMarkdownUseCase,
+)
 
 __all__ = [
     "IngestCurriculumUseCase",
+    "ConvertPDFToMarkdownUseCase",
 ]

@@ -13,11 +13,11 @@ from sqlmodel import Field, SQLModel
 
 class Subject(SQLModel, table=True):
     __tablename__ = "subjects"
-    __table_args__ = {"schema": "curriculum-ingestion"}
+    __table_args__ = {"schema": "curriculum_ingestion"}
 
     id: int = Field(primary_key=True)
     title: str
-    modality_id: int = Field(foreign_key="curriculum-ingestion.modalities.id")
+    modality_id: int = Field(foreign_key="curriculum_ingestion.modalities.id")
     url: str
     content: str = Field(default="")
     extracted_at: datetime = Field(default_factory=datetime.utcnow)

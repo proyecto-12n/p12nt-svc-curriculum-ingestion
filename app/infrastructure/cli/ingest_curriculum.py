@@ -8,12 +8,19 @@ All rights reserved.
 """
 
 import logging
-from sqlmodel import Session, SQLModel
+from sqlmodel import Session
 
 # Import SQLModels to ensure they register in metadata
 
 # Adapters & Use Case
-from app.infrastructure.adapter.outbound.db import SqlCurriculumRepositoryAdapter
+from app.infrastructure.adapter.outbound.db import (
+    SqlCurriculumRepositoryAdapter,
+    SqlModalityRepositoryAdapter,
+    SqlSubjectRepositoryAdapter,
+    SqlGradeLevelRepositoryAdapter,
+    SqlStudyProgramRefRepositoryAdapter,
+    SqlStudyProgramRepositoryAdapter,
+)
 from app.application.usecase.ingest_curriculum_usecase import (
     IngestCurriculumUseCaseImpl,
 )
@@ -25,34 +32,47 @@ logger = logging.getLogger(__name__)
 
 
 def run_cli():
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Ingest curriculum national data into the database."
+    )
+    parser.add_argument(
+        "--refresh",
+        action="store_true",
+        help="Force the update of elements even if they already exist in the database.",
+    )
+    args = parser.parse_args()
+
     # Database setup
-    from app.infrastructure.database import engine
+    from app.infrastructure.database import engine, init_db
 
-    db_url = str(engine.url)
-    logger.info("Using database configuration from app/infrastructure/database.py")
-
-    # In PostgreSQL, we must ensure schema exists before creating tables
-    if "postgresql" in db_url:
-        from sqlalchemy import text
-
-        with engine.connect() as conn:
-            conn.execute(text('CREATE SCHEMA IF NOT EXISTS "curriculum-ingestion"'))
-            conn.commit()
-
-    # Create tables
-    SQLModel.metadata.create_all(engine)
-    logger.info("Database schema and tables initialized.")
+    init_db()
 
     with Session(engine) as session:
-        repository = SqlCurriculumRepositoryAdapter(session)
+        curriculum_repo = SqlCurriculumRepositoryAdapter(session)
+        modality_repo = SqlModalityRepositoryAdapter(session)
+        subject_repo = SqlSubjectRepositoryAdapter(session)
+        grade_level_repo = SqlGradeLevelRepositoryAdapter(session)
+        study_program_ref_repo = SqlStudyProgramRefRepositoryAdapter(session)
+        study_program_repo = SqlStudyProgramRepositoryAdapter(session)
+
         from app.infrastructure.adapter.external.downloader_provider import (
             DownloaderProvider,
         )
 
         downloader_provider = DownloaderProvider()
 
-        use_case = IngestCurriculumUseCaseImpl(repository, downloader_provider)
-        use_case.execute()
+        use_case = IngestCurriculumUseCaseImpl(
+            curriculum_repository=curriculum_repo,
+            modality_repository=modality_repo,
+            subject_repository=subject_repo,
+            grade_level_repository=grade_level_repo,
+            study_program_ref_repository=study_program_ref_repo,
+            study_program_repository=study_program_repo,
+            downloader_provider=downloader_provider,
+        )
+        use_case.execute(refresh=args.refresh)
 
     logger.info("Ingestion completed successfully.")
 

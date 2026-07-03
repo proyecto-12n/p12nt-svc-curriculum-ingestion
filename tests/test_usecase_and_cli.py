@@ -12,7 +12,14 @@ from app.application.usecase.ingest_curriculum_usecase import (
 )
 from app.domain.model.node import Node
 from app.domain.model.resource_type import ResourceType
-from app.infrastructure.adapter.outbound.db import SqlCurriculumRepositoryAdapter
+from app.infrastructure.adapter.outbound.db import (
+    SqlCurriculumRepositoryAdapter,
+    SqlModalityRepositoryAdapter,
+    SqlSubjectRepositoryAdapter,
+    SqlGradeLevelRepositoryAdapter,
+    SqlStudyProgramRefRepositoryAdapter,
+    SqlStudyProgramRepositoryAdapter,
+)
 from app.infrastructure.cli.ingest_curriculum import run_cli
 
 
@@ -88,7 +95,12 @@ def test_ingest_curriculum_usecase_with_force_mock():
     SQLModel.metadata.create_all(engine)
 
     with Session(engine) as session:
-        repository = SqlCurriculumRepositoryAdapter(session)
+        curriculum_repo = SqlCurriculumRepositoryAdapter(session)
+        modality_repo = SqlModalityRepositoryAdapter(session)
+        subject_repo = SqlSubjectRepositoryAdapter(session)
+        grade_level_repo = SqlGradeLevelRepositoryAdapter(session)
+        study_program_ref_repo = SqlStudyProgramRefRepositoryAdapter(session)
+        study_program_repo = SqlStudyProgramRepositoryAdapter(session)
 
         # Setup mock downloader
         async def mock_download(url, timeout=10.0):
@@ -106,20 +118,28 @@ def test_ingest_curriculum_usecase_with_force_mock():
         downloader_provider = MagicMock()
         downloader_provider.get_downloader.return_value = mock_downloader
 
-        use_case = IngestCurriculumUseCaseImpl(repository, downloader_provider)
+        use_case = IngestCurriculumUseCaseImpl(
+            curriculum_repository=curriculum_repo,
+            modality_repository=modality_repo,
+            subject_repository=subject_repo,
+            grade_level_repository=grade_level_repo,
+            study_program_ref_repository=study_program_ref_repo,
+            study_program_repository=study_program_repo,
+            downloader_provider=downloader_provider,
+        )
 
         # Execute
         use_case.execute()
 
         # Verify that data was ingested in the database
-        curr = repository.find_curriculum_by_url(
+        curr = curriculum_repo.find_curriculum_by_url(
             "https://www.curriculumnacional.cl/curriculum"
         )
         assert curr is not None
         assert curr.title == "Curriculum Nacional"
 
         # Let's verify modalities were saved
-        mod = repository.find_modality_by_url(
+        mod = modality_repo.find_modality_by_url(
             "https://www.curriculumnacional.cl/curriculum/basica"
         )
         assert mod is not None
@@ -135,7 +155,12 @@ def test_ingest_curriculum_usecase_downloader_failure_fallback():
     SQLModel.metadata.create_all(engine)
 
     with Session(engine) as session:
-        repository = SqlCurriculumRepositoryAdapter(session)
+        curriculum_repo = SqlCurriculumRepositoryAdapter(session)
+        modality_repo = SqlModalityRepositoryAdapter(session)
+        subject_repo = SqlSubjectRepositoryAdapter(session)
+        grade_level_repo = SqlGradeLevelRepositoryAdapter(session)
+        study_program_ref_repo = SqlStudyProgramRefRepositoryAdapter(session)
+        study_program_repo = SqlStudyProgramRepositoryAdapter(session)
 
         # Mock downloader provider to raise an error when PDF download is called
         async def mock_download(url, timeout=10.0):
@@ -150,18 +175,26 @@ def test_ingest_curriculum_usecase_downloader_failure_fallback():
         mock_downloader_provider = MagicMock()
         mock_downloader_provider.get_downloader.return_value = mock_downloader
 
-        use_case = IngestCurriculumUseCaseImpl(repository, mock_downloader_provider)
+        use_case = IngestCurriculumUseCaseImpl(
+            curriculum_repository=curriculum_repo,
+            modality_repository=modality_repo,
+            subject_repository=subject_repo,
+            grade_level_repository=grade_level_repo,
+            study_program_ref_repository=study_program_ref_repo,
+            study_program_repository=study_program_repo,
+            downloader_provider=mock_downloader_provider,
+        )
 
         use_case.execute()
 
         # Verify fallback still populated database structures
-        curr = repository.find_curriculum_by_url(
+        curr = curriculum_repo.find_curriculum_by_url(
             "https://www.curriculumnacional.cl/curriculum"
         )
         assert curr is not None
 
         # Verify empty placeholder program was saved on PDF failure
-        prog = repository.find_study_program_by_url(
+        prog = study_program_repo.find_study_program_by_url(
             "https://www.curriculumnacional.cl/curriculum/basica/matematica/1g/ref/programa.pdf"
         )
         assert prog is not None
@@ -171,28 +204,63 @@ def test_ingest_curriculum_usecase_downloader_failure_fallback():
 def test_run_cli_postgresql_dialect():
     with (
         patch("app.infrastructure.cli.ingest_curriculum.Session") as mock_session_class,
-        patch("app.infrastructure.cli.ingest_curriculum.SQLModel") as mock_sqlmodel,
+        patch("app.infrastructure.database.init_db") as mock_init_db,
         patch(
             "app.infrastructure.cli.ingest_curriculum.IngestCurriculumUseCaseImpl"
         ) as mock_usecase_class,
+        patch("argparse.ArgumentParser.parse_args") as mock_parse_args,
     ):
-        mock_engine = MagicMock()
-        mock_engine.url = "postgresql://localhost:5432/test"
-        mock_engine.dialect.name = "postgresql"
+        mock_args = MagicMock()
+        mock_args.refresh = False
+        mock_parse_args.return_value = mock_args
 
+        mock_engine = MagicMock()
         mock_session = MagicMock()
         mock_session_class.return_value.__enter__.return_value = mock_session
 
         mock_usecase = MagicMock()
         mock_usecase_class.return_value = mock_usecase
 
-        with (
-            patch("app.infrastructure.database.engine", new=mock_engine),
-            patch("sqlalchemy.text") as mock_text,
-        ):
+        with patch("app.infrastructure.database.engine", new=mock_engine):
             run_cli()
 
-            mock_engine.connect.assert_called_once()
-            mock_usecase.execute.assert_called_once()
-            mock_sqlmodel.metadata.create_all.assert_called_once_with(mock_engine)
-            assert mock_text is not None
+            mock_init_db.assert_called_once()
+            mock_usecase.execute.assert_called_once_with(refresh=False)
+
+
+def test_init_db_postgresql():
+    mock_engine = MagicMock()
+    mock_engine.url = "postgresql://localhost:5432/test"
+
+    with (
+        patch("app.infrastructure.database.engine", new=mock_engine),
+        patch("sqlalchemy.text") as mock_text,
+        patch("sqlmodel.SQLModel.metadata.create_all") as mock_create_all,
+    ):
+        from app.infrastructure.database import init_db
+
+        init_db()
+
+        mock_engine.connect.assert_called_once()
+        mock_create_all.assert_called_once_with(mock_engine)
+        mock_text.assert_called_once_with(
+            'CREATE SCHEMA IF NOT EXISTS "curriculum-ingestion"'
+        )
+
+
+def test_init_db_sqlite():
+    mock_engine = MagicMock()
+    mock_engine.url = "sqlite:///:memory:"
+
+    with (
+        patch("app.infrastructure.database.engine", new=mock_engine),
+        patch("sqlalchemy.text") as mock_text,
+        patch("sqlmodel.SQLModel.metadata.create_all") as mock_create_all,
+    ):
+        from app.infrastructure.database import init_db
+
+        init_db()
+
+        mock_engine.connect.assert_not_called()
+        mock_create_all.assert_called_once_with(mock_engine)
+        mock_text.assert_not_called()

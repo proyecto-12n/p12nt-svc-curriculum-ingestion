@@ -8,7 +8,6 @@ from app.domain.model.study_program import StudyProgram
 from app.config import Settings
 from app.utils import log_execution_time
 from app.infrastructure.database import get_db
-from app.domain.port.outbound.curriculum_repository import CurriculumRepository
 
 
 def test_entity_not_found_exception():
@@ -65,19 +64,53 @@ def test_get_db():
 
 
 def test_curriculum_repository_protocol():
-    class DummyRepository(CurriculumRepository):
+    from app.domain.port.outbound import (
+        CurriculumRepository,
+        ModalityRepository,
+        SubjectRepository,
+        GradeLevelRepository,
+        StudyProgramRefRepository,
+        StudyProgramRepository,
+    )
+
+    class DummyCurriculumRepo(CurriculumRepository):
         pass
 
-    repo = DummyRepository()
-    repo.find_curriculum_by_url("url")
-    repo.save_curriculum(None)
-    repo.find_modality_by_url("url")
-    repo.save_modality(None)
-    repo.find_subject_by_title_and_modality("title", 1)
-    repo.save_subject(None)
-    repo.find_grade_level_by_title_and_subject("title", 1)
-    repo.save_grade_level(None)
-    repo.find_study_program_ref_by_url("url")
-    repo.save_study_program_ref(None)
-    repo.find_study_program_by_url("url")
-    repo.save_study_program(None)
+    repo1 = DummyCurriculumRepo()
+    repo1.find_curriculum_by_url("url")
+    repo1.save_curriculum(None)
+
+    class DummyModalityRepo(ModalityRepository):
+        pass
+
+    repo2 = DummyModalityRepo()
+    repo2.find_modality_by_url("url")
+    repo2.save_modality(None)
+
+    class DummySubjectRepo(SubjectRepository):
+        pass
+
+    repo3 = DummySubjectRepo()
+    repo3.find_subject_by_title_and_modality("title", 1)
+    repo3.save_subject(None)
+
+    class DummyGradeLevelRepo(GradeLevelRepository):
+        pass
+
+    repo4 = DummyGradeLevelRepo()
+    repo4.find_grade_level_by_title_and_subject("title", 1)
+    repo4.save_grade_level(None)
+
+    class DummyStudyProgramRefRepo(StudyProgramRefRepository):
+        pass
+
+    repo5 = DummyStudyProgramRefRepo()
+    repo5.find_study_program_ref_by_url("url")
+    repo5.save_study_program_ref(None)
+
+    class DummyStudyProgramRepo(StudyProgramRepository):
+        pass
+
+    repo6 = DummyStudyProgramRepo()
+    repo6.find_study_program_by_url("url")
+    repo6.save_study_program(None)

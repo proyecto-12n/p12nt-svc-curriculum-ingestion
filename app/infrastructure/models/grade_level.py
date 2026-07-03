@@ -13,10 +13,10 @@ from sqlmodel import Field, SQLModel
 
 class GradeLevel(SQLModel, table=True):
     __tablename__ = "grade_levels"
-    __table_args__ = {"schema": "curriculum-ingestion"}
+    __table_args__ = {"schema": "curriculum_ingestion"}
 
     id: int = Field(primary_key=True)
-    subject_id: int = Field(foreign_key="curriculum-ingestion.subjects.id")
+    subject_id: int = Field(foreign_key="curriculum_ingestion.subjects.id")
     title: str
     url: str
     content: str = Field(default="")

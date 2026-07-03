@@ -62,6 +62,7 @@ class GradeLevelNodeParser(NodeParser[str]):
                         url=u,
                         type=ResourceType.HTML,
                         level=CurriculumNodeType.STUDY_PROGRAM_REF,
+                        title=a.get_text(strip=True),
                     )
                 )
 

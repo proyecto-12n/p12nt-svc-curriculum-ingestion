@@ -53,7 +53,10 @@ class CurriculumNodeParser(NodeParser[str]):
                 u = urljoin(base_url, a.get("href"))
                 nodes.append(
                     Node(
-                        url=u, type=ResourceType.HTML, level=CurriculumNodeType.MODALITY
+                        url=u,
+                        type=ResourceType.HTML,
+                        level=CurriculumNodeType.MODALITY,
+                        title=h3.get_text(strip=True),
                     )
                 )
 

@@ -54,7 +54,12 @@ class ModalityNodeParser(NodeParser[str]):
 
             u = urljoin(base_url, a.get("href"))
             nodes.append(
-                Node(url=u, type=ResourceType.HTML, level=CurriculumNodeType.SUBJECT)
+                Node(
+                    url=u,
+                    type=ResourceType.HTML,
+                    level=CurriculumNodeType.SUBJECT,
+                    title=span.get_text(strip=True),
+                )
             )
 
         return nodes

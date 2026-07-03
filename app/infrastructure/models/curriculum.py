@@ -13,7 +13,7 @@ from sqlmodel import Field, SQLModel
 
 class Curriculum(SQLModel, table=True):
     __tablename__ = "curriculums"
-    __table_args__ = {"schema": "curriculum-ingestion"}
+    __table_args__ = {"schema": "curriculum_ingestion"}
 
     id: int = Field(primary_key=True)
     url: str

@@ -2,10 +2,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "p12nt-svc-curriculum-ingestion-service"
+    PROJECT_NAME: str = "p12nt-svc-curriculum_ingestion-service"
     API_V1_STR: str = "/api/v1"
     DATABASE_URL: str = (
-        "postgresql://postgres:postgres@localhost:5432/p12nt_curriculum-ingestion"
+        "postgresql://postgres:postgres@localhost:5432/p12nt_curriculum_ingestion"
     )
 
     # LLM Settings for external study program parsing agent

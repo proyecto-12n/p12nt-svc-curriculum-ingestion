@@ -1,7 +1,14 @@
 # -*- coding: utf-8 -*-
 import pytest
 from sqlmodel import SQLModel, create_engine, Session
-from app.infrastructure.adapter.outbound.db import SqlCurriculumRepositoryAdapter
+from app.infrastructure.adapter.outbound.db import (
+    SqlCurriculumRepositoryAdapter,
+    SqlModalityRepositoryAdapter,
+    SqlSubjectRepositoryAdapter,
+    SqlGradeLevelRepositoryAdapter,
+    SqlStudyProgramRefRepositoryAdapter,
+    SqlStudyProgramRepositoryAdapter,
+)
 from app.domain.model import (
     Curriculum,
     Modality,
@@ -38,11 +45,13 @@ def test_save_and_find_curriculum(session):
 
 
 def test_save_and_find_modality(session):
-    adapter = SqlCurriculumRepositoryAdapter(session)
+    curr_adapter = SqlCurriculumRepositoryAdapter(session)
+    mod_adapter = SqlModalityRepositoryAdapter(session)
+
     curr = Curriculum(
         id=1, title="Parvularia", url="http://test.url/curr", content="HTML"
     )
-    adapter.save_curriculum(curr)
+    curr_adapter.save_curriculum(curr)
 
     mod = Modality(
         id=10,
@@ -51,20 +60,23 @@ def test_save_and_find_modality(session):
         title="Nivel Medio",
         content="HTML Mod",
     )
-    adapter.save_modality(mod)
+    mod_adapter.save_modality(mod)
 
-    found = adapter.find_modality_by_url("http://test.url/mod")
+    found = mod_adapter.find_modality_by_url("http://test.url/mod")
     assert found is not None
     assert found.title == "Nivel Medio"
     assert found.content == "HTML Mod"
 
 
 def test_save_and_find_subject(session):
-    adapter = SqlCurriculumRepositoryAdapter(session)
+    curr_adapter = SqlCurriculumRepositoryAdapter(session)
+    mod_adapter = SqlModalityRepositoryAdapter(session)
+    sub_adapter = SqlSubjectRepositoryAdapter(session)
+
     curr = Curriculum(
         id=1, title="Parvularia", url="http://test.url/curr", content="HTML"
     )
-    adapter.save_curriculum(curr)
+    curr_adapter.save_curriculum(curr)
 
     mod = Modality(
         id=10,
@@ -73,7 +85,7 @@ def test_save_and_find_subject(session):
         title="Nivel Medio",
         content="HTML Mod",
     )
-    adapter.save_modality(mod)
+    mod_adapter.save_modality(mod)
 
     sub = Subject(
         id=100,
@@ -82,20 +94,24 @@ def test_save_and_find_subject(session):
         title="Matemáticas",
         content="HTML Sub",
     )
-    adapter.save_subject(sub)
+    sub_adapter.save_subject(sub)
 
-    found = adapter.find_subject_by_title_and_modality("Matemáticas", 10)
+    found = sub_adapter.find_subject_by_title_and_modality("Matemáticas", 10)
     assert found is not None
     assert found.url == "http://test.url/sub"
     assert found.content == "HTML Sub"
 
 
 def test_save_and_find_grade_level(session):
-    adapter = SqlCurriculumRepositoryAdapter(session)
+    curr_adapter = SqlCurriculumRepositoryAdapter(session)
+    mod_adapter = SqlModalityRepositoryAdapter(session)
+    sub_adapter = SqlSubjectRepositoryAdapter(session)
+    grade_adapter = SqlGradeLevelRepositoryAdapter(session)
+
     curr = Curriculum(
         id=1, title="Parvularia", url="http://test.url/curr", content="HTML"
     )
-    adapter.save_curriculum(curr)
+    curr_adapter.save_curriculum(curr)
 
     mod = Modality(
         id=10,
@@ -104,7 +120,7 @@ def test_save_and_find_grade_level(session):
         title="Nivel Medio",
         content="HTML Mod",
     )
-    adapter.save_modality(mod)
+    mod_adapter.save_modality(mod)
 
     sub = Subject(
         id=100,
@@ -113,7 +129,7 @@ def test_save_and_find_grade_level(session):
         title="Matemáticas",
         content="HTML Sub",
     )
-    adapter.save_subject(sub)
+    sub_adapter.save_subject(sub)
 
     grade = GradeLevel(
         id=1000,
@@ -122,20 +138,25 @@ def test_save_and_find_grade_level(session):
         title="1 Básico",
         content="HTML Grade",
     )
-    adapter.save_grade_level(grade)
+    grade_adapter.save_grade_level(grade)
 
-    found = adapter.find_grade_level_by_title_and_subject("1 Básico", 100)
+    found = grade_adapter.find_grade_level_by_title_and_subject("1 Básico", 100)
     assert found is not None
     assert found.url == "http://test.url/grade"
     assert found.content == "HTML Grade"
 
 
 def test_save_and_find_study_program_ref(session):
-    adapter = SqlCurriculumRepositoryAdapter(session)
+    curr_adapter = SqlCurriculumRepositoryAdapter(session)
+    mod_adapter = SqlModalityRepositoryAdapter(session)
+    sub_adapter = SqlSubjectRepositoryAdapter(session)
+    grade_adapter = SqlGradeLevelRepositoryAdapter(session)
+    ref_adapter = SqlStudyProgramRefRepositoryAdapter(session)
+
     curr = Curriculum(
         id=1, title="Parvularia", url="http://test.url/curr", content="HTML"
     )
-    adapter.save_curriculum(curr)
+    curr_adapter.save_curriculum(curr)
 
     mod = Modality(
         id=10,
@@ -144,7 +165,7 @@ def test_save_and_find_study_program_ref(session):
         title="Nivel Medio",
         content="HTML Mod",
     )
-    adapter.save_modality(mod)
+    mod_adapter.save_modality(mod)
 
     sub = Subject(
         id=100,
@@ -153,7 +174,7 @@ def test_save_and_find_study_program_ref(session):
         title="Matemáticas",
         content="HTML Sub",
     )
-    adapter.save_subject(sub)
+    sub_adapter.save_subject(sub)
 
     grade = GradeLevel(
         id=1000,
@@ -162,7 +183,7 @@ def test_save_and_find_study_program_ref(session):
         title="1 Básico",
         content="HTML Grade",
     )
-    adapter.save_grade_level(grade)
+    grade_adapter.save_grade_level(grade)
 
     ref = StudyProgramRef(
         id=2000,
@@ -171,20 +192,26 @@ def test_save_and_find_study_program_ref(session):
         title="Ref Programa",
         content="HTML Ref",
     )
-    adapter.save_study_program_ref(ref)
+    ref_adapter.save_study_program_ref(ref)
 
-    found = adapter.find_study_program_ref_by_url("http://test.url/ref")
+    found = ref_adapter.find_study_program_ref_by_url("http://test.url/ref")
     assert found is not None
     assert found.title == "Ref Programa"
     assert found.content == "HTML Ref"
 
 
 def test_save_and_find_study_program(session):
-    adapter = SqlCurriculumRepositoryAdapter(session)
+    curr_adapter = SqlCurriculumRepositoryAdapter(session)
+    mod_adapter = SqlModalityRepositoryAdapter(session)
+    sub_adapter = SqlSubjectRepositoryAdapter(session)
+    grade_adapter = SqlGradeLevelRepositoryAdapter(session)
+    ref_adapter = SqlStudyProgramRefRepositoryAdapter(session)
+    prog_adapter = SqlStudyProgramRepositoryAdapter(session)
+
     curr = Curriculum(
         id=1, title="Parvularia", url="http://test.url/curr", content="HTML"
     )
-    adapter.save_curriculum(curr)
+    curr_adapter.save_curriculum(curr)
 
     mod = Modality(
         id=10,
@@ -193,7 +220,7 @@ def test_save_and_find_study_program(session):
         title="Nivel Medio",
         content="HTML Mod",
     )
-    adapter.save_modality(mod)
+    mod_adapter.save_modality(mod)
 
     sub = Subject(
         id=100,
@@ -202,7 +229,7 @@ def test_save_and_find_study_program(session):
         title="Matemáticas",
         content="HTML Sub",
     )
-    adapter.save_subject(sub)
+    sub_adapter.save_subject(sub)
 
     grade = GradeLevel(
         id=1000,
@@ -211,7 +238,7 @@ def test_save_and_find_study_program(session):
         title="1 Básico",
         content="HTML Grade",
     )
-    adapter.save_grade_level(grade)
+    grade_adapter.save_grade_level(grade)
 
     ref = StudyProgramRef(
         id=2000,
@@ -220,7 +247,7 @@ def test_save_and_find_study_program(session):
         title="Ref Programa",
         content="HTML Ref",
     )
-    adapter.save_study_program_ref(ref)
+    ref_adapter.save_study_program_ref(ref)
 
     prog = StudyProgram(
         id=3000,
@@ -230,9 +257,9 @@ def test_save_and_find_study_program(session):
         content=b"binary pdf data",
         checksum="abcd",
     )
-    adapter.save_study_program(prog)
+    prog_adapter.save_study_program(prog)
 
-    found = adapter.find_study_program_by_url("http://test.url/prog.pdf")
+    found = prog_adapter.find_study_program_by_url("http://test.url/prog.pdf")
     assert found is not None
     assert found.title == "Art-1.pdf"
     assert found.content == b"binary pdf data"

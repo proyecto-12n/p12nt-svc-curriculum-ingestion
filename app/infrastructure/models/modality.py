@@ -13,10 +13,10 @@ from sqlmodel import Field, SQLModel
 
 class Modality(SQLModel, table=True):
     __tablename__ = "modalities"
-    __table_args__ = {"schema": "curriculum-ingestion"}
+    __table_args__ = {"schema": "curriculum_ingestion"}
 
     id: int = Field(primary_key=True)
-    curriculum_id: int = Field(foreign_key="curriculum-ingestion.curriculums.id")
+    curriculum_id: int = Field(foreign_key="curriculum_ingestion.curriculums.id")
     url: str
 
     title: str

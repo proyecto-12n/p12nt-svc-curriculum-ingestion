@@ -13,11 +13,11 @@ from sqlmodel import Field, SQLModel
 
 class StudyProgram(SQLModel, table=True):
     __tablename__ = "study_programs"
-    __table_args__ = {"schema": "curriculum-ingestion"}
+    __table_args__ = {"schema": "curriculum_ingestion"}
 
     id: int = Field(primary_key=True)
     study_program_ref_id: int = Field(
-        foreign_key="curriculum-ingestion.study_program_refs.id"
+        foreign_key="curriculum_ingestion.study_program_refs.id"
     )
 
     url: str

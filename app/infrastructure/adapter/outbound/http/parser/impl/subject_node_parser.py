@@ -55,6 +55,7 @@ class SubjectNodeParser(NodeParser[str]):
                             url=u,
                             type=ResourceType.HTML,
                             level=CurriculumNodeType.GRADE_LEVEL,
+                            title=a.get_text(strip=True),
                         )
                     )
         return nodes

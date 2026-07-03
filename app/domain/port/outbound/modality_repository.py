@@ -8,12 +8,12 @@ All rights reserved.
 """
 
 from typing import Protocol, Optional
-from app.domain.model.curriculum import Curriculum
+from app.domain.model.modality import Modality
 
 
-class CurriculumRepository(Protocol):
-    def find_curriculum_by_url(self, url: str) -> Optional[Curriculum]:
+class ModalityRepository(Protocol):
+    def find_modality_by_url(self, url: str) -> Optional[Modality]:
         pass
 
-    def save_curriculum(self, curriculum: Curriculum) -> Curriculum:
+    def save_modality(self, modality: Modality) -> Modality:
         pass
