@@ -45,9 +45,9 @@ class StudyProgramNodeParser(NodeParser[bytes]):
         title = None
         try:
             from io import BytesIO
-            from fitz import Document
+            import pymupdf
 
-            with Document(stream=BytesIO(node.content), filetype="pdf") as doc:
+            with pymupdf.Document(stream=BytesIO(node.content), filetype="pdf") as doc:
                 metadata = doc.metadata
                 if metadata:
                     title = metadata.get("title")

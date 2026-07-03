@@ -175,7 +175,7 @@ def test_study_program_node_parser():
     mock_doc.__enter__.return_value = mock_doc
 
     with patch(
-        "fitz.Document",
+        "pymupdf.Document",
         return_value=mock_doc,
     ):
         program, children = parser.parse(
