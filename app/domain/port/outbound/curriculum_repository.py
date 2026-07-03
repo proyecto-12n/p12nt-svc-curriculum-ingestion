@@ -17,3 +17,9 @@ class CurriculumRepository(Protocol):
 
     def save_curriculum(self, curriculum: Curriculum) -> Curriculum:
         pass
+
+    def find_curriculum_by_id(self, id: int) -> Optional[Curriculum]:
+        pass
+
+    def list_curriculums(self) -> list[Curriculum]:
+        pass

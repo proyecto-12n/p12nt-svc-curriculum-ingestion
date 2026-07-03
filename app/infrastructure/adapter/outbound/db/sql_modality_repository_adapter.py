@@ -57,3 +57,36 @@ class SqlModalityRepositoryAdapter(ModalityRepository):
         self.session.refresh(sql_mod)
         modality.id = sql_mod.id
         return modality
+
+    def find_modality_by_id(self, id: int) -> Optional[DomainModality]:
+        statement = select(SqlModality).where(SqlModality.id == id)
+        sql_mod = self.session.exec(statement).first()
+        if sql_mod:
+            return DomainModality(
+                id=sql_mod.id,
+                curriculum_id=sql_mod.curriculum_id,
+                title=sql_mod.title,
+                url=sql_mod.url,
+                content=sql_mod.content,
+                extracted_at=sql_mod.extracted_at,
+            )
+        return None
+
+    def list_modalities(
+        self, curriculum_id: Optional[int] = None
+    ) -> list[DomainModality]:
+        statement = select(SqlModality)
+        if curriculum_id is not None:
+            statement = statement.where(SqlModality.curriculum_id == curriculum_id)
+        results = self.session.exec(statement).all()
+        return [
+            DomainModality(
+                id=row.id,
+                curriculum_id=row.curriculum_id,
+                title=row.title,
+                url=row.url,
+                content=row.content,
+                extracted_at=row.extracted_at,
+            )
+            for row in results
+        ]

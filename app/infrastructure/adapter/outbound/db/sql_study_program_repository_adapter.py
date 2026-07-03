@@ -64,3 +64,40 @@ class SqlStudyProgramRepositoryAdapter(StudyProgramRepository):
         self.session.refresh(sql_prog)
         study_program.id = sql_prog.id
         return study_program
+
+    def find_study_program_by_id(self, id: int) -> Optional[DomainStudyProgram]:
+        statement = select(SqlStudyProgram).where(SqlStudyProgram.id == id)
+        sql_prog = self.session.exec(statement).first()
+        if sql_prog:
+            return DomainStudyProgram(
+                id=sql_prog.id,
+                url=sql_prog.url,
+                study_program_ref_id=sql_prog.study_program_ref_id,
+                title=sql_prog.title,
+                checksum=sql_prog.checksum,
+                content=sql_prog.content,
+                extracted_at=sql_prog.extracted_at,
+            )
+        return None
+
+    def list_study_programs(
+        self, study_program_ref_id: Optional[int] = None
+    ) -> list[DomainStudyProgram]:
+        statement = select(SqlStudyProgram)
+        if study_program_ref_id is not None:
+            statement = statement.where(
+                SqlStudyProgram.study_program_ref_id == study_program_ref_id
+            )
+        results = self.session.exec(statement).all()
+        return [
+            DomainStudyProgram(
+                id=row.id,
+                url=row.url,
+                study_program_ref_id=row.study_program_ref_id,
+                title=row.title,
+                checksum=row.checksum,
+                content=row.content,
+                extracted_at=row.extracted_at,
+            )
+            for row in results
+        ]

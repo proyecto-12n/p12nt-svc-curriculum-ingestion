@@ -19,3 +19,9 @@ class SubjectRepository(Protocol):
 
     def save_subject(self, subject: Subject) -> Subject:
         pass
+
+    def find_subject_by_id(self, id: int) -> Optional[Subject]:
+        pass
+
+    def list_subjects(self, modality_id: Optional[int] = None) -> list[Subject]:
+        pass

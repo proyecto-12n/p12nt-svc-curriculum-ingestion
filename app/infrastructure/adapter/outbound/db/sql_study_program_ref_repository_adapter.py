@@ -67,3 +67,38 @@ class SqlStudyProgramRefRepositoryAdapter(StudyProgramRefRepository):
         self.session.refresh(sql_ref)
         study_program_ref.id = sql_ref.id
         return study_program_ref
+
+    def find_study_program_ref_by_id(self, id: int) -> Optional[DomainStudyProgramRef]:
+        statement = select(SqlStudyProgramRef).where(SqlStudyProgramRef.id == id)
+        sql_ref = self.session.exec(statement).first()
+        if sql_ref:
+            return DomainStudyProgramRef(
+                id=sql_ref.id,
+                grade_level_id=sql_ref.grade_level_id,
+                title=sql_ref.title,
+                url=sql_ref.url,
+                content=sql_ref.content,
+                extracted_at=sql_ref.extracted_at,
+            )
+        return None
+
+    def list_study_program_refs(
+        self, grade_level_id: Optional[int] = None
+    ) -> list[DomainStudyProgramRef]:
+        statement = select(SqlStudyProgramRef)
+        if grade_level_id is not None:
+            statement = statement.where(
+                SqlStudyProgramRef.grade_level_id == grade_level_id
+            )
+        results = self.session.exec(statement).all()
+        return [
+            DomainStudyProgramRef(
+                id=row.id,
+                grade_level_id=row.grade_level_id,
+                title=row.title,
+                url=row.url,
+                content=row.content,
+                extracted_at=row.extracted_at,
+            )
+            for row in results
+        ]

@@ -4,6 +4,24 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.infrastructure.database import init_db
+from app.infrastructure.adapter.inbound.web.routers.curriculum_router import (
+    router as curriculum_router,
+)
+from app.infrastructure.adapter.inbound.web.routers.modality_router import (
+    router as modality_router,
+)
+from app.infrastructure.adapter.inbound.web.routers.subject_router import (
+    router as subject_router,
+)
+from app.infrastructure.adapter.inbound.web.routers.grade_level_router import (
+    router as grade_level_router,
+)
+from app.infrastructure.adapter.inbound.web.routers.study_program_ref_router import (
+    router as study_program_ref_router,
+)
+from app.infrastructure.adapter.inbound.web.routers.study_program_router import (
+    router as study_program_router,
+)
 
 
 @asynccontextmanager
@@ -35,7 +53,12 @@ def health_check():
     return {"status": "healthy", "service": settings.PROJECT_NAME}
 
 
-# Acoplar routers HTTP de los adaptadores
+app.include_router(curriculum_router, prefix=settings.API_V1_STR)
+app.include_router(modality_router, prefix=settings.API_V1_STR)
+app.include_router(subject_router, prefix=settings.API_V1_STR)
+app.include_router(grade_level_router, prefix=settings.API_V1_STR)
+app.include_router(study_program_ref_router, prefix=settings.API_V1_STR)
+app.include_router(study_program_router, prefix=settings.API_V1_STR)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

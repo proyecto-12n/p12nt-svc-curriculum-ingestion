@@ -63,3 +63,36 @@ class SqlGradeLevelRepositoryAdapter(GradeLevelRepository):
         self.session.refresh(sql_grade)
         grade_level.id = sql_grade.id
         return grade_level
+
+    def find_grade_level_by_id(self, id: int) -> Optional[DomainGradeLevel]:
+        statement = select(SqlGradeLevel).where(SqlGradeLevel.id == id)
+        sql_grade = self.session.exec(statement).first()
+        if sql_grade:
+            return DomainGradeLevel(
+                id=sql_grade.id,
+                title=sql_grade.title,
+                subject_id=sql_grade.subject_id,
+                url=sql_grade.url,
+                content=sql_grade.content,
+                extracted_at=sql_grade.extracted_at,
+            )
+        return None
+
+    def list_grade_levels(
+        self, subject_id: Optional[int] = None
+    ) -> list[DomainGradeLevel]:
+        statement = select(SqlGradeLevel)
+        if subject_id is not None:
+            statement = statement.where(SqlGradeLevel.subject_id == subject_id)
+        results = self.session.exec(statement).all()
+        return [
+            DomainGradeLevel(
+                id=row.id,
+                title=row.title,
+                subject_id=row.subject_id,
+                url=row.url,
+                content=row.content,
+                extracted_at=row.extracted_at,
+            )
+            for row in results
+        ]

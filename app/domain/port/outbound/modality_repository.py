@@ -17,3 +17,9 @@ class ModalityRepository(Protocol):
 
     def save_modality(self, modality: Modality) -> Modality:
         pass
+
+    def find_modality_by_id(self, id: int) -> Optional[Modality]:
+        pass
+
+    def list_modalities(self, curriculum_id: Optional[int] = None) -> list[Modality]:
+        pass

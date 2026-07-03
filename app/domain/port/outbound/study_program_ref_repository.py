@@ -19,3 +19,11 @@ class StudyProgramRefRepository(Protocol):
         self, study_program_ref: StudyProgramRef
     ) -> StudyProgramRef:
         pass
+
+    def find_study_program_ref_by_id(self, id: int) -> Optional[StudyProgramRef]:
+        pass
+
+    def list_study_program_refs(
+        self, grade_level_id: Optional[int] = None
+    ) -> list[StudyProgramRef]:
+        pass

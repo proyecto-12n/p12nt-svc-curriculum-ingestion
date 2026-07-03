@@ -63,3 +63,34 @@ class SqlSubjectRepositoryAdapter(SubjectRepository):
         self.session.refresh(sql_sub)
         subject.id = sql_sub.id
         return subject
+
+    def find_subject_by_id(self, id: int) -> Optional[DomainSubject]:
+        statement = select(SqlSubject).where(SqlSubject.id == id)
+        sql_sub = self.session.exec(statement).first()
+        if sql_sub:
+            return DomainSubject(
+                id=sql_sub.id,
+                title=sql_sub.title,
+                modality_id=sql_sub.modality_id,
+                url=sql_sub.url,
+                content=sql_sub.content,
+                extracted_at=sql_sub.extracted_at,
+            )
+        return None
+
+    def list_subjects(self, modality_id: Optional[int] = None) -> list[DomainSubject]:
+        statement = select(SqlSubject)
+        if modality_id is not None:
+            statement = statement.where(SqlSubject.modality_id == modality_id)
+        results = self.session.exec(statement).all()
+        return [
+            DomainSubject(
+                id=row.id,
+                title=row.title,
+                modality_id=row.modality_id,
+                url=row.url,
+                content=row.content,
+                extracted_at=row.extracted_at,
+            )
+            for row in results
+        ]

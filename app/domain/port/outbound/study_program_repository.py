@@ -17,3 +17,11 @@ class StudyProgramRepository(Protocol):
 
     def save_study_program(self, study_program: StudyProgram) -> StudyProgram:
         pass
+
+    def find_study_program_by_id(self, id: int) -> Optional[StudyProgram]:
+        pass
+
+    def list_study_programs(
+        self, study_program_ref_id: Optional[int] = None
+    ) -> list[StudyProgram]:
+        pass

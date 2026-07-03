@@ -19,3 +19,9 @@ class GradeLevelRepository(Protocol):
 
     def save_grade_level(self, grade_level: GradeLevel) -> GradeLevel:
         pass
+
+    def find_grade_level_by_id(self, id: int) -> Optional[GradeLevel]:
+        pass
+
+    def list_grade_levels(self, subject_id: Optional[int] = None) -> list[GradeLevel]:
+        pass

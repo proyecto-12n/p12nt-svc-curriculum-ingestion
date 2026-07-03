@@ -55,3 +55,30 @@ class SqlCurriculumRepositoryAdapter(CurriculumRepository):
         self.session.refresh(sql_cur)
         curriculum.id = sql_cur.id
         return curriculum
+
+    def find_curriculum_by_id(self, id: int) -> Optional[DomainCurriculum]:
+        statement = select(SqlCurriculum).where(SqlCurriculum.id == id)
+        sql_cur = self.session.exec(statement).first()
+        if sql_cur:
+            return DomainCurriculum(
+                id=sql_cur.id,
+                url=sql_cur.url,
+                title=sql_cur.title,
+                content=sql_cur.content,
+                extracted_at=sql_cur.extracted_at,
+            )
+        return None
+
+    def list_curriculums(self) -> list[DomainCurriculum]:
+        statement = select(SqlCurriculum)
+        results = self.session.exec(statement).all()
+        return [
+            DomainCurriculum(
+                id=row.id,
+                url=row.url,
+                title=row.title,
+                content=row.content,
+                extracted_at=row.extracted_at,
+            )
+            for row in results
+        ]
