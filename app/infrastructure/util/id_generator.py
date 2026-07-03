@@ -17,5 +17,5 @@ def generate_id(*values: str) -> int:
     This is used across the domain to ensure idempotency and stable IDs.
     """
     concatenated_value = "&".join(str(v).lower() for v in values)
-    aux = hashlib.md5(concatenated_value.encode("utf-8")).hexdigest()
-    return int(aux, 16) % MAX_INTEGER
+    digest = hashlib.md5(concatenated_value.encode("utf-8")).digest()
+    return int.from_bytes(digest, "big") % MAX_INTEGER
