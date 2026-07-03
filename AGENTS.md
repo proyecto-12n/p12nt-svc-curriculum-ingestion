@@ -41,6 +41,16 @@ When generating or refactoring code, you must strictly respect the following Pyt
 1. **SQLModel Query Standard**: Always use the standard SQLModel query format `session.exec(select(Model))` instead of `session.query(Model)`.
 2. **Model Isolation**: SQLModel database models (`table=True`) **ONLY** can exist in the infrastructure layer. You must explicitly map these models to/from the pure domain model (`StudyProgram`) before they cross architecture boundaries.
 
+## 📐 SOLID Design Principles
+
+This codebase strictly adheres to the SOLID principles to ensure maintainability, decoupling, and high testability:
+
+1. **Single Responsibility Principle (SRP)**: Each class/module must have only one responsibility. Rich domain entities represent data, use cases orchestrate logic, ports define contracts, and adapters implement technical details (HTTP scrapers, SQLModel database access).
+2. **Open/Closed Principle (OCP)**: Code must be open for extension but closed for modification. Dynamic factories (e.g., `LLMModelFactory`, `PDFConverterProvider`) instantiate components dynamically from configuration settings, allowing new provider classes to be added without modifying the core domain.
+3. **Liskov Substitution Principle (LSP)**: Derived classes or interfaces must be substitutable for their base forms. Infrastructure adapters (e.g., `SqlCurriculumRepositoryAdapter`) strictly implement domain protocols and contracts without altering expectation outcomes.
+4. **Interface Segregation Principle (ISP)**: Large interfaces should be split into smaller, specific ones. Python `typing.Protocol` is used to define narrow, specialized outbound ports (`ContentDownloader`, `PDFConverter`, `CurriculumRepository`) so modules only depend on what they actually use.
+5. **Dependency Inversion Principle (DIP)**: High-level business logic must depend on abstractions, not concrete implementations. The domain layer defines Ports, and the infrastructure layer implements Adapters, which are injected dynamically.
+
 ## 🚫 Constraints and Anti-Patterns to Avoid
 * **DO NOT** use `abc.ABC` inheritance for interfaces; use `typing.Protocol` instead.
 * **DO NOT** define multiple classes in a single file; follow a strict **one class per file** rule.
