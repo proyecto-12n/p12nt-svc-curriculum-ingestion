@@ -1,55 +1,59 @@
 # -*- coding: utf-8 -*-
 import pytest
-from domain.model.curriculum_node_type import CurriculumNodeType
-from infrastructure.adapter.outbound.http.parser.http_node_parser_provider_adapter import (
-    HttpNodeParserProviderAdapter,
+from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
+from infrastructure.adapter.outbound.http.parser.scrap_resource_parser_provider_adapter import (
+    ScrapResourceParserProviderAdapter,
 )
 from infrastructure.adapter.outbound.http.parser.impl.curriculum_node_parser import (
-    CurriculumNodeParser,
+    CurriculumScrapResourceParser,
 )
 from infrastructure.adapter.outbound.http.parser.impl.modality_node_parser import (
-    ModalityNodeParser,
+    ModalityScrapResourceParser,
 )
 from infrastructure.adapter.outbound.http.parser.impl.subject_node_parser import (
-    SubjectNodeParser,
+    SubjectScrapResourceParser,
 )
 from infrastructure.adapter.outbound.http.parser.impl.grade_level_node_parser import (
-    GradeLevelNodeParser,
+    GradeLevelScrapResourceParser,
 )
 from infrastructure.adapter.outbound.http.parser.impl.study_program_ref_node_parser import (
-    StudyProgramRefNodeParser,
+    StudyProgramRefScrapResourceParser,
 )
 from infrastructure.adapter.outbound.http.parser.impl.study_program_node_parser import (
-    StudyProgramNodeParser,
+    StudyProgramScrapResourceParser,
 )
 
 
 def test_http_node_parser_provider_adapter_returns_correct_parsers():
-    provider = HttpNodeParserProviderAdapter()
+    provider = ScrapResourceParserProviderAdapter()
 
     assert isinstance(
-        provider.get_parser(CurriculumNodeType.CURRICULUM), CurriculumNodeParser
+        provider.get_parser(CurriculumHierarchyType.CURRICULUM),
+        CurriculumScrapResourceParser,
     )
     assert isinstance(
-        provider.get_parser(CurriculumNodeType.MODALITY), ModalityNodeParser
+        provider.get_parser(CurriculumHierarchyType.MODALITY),
+        ModalityScrapResourceParser,
     )
     assert isinstance(
-        provider.get_parser(CurriculumNodeType.SUBJECT), SubjectNodeParser
+        provider.get_parser(CurriculumHierarchyType.SUBJECT), SubjectScrapResourceParser
     )
     assert isinstance(
-        provider.get_parser(CurriculumNodeType.GRADE_LEVEL), GradeLevelNodeParser
+        provider.get_parser(CurriculumHierarchyType.GRADE_LEVEL),
+        GradeLevelScrapResourceParser,
     )
     assert isinstance(
-        provider.get_parser(CurriculumNodeType.STUDY_PROGRAM_REF),
-        StudyProgramRefNodeParser,
+        provider.get_parser(CurriculumHierarchyType.STUDY_PROGRAM_REF),
+        StudyProgramRefScrapResourceParser,
     )
     assert isinstance(
-        provider.get_parser(CurriculumNodeType.STUDY_PROGRAM), StudyProgramNodeParser
+        provider.get_parser(CurriculumHierarchyType.STUDY_PROGRAM),
+        StudyProgramScrapResourceParser,
     )
 
 
 def test_http_node_parser_provider_adapter_invalid_discriminator():
-    provider = HttpNodeParserProviderAdapter()
+    provider = ScrapResourceParserProviderAdapter()
 
     with pytest.raises(ValueError) as excinfo:
         provider.get_parser("invalid_type")  # type: ignore

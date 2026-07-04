@@ -2,7 +2,7 @@
 """
 NextProject © 2026
 
-This file is part of Project-12nt.
+This file is part of *P12nt*.
 Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
@@ -10,7 +10,7 @@ All rights reserved.
 from dataclasses import dataclass
 from typing import Generic, TypeVar, Optional
 from domain.model.resource_type import ResourceType
-from domain.model.curriculum_node_type import CurriculumNodeType
+from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
 
 T = TypeVar("T")
 
@@ -19,7 +19,7 @@ T = TypeVar("T")
 class Node(Generic[T]):
     url: str
     type: ResourceType
-    level: Optional[CurriculumNodeType] = None
+    level: CurriculumHierarchyType
 
     title: Optional[str] = None
     content: Optional[T] = None

@@ -2,21 +2,23 @@
 """
 NextProject © 2026
 
-This file is part of Project-12nt.
+This file is part of *P12nt*.
 Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from typing import Tuple, List, Any, TypeVar, Protocol
+from typing import Tuple, Any, TypeVar, Protocol, List
+
 from domain.model.node import Node
+from domain.model.scrap_resource import ScrapResource
 
 T = TypeVar("T")
 
 
-class NodeParser(Protocol[T]):
-    def parse(
+class ScrapResourceParser(Protocol[T]):
+    async def parse(
         self,
-        node: Node[T],
+        node: ScrapResource[T],
         parent_id: int,
     ) -> Tuple[Any, List[Node]]:
         """

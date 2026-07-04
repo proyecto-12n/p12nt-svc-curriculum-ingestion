@@ -2,7 +2,7 @@
 """
 NextProject © 2026
 
-This file is part of Project-12nt.
+This file is part of *P12nt*.
 Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
@@ -12,7 +12,7 @@ from typing import Optional, TypeVar
 from domain.port.inbound.get_curriculum_hierarchy_item_use_case import (
     GetCurriculumHierarchyItemUseCase,
 )
-from domain.port.outbound.curriculum_hierarchy_repository import (
+from infrastructure.adapter.outbound.db.curriculum_hierarchy_repository import (
     CurriculumHierarchyRepository,
 )
 

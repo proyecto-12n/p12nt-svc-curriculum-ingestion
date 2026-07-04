@@ -2,7 +2,7 @@
 """
 NextProject © 2026
 
-This file is part of Project-12nt.
+This file is part of *P12nt*.
 Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
@@ -16,7 +16,7 @@ from domain.model.resource_type import ResourceType
 from domain.model.pdf_resource import PDFResource
 from domain.model.node import Node
 from domain.model.curriculum import Curriculum
-from domain.model.curriculum_node_type import CurriculumNodeType
+from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
 
 __all__ = [
     "Modality",
@@ -28,5 +28,5 @@ __all__ = [
     "PDFResource",
     "Node",
     "Curriculum",
-    "CurriculumNodeType",
+    "CurriculumHierarchyType",
 ]

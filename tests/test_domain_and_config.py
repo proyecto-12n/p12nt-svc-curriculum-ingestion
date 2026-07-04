@@ -10,7 +10,7 @@ from app.utils import log_execution_time
 from domain.exceptions import EntityNotFoundException, DomainException
 from domain.model import Curriculum, Modality, Subject, GradeLevel, StudyProgramRef
 from domain.model.study_program import StudyProgram
-from domain.port.outbound.curriculum_hierarchy_repository import (
+from infrastructure.adapter.outbound.db.curriculum_hierarchy_repository import (
     CurriculumHierarchyRepository,
 )
 from infrastructure.database import get_db

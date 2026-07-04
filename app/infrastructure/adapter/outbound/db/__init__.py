@@ -2,35 +2,32 @@
 """
 NextProject © 2026
 
-This file is part of Project-12nt.
+This file is part of *P12nt*.
 Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from infrastructure.adapter.outbound.db.sql_curriculum_repository_adapter import (
+from infrastructure.adapter.outbound.db.curriculum_hierarchy_repository import (
+    CurriculumHierarchyRepository,
+)
+
+from infrastructure.adapter.outbound.db.impl import (
     SqlCurriculumRepositoryAdapter,
-)
-from infrastructure.adapter.outbound.db.sql_modality_repository_adapter import (
     SqlModalityRepositoryAdapter,
-)
-from infrastructure.adapter.outbound.db.sql_subject_repository_adapter import (
     SqlSubjectRepositoryAdapter,
-)
-from infrastructure.adapter.outbound.db.sql_grade_level_repository_adapter import (
     SqlGradeLevelRepositoryAdapter,
-)
-from infrastructure.adapter.outbound.db.sql_study_program_ref_repository_adapter import (
     SqlStudyProgramRefRepositoryAdapter,
-)
-from infrastructure.adapter.outbound.db.sql_study_program_repository_adapter import (
     SqlStudyProgramRepositoryAdapter,
+    SqlCurriculumHierarchyRepositoryProviderAdapter,
 )
 
 __all__ = [
+    "CurriculumHierarchyRepository",
     "SqlCurriculumRepositoryAdapter",
     "SqlModalityRepositoryAdapter",
     "SqlSubjectRepositoryAdapter",
     "SqlGradeLevelRepositoryAdapter",
     "SqlStudyProgramRefRepositoryAdapter",
     "SqlStudyProgramRepositoryAdapter",
+    "SqlCurriculumHierarchyRepositoryProviderAdapter",
 ]

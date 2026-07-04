@@ -2,35 +2,26 @@
 """
 NextProject © 2026
 
-This file is part of Project-12nt.
+This file is part of *P12nt*.
 Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
 import logging
+from typing import Any, AsyncGenerator, Tuple
 
-from application.usecase.curriculum_node_resolver import CurriculumNodeResolver
-from application.usecase.study_program_resolver import StudyProgramResolver
-from domain.model.resource_type import ResourceType
-from domain.port.inbound import IngestCurriculumUseCase
-from domain.port.outbound import DownloaderProvider
 from domain.model import (
-    Curriculum,
-    Modality,
-    Subject,
-    GradeLevel,
-    StudyProgramRef,
-    StudyProgram,
+    Node,
+    CurriculumHierarchyType,
 )
-from domain.port.outbound.curriculum_hierarchy_repository import (
-    CurriculumHierarchyRepository,
-)
-from infrastructure.adapter.outbound.http.parser.impl import (
-    CurriculumNodeParser,
-    GradeLevelNodeParser,
-    ModalityNodeParser,
-    StudyProgramRefNodeParser,
-    SubjectNodeParser,
+from domain.model.resource_type import ResourceType
+from domain.model.scrap_resource import ScrapResource
+from domain.port.inbound import IngestCurriculumUseCase
+from domain.port.outbound import (
+    DownloaderProvider,
+    CurriculumHierarchyRepositoryProvider,
+    ScrapResourceParserProvider,
+    CurriculumHierarchyMapperProvider,
 )
 
 logger = logging.getLogger(__name__)
@@ -41,36 +32,51 @@ _ROOT_URL = "https://www.curriculumnacional.cl/curriculum"
 class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
     def __init__(
         self,
-        curriculum_repository: CurriculumHierarchyRepository[Curriculum],
-        modality_repository: CurriculumHierarchyRepository[Modality],
-        subject_repository: CurriculumHierarchyRepository[Subject],
-        grade_level_repository: CurriculumHierarchyRepository[GradeLevel],
-        study_program_ref_repository: CurriculumHierarchyRepository[StudyProgramRef],
-        study_program_repository: CurriculumHierarchyRepository[StudyProgram],
+        repository_provider_adapter: CurriculumHierarchyRepositoryProvider,
+        resource_parser_provider_adapter: ScrapResourceParserProvider,
+        curriculum_hierarchy_mapper_provider: CurriculumHierarchyMapperProvider,
         downloader_provider: DownloaderProvider,
-        node_resolver: CurriculumNodeResolver = None,
-        study_program_resolver: StudyProgramResolver = None,
     ):
-        self.curriculum_repository = curriculum_repository
-        self.modality_repository = modality_repository
-        self.subject_repository = subject_repository
-        self.grade_level_repository = grade_level_repository
-        self.study_program_ref_repository = study_program_ref_repository
-        self.study_program_repository = study_program_repository
+        self.repository_provider_adapter = repository_provider_adapter
+        self.resource_parser_provider_adapter = resource_parser_provider_adapter
+        self.curriculum_hierarchy_mapper_provider = curriculum_hierarchy_mapper_provider
         self.downloader_provider = downloader_provider
-
-        # Setup resolvers (maintaining backward compatibility)
-        self.node_resolver = node_resolver or CurriculumNodeResolver(
-            downloader_provider=downloader_provider
-        )
-        self.study_program_resolver = study_program_resolver or StudyProgramResolver(
-            study_program_repository=study_program_repository,
-            node_resolver=self.node_resolver,
-        )
 
     async def execute(self, refresh: bool = False) -> None:
         logger.info("Starting ingestion of curriculum data...")
 
+        root_node = Node(
+            url=_ROOT_URL,
+            type=ResourceType.HTML,
+            level=CurriculumHierarchyType.CURRICULUM,
+        )
+
+        async for node in self._navigator(root_node):
+            logger.info(f"Ingesting curriculum data for {node.url}")
+
+    async def _navigator(
+        self, node: Node, refresh: bool = False
+    ) -> AsyncGenerator[Node, Any]:
+
+        # repository = self.repository_provider_adapter.get_repository(node.level)
+        aux_node = await self.__get_resource(node, refresh)
+
+        logger.info(f"Ingesting curriculum data for {aux_node}")
+
+        yield node
+
+    async def __get_resource(
+        self, node: Node, refresh: bool = False
+    ) -> Tuple[bool, ScrapResource[Any]]:
+        repository = self.repository_provider_adapter.get_repository(node.level)
+        cache_node = await repository.find_by_url(node.url) if not refresh else None
+        if cache_node is None:
+            downloader = self.downloader_provider.get_downloader(node.type)
+            return await False, downloader.download(node.url)
+
+        return True, cache_node
+
+        """
         curriculum, modality_nodes = await self.node_resolver.resolve_node(
             url=_ROOT_URL,
             resource_type=ResourceType.HTML,
@@ -171,3 +177,4 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                             )
 
         logger.info("Ingestion completed successfully.")
+        """

@@ -2,17 +2,28 @@
 """
 NextProject © 2026
 
-This file is part of Project-12nt.
+This file is part of *P12nt*.
 Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
 from domain.port.outbound.content_downloader import ContentDownloader
 from domain.port.outbound.downloader_provider import DownloaderProvider
-from domain.port.outbound.curriculum_hierarchy_repository import (
+from infrastructure.adapter.outbound.db.curriculum_hierarchy_repository import (
     CurriculumHierarchyRepository,
 )
-from domain.port.outbound.node_parser_provider import NodeParserProvider
+from domain.port.outbound.curriculum_hierarchy_repository_provider import (
+    CurriculumHierarchyRepositoryProvider,
+)
+from domain.port.outbound.curriculum_hierarchy_mapper import (
+    CurriculumHierarchyMapper,
+)
+from domain.port.outbound.curriculum_hierarchy_mapper_provider import (
+    CurriculumHierarchyMapperProvider,
+)
+from domain.port.outbound.scrap_resource_parser_provider import (
+    ScrapResourceParserProvider,
+)
 from domain.port.outbound.pdf_converter import PDFConverter
 from domain.port.outbound.pdf_converter_provider import PDFConverterProvider
 from domain.port.outbound.study_program_agent_parser import (
@@ -22,9 +33,12 @@ from domain.port.outbound.study_program_agent_parser import (
 __all__ = [
     "ContentDownloader",
     "DownloaderProvider",
-    "NodeParserProvider",
+    "ScrapResourceParserProvider",
     "PDFConverter",
     "PDFConverterProvider",
     "StudyProgramAgentParser",
     "CurriculumHierarchyRepository",
+    "CurriculumHierarchyRepositoryProvider",
+    "CurriculumHierarchyMapper",
+    "CurriculumHierarchyMapperProvider",
 ]

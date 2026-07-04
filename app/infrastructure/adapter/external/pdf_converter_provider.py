@@ -43,7 +43,11 @@ class PDFConverterProvider(PDFConverterProviderPort):
 
             converter_class = PyMuPDFPDFConverter
         else:
-            raise ValueError(f"No PDF converter found with name: {provider_name}")
+            self.error = ValueError(
+                f"No PDF converter found with name: {provider_name}"
+            )
+            self.self_error = self.error
+            raise self.self_error
 
         logger.info(
             f"Using PDF converter: {converter_class.__name__} "

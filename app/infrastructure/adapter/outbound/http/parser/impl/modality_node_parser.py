@@ -2,7 +2,7 @@
 """
 NextProject © 2026
 
-This file is part of Project-12nt.
+This file is part of *P12nt*.
 Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
@@ -15,27 +15,30 @@ from bs4 import BeautifulSoup
 from domain.model import Modality
 from domain.model.node import Node
 from domain.model.resource_type import ResourceType
-from infrastructure.adapter.outbound.http.parser.node_parser import NodeParser
+from domain.model.scrap_resource import ScrapResource
+from infrastructure.adapter.outbound.http.parser.scrap_resource_parser import (
+    ScrapResourceParser,
+)
 from infrastructure.util.id_generator import generate_id
-from domain.model.curriculum_node_type import CurriculumNodeType
+from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
 
 
-class ModalityNodeParser(NodeParser[str]):
-    def parse(
+class ModalityScrapResourceParser(ScrapResourceParser[str]):
+    async def parse(
         self,
-        node: Node[str],
+        resource: ScrapResource[str],
         parent_id: int,
     ) -> Tuple[Modality, List[Node]]:
 
-        soup = BeautifulSoup(node.content, "html.parser")
-        title = ModalityNodeParser._extract_title(soup)
-        children = ModalityNodeParser._extract_nodes(node.url, soup)
+        soup = BeautifulSoup(resource.content, "html.parser")
+        title = ModalityScrapResourceParser._extract_title(soup)
+        children = ModalityScrapResourceParser._extract_nodes(resource.url, soup)
         return Modality(
-            id=generate_id(node.url),
+            id=generate_id(resource.url),
             curriculum_id=parent_id,
-            url=node.url,
+            url=resource.url,
             title=title,
-            content=node.content,
+            content=resource.content,
         ), children
 
     @staticmethod
@@ -57,7 +60,7 @@ class ModalityNodeParser(NodeParser[str]):
                 Node(
                     url=u,
                     type=ResourceType.HTML,
-                    level=CurriculumNodeType.SUBJECT,
+                    level=CurriculumHierarchyType.SUBJECT,
                     title=span.get_text(strip=True),
                 )
             )

@@ -1,0 +1,56 @@
+# -*- coding: utf-8 -*-
+"""
+NextProject © 2026
+
+This file is part of *P12nt*.
+Unauthorized copying of this file, via any medium is strictly prohibited.
+All rights reserved.
+"""
+
+from typing import Optional, List
+
+from sqlmodel import Session, select
+
+from infrastructure.adapter.outbound.db.curriculum_hierarchy_repository import (
+    CurriculumHierarchyRepository,
+)
+from infrastructure.models.curriculum import Curriculum
+
+
+class SqlCurriculumRepositoryAdapter(CurriculumHierarchyRepository[Curriculum]):
+    def __init__(self, session: Session):
+        self.session = session
+
+    async def find_by_id(self, id: int) -> Optional[Curriculum]:
+        statement = select(Curriculum).where(Curriculum.id == id)
+        return self.session.exec(statement).first()
+
+    async def find_by_url(self, url: str) -> Optional[Curriculum]:
+        statement = select(Curriculum).where(Curriculum.url == url)
+        return self.session.exec(statement).first()
+
+    async def list(self, parent_id: Optional[int] = None) -> List[Curriculum]:
+        statement = select(Curriculum)
+        results = self.session.exec(statement).all()
+        return [row for row in results]
+
+    async def save(self, curriculum: Curriculum) -> Curriculum:
+        statement = select(Curriculum).where(Curriculum.url == curriculum.url)
+        sql_cur = self.session.exec(statement).first()
+        if sql_cur:
+            sql_cur.title = curriculum.title
+            sql_cur.content = curriculum.content
+            sql_cur.extracted_at = curriculum.extracted_at
+        else:
+            sql_cur = Curriculum(
+                id=curriculum.id,
+                title=curriculum.title,
+                url=curriculum.url,
+                content=curriculum.content,
+                extracted_at=curriculum.extracted_at,
+            )
+            self.session.add(sql_cur)
+        self.session.commit()
+        self.session.refresh(sql_cur)
+        curriculum.id = sql_cur.id
+        return curriculum

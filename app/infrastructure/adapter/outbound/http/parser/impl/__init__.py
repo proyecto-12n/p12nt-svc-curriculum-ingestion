@@ -2,35 +2,35 @@
 """
 NextProject © 2026
 
-This file is part of Project-12nt.
+This file is part of *P12nt*.
 Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
 from infrastructure.adapter.outbound.http.parser.impl.curriculum_node_parser import (
-    CurriculumNodeParser,
+    CurriculumScrapResourceParser,
 )
 from infrastructure.adapter.outbound.http.parser.impl.grade_level_node_parser import (
-    GradeLevelNodeParser,
+    GradeLevelScrapResourceParser,
 )
 from infrastructure.adapter.outbound.http.parser.impl.modality_node_parser import (
-    ModalityNodeParser,
+    ModalityScrapResourceParser,
 )
 from infrastructure.adapter.outbound.http.parser.impl.study_program_node_parser import (
-    StudyProgramNodeParser,
+    StudyProgramScrapResourceParser,
 )
 from infrastructure.adapter.outbound.http.parser.impl.study_program_ref_node_parser import (
-    StudyProgramRefNodeParser,
+    StudyProgramRefScrapResourceParser,
 )
 from infrastructure.adapter.outbound.http.parser.impl.subject_node_parser import (
-    SubjectNodeParser,
+    SubjectScrapResourceParser,
 )
 
 __all__ = [
-    "CurriculumNodeParser",
-    "GradeLevelNodeParser",
-    "ModalityNodeParser",
-    "StudyProgramNodeParser",
-    "StudyProgramRefNodeParser",
-    "SubjectNodeParser",
+    "CurriculumScrapResourceParser",
+    "GradeLevelScrapResourceParser",
+    "ModalityScrapResourceParser",
+    "StudyProgramScrapResourceParser",
+    "StudyProgramRefScrapResourceParser",
+    "SubjectScrapResourceParser",
 ]

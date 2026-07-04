@@ -2,7 +2,7 @@
 """
 NextProject © 2026
 
-This file is part of Project-12nt.
+This file is part of *P12nt*.
 Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
@@ -16,7 +16,7 @@ class Curriculum(SQLModel, table=True):
     __table_args__ = {"schema": "curriculum_ingestion"}
 
     id: int = Field(primary_key=True)
-    url: str
+    url: str = Field(unique=True)
     title: str
-    content: str = Field(default="")
+    content: str
     extracted_at: datetime = Field(default_factory=datetime.utcnow)

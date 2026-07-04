@@ -2,7 +2,7 @@
 """
 NextProject © 2026
 
-This file is part of Project-12nt.
+This file is part of *P12nt*.
 Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
@@ -15,25 +15,28 @@ from urllib.parse import urlparse
 
 from domain.model import StudyProgram
 from domain.model.node import Node
-from infrastructure.adapter.outbound.http.parser.node_parser import NodeParser
+from domain.model.scrap_resource import ScrapResource
+from infrastructure.adapter.outbound.http.parser.scrap_resource_parser import (
+    ScrapResourceParser,
+)
 from infrastructure.util.id_generator import generate_id
 
 
-class StudyProgramNodeParser(NodeParser[bytes]):
-    def parse(
+class StudyProgramScrapResourceParser(ScrapResourceParser[bytes]):
+    async def parse(
         self,
-        node: Node[bytes],
+        resource: ScrapResource[bytes],
         parent_id: int,
     ) -> Tuple[StudyProgram, List[Node]]:
-        checksum = sha256(node.content)
-        title = self._calculate_title(node)
+        checksum = sha256(resource.content)
+        title = self._calculate_title(resource)
 
         return StudyProgram(
-            id=generate_id(node.url),
+            id=generate_id(resource.url),
             study_program_ref_id=parent_id,
-            url=node.url,
+            url=resource.url,
             title=title,
-            content=node.content,
+            content=resource.content,
             checksum=checksum.hexdigest(),
             extracted_at=datetime.now(),
         ), []

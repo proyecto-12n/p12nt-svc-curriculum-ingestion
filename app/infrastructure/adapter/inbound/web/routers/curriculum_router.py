@@ -2,7 +2,7 @@
 """
 NextProject © 2026
 
-This file is part of Project-12nt.
+This file is part of *P12nt*.
 Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
@@ -28,7 +28,7 @@ from domain.port.inbound.list_curriculum_hierarchy_item_use_case import (
 from infrastructure.adapter.inbound.web.dto.curriculum_response import (
     CurriculumResponse,
 )
-from infrastructure.adapter.outbound.db.sql_curriculum_repository_adapter import (
+from infrastructure.adapter.outbound.db.impl.sql_curriculum_repository_adapter import (
     SqlCurriculumRepositoryAdapter,
 )
 from infrastructure.database import get_db
