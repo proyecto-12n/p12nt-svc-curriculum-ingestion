@@ -7,12 +7,12 @@ from unittest.mock import MagicMock, patch
 
 from sqlmodel import SQLModel, create_engine, Session
 
-from app.application.usecase.ingest_curriculum_usecase import (
+from application.usecase.ingest_curriculum_usecase import (
     IngestCurriculumUseCaseImpl,
 )
-from app.domain.model.node import Node
-from app.domain.model.resource_type import ResourceType
-from app.infrastructure.adapter.outbound.db import (
+from domain.model.node import Node
+from domain.model.resource_type import ResourceType
+from infrastructure.adapter.outbound.db import (
     SqlCurriculumRepositoryAdapter,
     SqlModalityRepositoryAdapter,
     SqlSubjectRepositoryAdapter,
@@ -20,7 +20,7 @@ from app.infrastructure.adapter.outbound.db import (
     SqlStudyProgramRefRepositoryAdapter,
     SqlStudyProgramRepositoryAdapter,
 )
-from app.infrastructure.cli.ingest_curriculum import run_cli
+from infrastructure.cli.ingest_curriculum import run_cli
 
 
 def mock_get_mock_content(url: str) -> str | bytes:
@@ -132,14 +132,14 @@ def test_ingest_curriculum_usecase_with_force_mock():
         use_case.execute()
 
         # Verify that data was ingested in the database
-        curr = curriculum_repo.find_curriculum_by_url(
+        curr = curriculum_repo.find_by_url(
             "https://www.curriculumnacional.cl/curriculum"
         )
         assert curr is not None
         assert curr.title == "Curriculum Nacional"
 
         # Let's verify modalities were saved
-        mod = modality_repo.find_modality_by_url(
+        mod = modality_repo.find_by_url(
             "https://www.curriculumnacional.cl/curriculum/basica"
         )
         assert mod is not None
@@ -188,7 +188,7 @@ def test_ingest_curriculum_usecase_downloader_failure_fallback():
         use_case.execute()
 
         # Verify fallback still populated database structures
-        curr = curriculum_repo.find_curriculum_by_url(
+        curr = curriculum_repo.find_by_url(
             "https://www.curriculumnacional.cl/curriculum"
         )
         assert curr is not None
@@ -203,10 +203,10 @@ def test_ingest_curriculum_usecase_downloader_failure_fallback():
 
 def test_run_cli_postgresql_dialect():
     with (
-        patch("app.infrastructure.cli.ingest_curriculum.Session") as mock_session_class,
-        patch("app.infrastructure.database.init_db") as mock_init_db,
+        patch("infrastructure.cli.ingest_curriculum.Session") as mock_session_class,
+        patch("infrastructure.database.init_db") as mock_init_db,
         patch(
-            "app.infrastructure.cli.ingest_curriculum.IngestCurriculumUseCaseImpl"
+            "infrastructure.cli.ingest_curriculum.IngestCurriculumUseCaseImpl"
         ) as mock_usecase_class,
         patch("argparse.ArgumentParser.parse_args") as mock_parse_args,
     ):
@@ -221,7 +221,7 @@ def test_run_cli_postgresql_dialect():
         mock_usecase = MagicMock()
         mock_usecase_class.return_value = mock_usecase
 
-        with patch("app.infrastructure.database.engine", new=mock_engine):
+        with patch("infrastructure.database.engine", new=mock_engine):
             run_cli()
 
             mock_init_db.assert_called_once()
@@ -233,11 +233,11 @@ def test_init_db_postgresql():
     mock_engine.url = "postgresql://localhost:5432/test"
 
     with (
-        patch("app.infrastructure.database.engine", new=mock_engine),
+        patch("infrastructure.database.engine", new=mock_engine),
         patch("sqlalchemy.text") as mock_text,
         patch("sqlmodel.SQLModel.metadata.create_all") as mock_create_all,
     ):
-        from app.infrastructure.database import init_db
+        from infrastructure.database import init_db
 
         init_db()
 
@@ -253,11 +253,11 @@ def test_init_db_sqlite():
     mock_engine.url = "sqlite:///:memory:"
 
     with (
-        patch("app.infrastructure.database.engine", new=mock_engine),
+        patch("infrastructure.database.engine", new=mock_engine),
         patch("sqlalchemy.text") as mock_text,
         patch("sqlmodel.SQLModel.metadata.create_all") as mock_create_all,
     ):
-        from app.infrastructure.database import init_db
+        from infrastructure.database import init_db
 
         init_db()
 

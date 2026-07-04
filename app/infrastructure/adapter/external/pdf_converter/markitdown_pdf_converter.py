@@ -9,8 +9,8 @@ from io import BytesIO
 
 from markitdown import MarkItDown, StreamInfo
 
-from app.domain.port.outbound.pdf_converter import PDFConverter
-from app.domain.model.pdf_resource import PDFResource
+from domain.port.outbound.pdf_converter import PDFConverter
+from domain.model.pdf_resource import PDFResource
 from app.utils import log_execution_time
 
 

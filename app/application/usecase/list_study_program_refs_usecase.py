@@ -9,11 +9,11 @@ All rights reserved.
 
 import asyncio
 from typing import List, Optional
-from app.domain.model.study_program_ref import StudyProgramRef
-from app.domain.port.inbound.list_study_program_refs_use_case import (
+from domain.model.study_program_ref import StudyProgramRef
+from domain.port.inbound.list_study_program_refs_use_case import (
     ListStudyProgramRefsUseCase,
 )
-from app.domain.port.outbound.study_program_ref_repository import (
+from domain.port.outbound.study_program_ref_repository import (
     StudyProgramRefRepository,
 )
 

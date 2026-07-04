@@ -10,7 +10,7 @@ All rights reserved.
 import base64
 from datetime import datetime
 from pydantic import BaseModel
-from app.domain.model.study_program import StudyProgram
+from domain.model.study_program import StudyProgram
 
 
 class StudyProgramResponse(BaseModel):

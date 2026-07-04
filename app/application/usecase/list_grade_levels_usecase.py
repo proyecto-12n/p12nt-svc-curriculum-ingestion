@@ -9,9 +9,9 @@ All rights reserved.
 
 import asyncio
 from typing import List, Optional
-from app.domain.model.grade_level import GradeLevel
-from app.domain.port.inbound.list_grade_levels_use_case import ListGradeLevelsUseCase
-from app.domain.port.outbound.grade_level_repository import GradeLevelRepository
+from domain.model.grade_level import GradeLevel
+from domain.port.inbound.list_grade_levels_use_case import ListGradeLevelsUseCase
+from domain.port.outbound.grade_level_repository import GradeLevelRepository
 
 
 class ListGradeLevelsUseCaseImpl(ListGradeLevelsUseCase):

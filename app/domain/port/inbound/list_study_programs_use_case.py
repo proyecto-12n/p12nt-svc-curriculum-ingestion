@@ -8,7 +8,7 @@ All rights reserved.
 """
 
 from typing import Protocol, List, Optional
-from app.domain.model.study_program import StudyProgram
+from domain.model.study_program import StudyProgram
 
 
 class ListStudyProgramsUseCase(Protocol):

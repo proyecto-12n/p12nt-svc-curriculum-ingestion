@@ -7,12 +7,12 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 
 from typing import Dict
 
-from app.domain.port.outbound.content_downloader import ContentDownloader
-from app.domain.port.outbound.downloader_provider import (
+from domain.port.outbound.content_downloader import ContentDownloader
+from domain.port.outbound.downloader_provider import (
     DownloaderProvider as DownloaderProviderPort,
 )
-from app.domain.model.resource_type import ResourceType
-from app.infrastructure.adapter.external.downloader import HTMLDownloader, PDFDownloader
+from domain.model.resource_type import ResourceType
+from infrastructure.adapter.external.downloader import HTMLDownloader, PDFDownloader
 
 
 class DownloaderProvider(DownloaderProviderPort):

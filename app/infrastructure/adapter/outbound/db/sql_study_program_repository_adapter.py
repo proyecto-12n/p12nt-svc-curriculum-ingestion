@@ -9,13 +9,13 @@ All rights reserved.
 
 from typing import Optional
 from sqlmodel import Session, select
-from app.domain.port.outbound.study_program_repository import StudyProgramRepository
+from domain.port.outbound.study_program_repository import StudyProgramRepository
 
 # Domain models
-from app.domain.model.study_program import StudyProgram as DomainStudyProgram
+from domain.model.study_program import StudyProgram as DomainStudyProgram
 
 # SQLModel models
-from app.infrastructure.models.study_program import StudyProgram as SqlStudyProgram
+from infrastructure.models.study_program import StudyProgram as SqlStudyProgram
 
 
 class SqlStudyProgramRepositoryAdapter(StudyProgramRepository):

@@ -11,15 +11,15 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session
 
-from app.domain.port.inbound.get_grade_level_use_case import GetGradeLevelUseCase
-from app.domain.port.inbound.list_grade_levels_use_case import ListGradeLevelsUseCase
-from app.application.usecase.get_grade_level_usecase import GetGradeLevelUseCaseImpl
-from app.application.usecase.list_grade_levels_usecase import ListGradeLevelsUseCaseImpl
-from app.infrastructure.adapter.outbound.db.sql_grade_level_repository_adapter import (
+from domain.port.inbound.get_grade_level_use_case import GetGradeLevelUseCase
+from domain.port.inbound.list_grade_levels_use_case import ListGradeLevelsUseCase
+from application.usecase.get_grade_level_usecase import GetGradeLevelUseCaseImpl
+from application.usecase.list_grade_levels_usecase import ListGradeLevelsUseCaseImpl
+from infrastructure.adapter.outbound.db.sql_grade_level_repository_adapter import (
     SqlGradeLevelRepositoryAdapter,
 )
-from app.infrastructure.database import get_db
-from app.infrastructure.adapter.inbound.web.dto.grade_level_response import (
+from infrastructure.database import get_db
+from infrastructure.adapter.inbound.web.dto.grade_level_response import (
     GradeLevelResponse,
 )
 

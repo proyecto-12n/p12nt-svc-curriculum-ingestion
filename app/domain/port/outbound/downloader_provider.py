@@ -4,8 +4,8 @@ NextProject © 2026
 """
 
 from typing import Protocol
-from app.domain.model.resource_type import ResourceType
-from app.domain.port.outbound.content_downloader import ContentDownloader
+from domain.model.resource_type import ResourceType
+from domain.port.outbound.content_downloader import ContentDownloader
 
 
 class DownloaderProvider(Protocol):

@@ -13,7 +13,7 @@ from sqlmodel import Session
 # Import SQLModels to ensure they register in metadata
 
 # Adapters & Use Case
-from app.infrastructure.adapter.outbound.db import (
+from infrastructure.adapter.outbound.db import (
     SqlCurriculumRepositoryAdapter,
     SqlModalityRepositoryAdapter,
     SqlSubjectRepositoryAdapter,
@@ -21,7 +21,7 @@ from app.infrastructure.adapter.outbound.db import (
     SqlStudyProgramRefRepositoryAdapter,
     SqlStudyProgramRepositoryAdapter,
 )
-from app.application.usecase.ingest_curriculum_usecase import (
+from application.usecase.ingest_curriculum_usecase import (
     IngestCurriculumUseCaseImpl,
 )
 
@@ -45,7 +45,7 @@ def run_cli():
     args = parser.parse_args()
 
     # Database setup
-    from app.infrastructure.database import engine, init_db
+    from infrastructure.database import engine, init_db
 
     init_db()
 
@@ -57,7 +57,7 @@ def run_cli():
         study_program_ref_repo = SqlStudyProgramRefRepositoryAdapter(session)
         study_program_repo = SqlStudyProgramRepositoryAdapter(session)
 
-        from app.infrastructure.adapter.external.downloader_provider import (
+        from infrastructure.adapter.external.downloader_provider import (
             DownloaderProvider,
         )
 

@@ -9,9 +9,9 @@ All rights reserved.
 
 import asyncio
 from typing import List, Optional
-from app.domain.model.subject import Subject
-from app.domain.port.inbound.list_subjects_use_case import ListSubjectsUseCase
-from app.domain.port.outbound.subject_repository import SubjectRepository
+from domain.model.subject import Subject
+from domain.port.inbound.list_subjects_use_case import ListSubjectsUseCase
+from domain.port.outbound.subject_repository import SubjectRepository
 
 
 class ListSubjectsUseCaseImpl(ListSubjectsUseCase):

@@ -4,7 +4,7 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
 
-from app.domain.model import (
+from domain.model import (
     Curriculum,
     Modality,
     Subject,
@@ -12,7 +12,7 @@ from app.domain.model import (
     StudyProgramRef,
     StudyProgram,
 )
-from app.infrastructure.database import get_db
+from infrastructure.database import get_db
 
 
 @pytest.fixture(name="db_session")
@@ -28,17 +28,17 @@ def db_session_fixture():
         yield session
 
 
-@patch("app.main.init_db")
+@patch("main.init_db")
 def test_curriculum_endpoints(mock_init_db, db_session):
     from app.main import app
-    from app.infrastructure.adapter.outbound.db import SqlCurriculumRepositoryAdapter
+    from infrastructure.adapter.outbound.db import SqlCurriculumRepositoryAdapter
 
     # Seed database
     repo = SqlCurriculumRepositoryAdapter(db_session)
     curr = Curriculum(
         id=1, url="http://test.url/cur", title="Initial Curriculum", content="Init"
     )
-    saved_curr = repo.save_curriculum(curr)
+    saved_curr = repo.save(curr)
 
     # Dependency override
     app.dependency_overrides[get_db] = lambda: db_session
@@ -65,10 +65,10 @@ def test_curriculum_endpoints(mock_init_db, db_session):
     app.dependency_overrides.clear()
 
 
-@patch("app.main.init_db")
+@patch("main.init_db")
 def test_modality_endpoints(mock_init_db, db_session):
     from app.main import app
-    from app.infrastructure.adapter.outbound.db import (
+    from infrastructure.adapter.outbound.db import (
         SqlCurriculumRepositoryAdapter,
         SqlModalityRepositoryAdapter,
     )
@@ -77,7 +77,7 @@ def test_modality_endpoints(mock_init_db, db_session):
     mod_repo = SqlModalityRepositoryAdapter(db_session)
 
     curr = Curriculum(id=1, url="http://test.url/cur", title="Cur", content="Init")
-    saved_curr = curr_repo.save_curriculum(curr)
+    saved_curr = curr_repo.save(curr)
 
     mod = Modality(
         id=10,
@@ -86,7 +86,7 @@ def test_modality_endpoints(mock_init_db, db_session):
         title="Mod",
         content="Init",
     )
-    saved_mod = mod_repo.save_modality(mod)
+    saved_mod = mod_repo.save(mod)
 
     app.dependency_overrides[get_db] = lambda: db_session
     client = TestClient(app)
@@ -117,10 +117,10 @@ def test_modality_endpoints(mock_init_db, db_session):
     app.dependency_overrides.clear()
 
 
-@patch("app.main.init_db")
+@patch("main.init_db")
 def test_subject_endpoints(mock_init_db, db_session):
     from app.main import app
-    from app.infrastructure.adapter.outbound.db import (
+    from infrastructure.adapter.outbound.db import (
         SqlCurriculumRepositoryAdapter,
         SqlModalityRepositoryAdapter,
         SqlSubjectRepositoryAdapter,
@@ -131,7 +131,7 @@ def test_subject_endpoints(mock_init_db, db_session):
     sub_repo = SqlSubjectRepositoryAdapter(db_session)
 
     curr = Curriculum(id=1, url="http://test.url/cur", title="Cur", content="Init")
-    saved_curr = curr_repo.save_curriculum(curr)
+    saved_curr = curr_repo.save(curr)
 
     mod = Modality(
         id=10,
@@ -140,7 +140,7 @@ def test_subject_endpoints(mock_init_db, db_session):
         title="Mod",
         content="Init",
     )
-    saved_mod = mod_repo.save_modality(mod)
+    saved_mod = mod_repo.save(mod)
 
     sub = Subject(
         id=100,
@@ -172,10 +172,10 @@ def test_subject_endpoints(mock_init_db, db_session):
     app.dependency_overrides.clear()
 
 
-@patch("app.main.init_db")
+@patch("main.init_db")
 def test_grade_level_endpoints(mock_init_db, db_session):
     from app.main import app
-    from app.infrastructure.adapter.outbound.db import (
+    from infrastructure.adapter.outbound.db import (
         SqlCurriculumRepositoryAdapter,
         SqlModalityRepositoryAdapter,
         SqlSubjectRepositoryAdapter,
@@ -188,7 +188,7 @@ def test_grade_level_endpoints(mock_init_db, db_session):
     grade_repo = SqlGradeLevelRepositoryAdapter(db_session)
 
     curr = Curriculum(id=1, url="http://test.url/cur", title="Cur", content="Init")
-    saved_curr = curr_repo.save_curriculum(curr)
+    saved_curr = curr_repo.save(curr)
 
     mod = Modality(
         id=10,
@@ -197,7 +197,7 @@ def test_grade_level_endpoints(mock_init_db, db_session):
         title="Mod",
         content="Init",
     )
-    saved_mod = mod_repo.save_modality(mod)
+    saved_mod = mod_repo.save(mod)
 
     sub = Subject(
         id=100,
@@ -238,10 +238,10 @@ def test_grade_level_endpoints(mock_init_db, db_session):
     app.dependency_overrides.clear()
 
 
-@patch("app.main.init_db")
+@patch("main.init_db")
 def test_study_program_ref_endpoints(mock_init_db, db_session):
     from app.main import app
-    from app.infrastructure.adapter.outbound.db import (
+    from infrastructure.adapter.outbound.db import (
         SqlCurriculumRepositoryAdapter,
         SqlModalityRepositoryAdapter,
         SqlSubjectRepositoryAdapter,
@@ -256,7 +256,7 @@ def test_study_program_ref_endpoints(mock_init_db, db_session):
     ref_repo = SqlStudyProgramRefRepositoryAdapter(db_session)
 
     curr = Curriculum(id=1, url="http://test.url/cur", title="Cur", content="Init")
-    saved_curr = curr_repo.save_curriculum(curr)
+    saved_curr = curr_repo.save(curr)
 
     mod = Modality(
         id=10,
@@ -265,7 +265,7 @@ def test_study_program_ref_endpoints(mock_init_db, db_session):
         title="Mod",
         content="Init",
     )
-    saved_mod = mod_repo.save_modality(mod)
+    saved_mod = mod_repo.save(mod)
 
     sub = Subject(
         id=100,
@@ -315,10 +315,10 @@ def test_study_program_ref_endpoints(mock_init_db, db_session):
     app.dependency_overrides.clear()
 
 
-@patch("app.main.init_db")
+@patch("main.init_db")
 def test_study_program_endpoints(mock_init_db, db_session):
     from app.main import app
-    from app.infrastructure.adapter.outbound.db import (
+    from infrastructure.adapter.outbound.db import (
         SqlCurriculumRepositoryAdapter,
         SqlModalityRepositoryAdapter,
         SqlSubjectRepositoryAdapter,
@@ -335,7 +335,7 @@ def test_study_program_endpoints(mock_init_db, db_session):
     prog_repo = SqlStudyProgramRepositoryAdapter(db_session)
 
     curr = Curriculum(id=1, url="http://test.url/cur", title="Cur", content="Init")
-    saved_curr = curr_repo.save_curriculum(curr)
+    saved_curr = curr_repo.save(curr)
 
     mod = Modality(
         id=10,
@@ -344,7 +344,7 @@ def test_study_program_endpoints(mock_init_db, db_session):
         title="Mod",
         content="Init",
     )
-    saved_mod = mod_repo.save_modality(mod)
+    saved_mod = mod_repo.save(mod)
 
     sub = Subject(
         id=100,

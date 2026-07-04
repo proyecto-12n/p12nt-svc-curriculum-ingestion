@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 from app.config import settings
 
 
-@patch("app.main.init_db")
+@patch("main.init_db")
 def test_health_check(mock_init_db):
     from app.main import app
 

@@ -8,7 +8,7 @@ All rights reserved.
 """
 
 from typing import Protocol, Optional
-from app.domain.model.curriculum import Curriculum
+from domain.model.curriculum import Curriculum
 
 
 class GetCurriculumUseCase(Protocol):

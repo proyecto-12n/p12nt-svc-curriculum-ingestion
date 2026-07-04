@@ -11,15 +11,15 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 
-from app.domain.port.inbound.get_curriculum_use_case import GetCurriculumUseCase
-from app.domain.port.inbound.list_curriculums_use_case import ListCurriculumsUseCase
-from app.application.usecase.get_curriculum_usecase import GetCurriculumUseCaseImpl
-from app.application.usecase.list_curriculums_usecase import ListCurriculumsUseCaseImpl
-from app.infrastructure.adapter.outbound.db.sql_curriculum_repository_adapter import (
+from domain.port.inbound.get_curriculum_use_case import GetCurriculumUseCase
+from domain.port.inbound.list_curriculums_use_case import ListCurriculumsUseCase
+from application.usecase.get_curriculum_usecase import GetCurriculumUseCaseImpl
+from application.usecase.list_curriculums_usecase import ListCurriculumsUseCaseImpl
+from infrastructure.adapter.outbound.db.sql_curriculum_repository_adapter import (
     SqlCurriculumRepositoryAdapter,
 )
-from app.infrastructure.database import get_db
-from app.infrastructure.adapter.inbound.web.dto.curriculum_response import (
+from infrastructure.database import get_db
+from infrastructure.adapter.inbound.web.dto.curriculum_response import (
     CurriculumResponse,
 )
 

@@ -13,10 +13,10 @@ from os import path
 from typing import Tuple, List
 from urllib.parse import urlparse
 
-from app.domain.model import StudyProgram
-from app.domain.model.node import Node
-from app.infrastructure.adapter.outbound.http.parser.node_parser import NodeParser
-from app.infrastructure.util.id_generator import generate_id
+from domain.model import StudyProgram
+from domain.model.node import Node
+from infrastructure.adapter.outbound.http.parser.node_parser import NodeParser
+from infrastructure.util.id_generator import generate_id
 
 
 class StudyProgramNodeParser(NodeParser[bytes]):

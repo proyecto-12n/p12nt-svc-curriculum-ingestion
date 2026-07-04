@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from app.infrastructure.util.id_generator import generate_id
+from infrastructure.util.id_generator import generate_id
 
 
 def test_generate_id_is_deterministic():

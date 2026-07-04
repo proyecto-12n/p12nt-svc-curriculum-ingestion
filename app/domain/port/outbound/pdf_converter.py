@@ -4,7 +4,7 @@ NextProject © 2026
 """
 
 from typing import Protocol
-from app.domain.model.pdf_resource import PDFResource
+from domain.model.pdf_resource import PDFResource
 
 
 class PDFConverter(Protocol):

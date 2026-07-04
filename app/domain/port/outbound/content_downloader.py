@@ -7,7 +7,7 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 
 from typing import Protocol, TypeVar
 
-from app.domain.model.node import Node
+from domain.model.node import Node
 
 T = TypeVar("T")
 

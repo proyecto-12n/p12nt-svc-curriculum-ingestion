@@ -8,7 +8,7 @@ All rights reserved.
 """
 
 from typing import Tuple, List, Any, TypeVar, Protocol
-from app.domain.model.node import Node
+from domain.model.node import Node
 
 T = TypeVar("T")
 

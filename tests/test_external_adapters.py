@@ -10,33 +10,33 @@ sys.modules["markitdown"] = MagicMock()
 import pytest
 import httpx
 
-from app.domain.model.resource_type import ResourceType
-from app.domain.model.pdf_resource import PDFResource
+from domain.model.resource_type import ResourceType
+from domain.model.pdf_resource import PDFResource
 from app.config import Settings
-from app.infrastructure.adapter.external.downloader.html_downloader import (
+from infrastructure.adapter.external.downloader.html_downloader import (
     HTMLDownloader,
 )
-from app.infrastructure.adapter.external.downloader.pdf_downloader import PDFDownloader
-from app.infrastructure.adapter.external.downloader_provider import DownloaderProvider
-from app.infrastructure.adapter.external.pdf_converter.pymupdf_pdf_converter import (
+from infrastructure.adapter.external.downloader.pdf_downloader import PDFDownloader
+from infrastructure.adapter.external.downloader_provider import DownloaderProvider
+from infrastructure.adapter.external.pdf_converter.pymupdf_pdf_converter import (
     PyMuPDFPDFConverter,
 )
-from app.infrastructure.adapter.external.pdf_converter.markitdown_pdf_converter import (
+from infrastructure.adapter.external.pdf_converter.markitdown_pdf_converter import (
     MarkItDownPDFConverter,
 )
-from app.infrastructure.adapter.external.pdf_converter_provider import (
+from infrastructure.adapter.external.pdf_converter_provider import (
     PDFConverterProvider,
 )
-from app.infrastructure.adapter.external.study_program_agent_parser.ollama_model_factory import (
+from infrastructure.adapter.external.study_program_agent_parser.ollama_model_factory import (
     OllamaModelFactory,
 )
-from app.infrastructure.adapter.external.study_program_agent_parser.gemini_model_factory import (
+from infrastructure.adapter.external.study_program_agent_parser.gemini_model_factory import (
     GeminiModelFactory,
 )
-from app.infrastructure.adapter.external.study_program_agent_parser.pydantic_ai_study_program_agent_parser import (
+from infrastructure.adapter.external.study_program_agent_parser.pydantic_ai_study_program_agent_parser import (
     PydanticAiStudyProgramAgentParser,
 )
-from app.infrastructure.adapter.external.study_program_agent_parser_provider import (
+from infrastructure.adapter.external.study_program_agent_parser_provider import (
     StudyProgramAgentParserProvider,
 )
 
@@ -92,11 +92,11 @@ def test_pymupdf_pdf_converter():
     mock_doc = MagicMock()
     with (
         patch(
-            "app.infrastructure.adapter.external.pdf_converter.pymupdf_pdf_converter.Document",
+            "infrastructure.adapter.external.pdf_converter.pymupdf_pdf_converter.Document",
             return_value=mock_doc,
         ) as mock_doc_class,
         patch(
-            "app.infrastructure.adapter.external.pdf_converter.pymupdf_pdf_converter.pymupdf4llm"
+            "infrastructure.adapter.external.pdf_converter.pymupdf_pdf_converter.pymupdf4llm"
         ) as mock_pymupdf4llm,
     ):
         mock_pymupdf4llm.to_markdown.return_value = "markdown content"
@@ -123,7 +123,7 @@ def test_markitdown_pdf_converter():
     mock_mid.convert_stream.return_value = mock_response
 
     with patch(
-        "app.infrastructure.adapter.external.pdf_converter.markitdown_pdf_converter.MarkItDown",
+        "infrastructure.adapter.external.pdf_converter.markitdown_pdf_converter.MarkItDown",
         return_value=mock_mid,
     ) as mock_mid_class:
         converter = MarkItDownPDFConverter()
@@ -139,10 +139,10 @@ def test_pdf_converter_provider():
     provider = PDFConverterProvider()
     with (
         patch(
-            "app.infrastructure.adapter.external.pdf_converter.markitdown_pdf_converter.MarkItDownPDFConverter"
+            "infrastructure.adapter.external.pdf_converter.markitdown_pdf_converter.MarkItDownPDFConverter"
         ) as mock_mid_class,
         patch(
-            "app.infrastructure.adapter.external.pdf_converter.pymupdf_pdf_converter.PyMuPDFPDFConverter"
+            "infrastructure.adapter.external.pdf_converter.pymupdf_pdf_converter.PyMuPDFPDFConverter"
         ) as mock_pymupdf_class,
     ):
         mock_mid_inst = MagicMock()
@@ -180,10 +180,10 @@ def test_pdf_converter_provider():
 def test_ollama_model_factory():
     with (
         patch(
-            "app.infrastructure.adapter.external.study_program_agent_parser.ollama_model_factory.OllamaProvider"
+            "infrastructure.adapter.external.study_program_agent_parser.ollama_model_factory.OllamaProvider"
         ) as mock_provider_class,
         patch(
-            "app.infrastructure.adapter.external.study_program_agent_parser.ollama_model_factory.OllamaModel"
+            "infrastructure.adapter.external.study_program_agent_parser.ollama_model_factory.OllamaModel"
         ) as mock_model_class,
     ):
         mock_provider = MagicMock()
@@ -207,10 +207,10 @@ def test_ollama_model_factory():
 def test_gemini_model_factory():
     with (
         patch(
-            "app.infrastructure.adapter.external.study_program_agent_parser.gemini_model_factory.GoogleProvider"
+            "infrastructure.adapter.external.study_program_agent_parser.gemini_model_factory.GoogleProvider"
         ) as mock_provider_class,
         patch(
-            "app.infrastructure.adapter.external.study_program_agent_parser.gemini_model_factory.GoogleModel"
+            "infrastructure.adapter.external.study_program_agent_parser.gemini_model_factory.GoogleModel"
         ) as mock_model_class,
     ):
         mock_provider = MagicMock()
@@ -245,7 +245,7 @@ async def test_pydantic_ai_study_program_agent_parser():
     mock_agent_instance.run = AsyncMock(return_value=mock_result)
 
     with patch(
-        "app.infrastructure.adapter.external.study_program_agent_parser.pydantic_ai_study_program_agent_parser.Agent",
+        "infrastructure.adapter.external.study_program_agent_parser.pydantic_ai_study_program_agent_parser.Agent",
         new=mock_agent_class,
     ):
         mock_model = MagicMock()
@@ -271,7 +271,7 @@ def test_study_program_agent_parser_provider():
     provider._factories["gemini"] = mock_gemini_factory
 
     with patch(
-        "app.infrastructure.adapter.external.study_program_agent_parser_provider.PydanticAiStudyProgramAgentParser",
+        "infrastructure.adapter.external.study_program_agent_parser_provider.PydanticAiStudyProgramAgentParser",
         new=mock_parser_class,
     ):
         parser = provider.get_parser()

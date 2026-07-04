@@ -8,7 +8,7 @@ All rights reserved.
 """
 
 from typing import Protocol, Optional
-from app.domain.model.modality import Modality
+from domain.model.modality import Modality
 
 
 class GetModalityUseCase(Protocol):

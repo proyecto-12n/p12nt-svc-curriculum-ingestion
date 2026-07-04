@@ -7,7 +7,7 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from app.infrastructure.adapter.outbound.db import (
+from infrastructure.adapter.outbound.db import (
     SqlCurriculumRepositoryAdapter,
     SqlModalityRepositoryAdapter,
     SqlSubjectRepositoryAdapter,
@@ -15,7 +15,7 @@ from app.infrastructure.adapter.outbound.db import (
     SqlStudyProgramRefRepositoryAdapter,
     SqlStudyProgramRepositoryAdapter,
 )
-from app.infrastructure.adapter.outbound.http import HttpNodeParserProviderAdapter
+from infrastructure.adapter.outbound.http import HttpNodeParserProviderAdapter
 
 __all__ = [
     "SqlCurriculumRepositoryAdapter",

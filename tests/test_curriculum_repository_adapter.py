@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import pytest
 from sqlmodel import SQLModel, create_engine, Session
-from app.infrastructure.adapter.outbound.db import (
+from infrastructure.adapter.outbound.db import (
     SqlCurriculumRepositoryAdapter,
     SqlModalityRepositoryAdapter,
     SqlSubjectRepositoryAdapter,
@@ -9,7 +9,7 @@ from app.infrastructure.adapter.outbound.db import (
     SqlStudyProgramRefRepositoryAdapter,
     SqlStudyProgramRepositoryAdapter,
 )
-from app.domain.model import (
+from domain.model import (
     Curriculum,
     Modality,
     Subject,
@@ -35,10 +35,10 @@ def test_save_and_find_curriculum(session):
     curr = Curriculum(
         id=1, title="Parvularia", url="http://test.url/curr", content="HTML content"
     )
-    saved = adapter.save_curriculum(curr)
+    saved = adapter.save(curr)
     assert saved.id == 1
 
-    found = adapter.find_curriculum_by_url("http://test.url/curr")
+    found = adapter.find_by_url("http://test.url/curr")
     assert found is not None
     assert found.title == "Parvularia"
     assert found.content == "HTML content"
@@ -51,7 +51,7 @@ def test_save_and_find_modality(session):
     curr = Curriculum(
         id=1, title="Parvularia", url="http://test.url/curr", content="HTML"
     )
-    curr_adapter.save_curriculum(curr)
+    curr_adapter.save(curr)
 
     mod = Modality(
         id=10,
@@ -60,9 +60,9 @@ def test_save_and_find_modality(session):
         title="Nivel Medio",
         content="HTML Mod",
     )
-    mod_adapter.save_modality(mod)
+    mod_adapter.save(mod)
 
-    found = mod_adapter.find_modality_by_url("http://test.url/mod")
+    found = mod_adapter.find_by_url("http://test.url/mod")
     assert found is not None
     assert found.title == "Nivel Medio"
     assert found.content == "HTML Mod"
@@ -76,7 +76,7 @@ def test_save_and_find_subject(session):
     curr = Curriculum(
         id=1, title="Parvularia", url="http://test.url/curr", content="HTML"
     )
-    curr_adapter.save_curriculum(curr)
+    curr_adapter.save(curr)
 
     mod = Modality(
         id=10,
@@ -85,7 +85,7 @@ def test_save_and_find_subject(session):
         title="Nivel Medio",
         content="HTML Mod",
     )
-    mod_adapter.save_modality(mod)
+    mod_adapter.save(mod)
 
     sub = Subject(
         id=100,
@@ -111,7 +111,7 @@ def test_save_and_find_grade_level(session):
     curr = Curriculum(
         id=1, title="Parvularia", url="http://test.url/curr", content="HTML"
     )
-    curr_adapter.save_curriculum(curr)
+    curr_adapter.save(curr)
 
     mod = Modality(
         id=10,
@@ -120,7 +120,7 @@ def test_save_and_find_grade_level(session):
         title="Nivel Medio",
         content="HTML Mod",
     )
-    mod_adapter.save_modality(mod)
+    mod_adapter.save(mod)
 
     sub = Subject(
         id=100,
@@ -156,7 +156,7 @@ def test_save_and_find_study_program_ref(session):
     curr = Curriculum(
         id=1, title="Parvularia", url="http://test.url/curr", content="HTML"
     )
-    curr_adapter.save_curriculum(curr)
+    curr_adapter.save(curr)
 
     mod = Modality(
         id=10,
@@ -165,7 +165,7 @@ def test_save_and_find_study_program_ref(session):
         title="Nivel Medio",
         content="HTML Mod",
     )
-    mod_adapter.save_modality(mod)
+    mod_adapter.save(mod)
 
     sub = Subject(
         id=100,
@@ -211,7 +211,7 @@ def test_save_and_find_study_program(session):
     curr = Curriculum(
         id=1, title="Parvularia", url="http://test.url/curr", content="HTML"
     )
-    curr_adapter.save_curriculum(curr)
+    curr_adapter.save(curr)
 
     mod = Modality(
         id=10,
@@ -220,7 +220,7 @@ def test_save_and_find_study_program(session):
         title="Nivel Medio",
         content="HTML Mod",
     )
-    mod_adapter.save_modality(mod)
+    mod_adapter.save(mod)
 
     sub = Subject(
         id=100,

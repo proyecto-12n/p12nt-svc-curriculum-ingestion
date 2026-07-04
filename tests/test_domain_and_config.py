@@ -3,11 +3,13 @@ import logging
 from datetime import datetime
 from unittest.mock import MagicMock, patch
 
-from app.domain.exceptions import EntityNotFoundException, DomainException
-from app.domain.model.study_program import StudyProgram
 from app.config import Settings
 from app.utils import log_execution_time
-from app.infrastructure.database import get_db
+from domain.exceptions import EntityNotFoundException, DomainException
+from domain.model import Curriculum, Modality
+from domain.model.study_program import StudyProgram
+from domain.port.outbound.knowledge_repository import KnowledgeRepository
+from infrastructure.database import get_db
 
 
 def test_entity_not_found_exception():
@@ -48,7 +50,7 @@ def test_settings():
 
 
 def test_get_db():
-    with patch("app.infrastructure.database.SessionLocal") as mock_session_maker:
+    with patch("infrastructure.database.SessionLocal") as mock_session_maker:
         mock_session = MagicMock()
         mock_session_maker.return_value = mock_session
 
@@ -64,28 +66,26 @@ def test_get_db():
 
 
 def test_curriculum_repository_protocol():
-    from app.domain.port.outbound import (
-        CurriculumRepository,
-        ModalityRepository,
+    from domain.port.outbound import (
         SubjectRepository,
         GradeLevelRepository,
         StudyProgramRefRepository,
         StudyProgramRepository,
     )
 
-    class DummyCurriculumRepo(CurriculumRepository):
+    class DummyCurriculumRepo(KnowledgeRepository[Curriculum]):
         pass
 
     repo1 = DummyCurriculumRepo()
-    repo1.find_curriculum_by_url("url")
-    repo1.save_curriculum(None)
+    repo1.find_by_url("url")
+    repo1.save(None)
 
-    class DummyModalityRepo(ModalityRepository):
+    class DummyModalityRepo(KnowledgeRepository[Modality]):
         pass
 
     repo2 = DummyModalityRepo()
-    repo2.find_modality_by_url("url")
-    repo2.save_modality(None)
+    repo2.find_by_url("url")
+    repo2.save(None)
 
     class DummySubjectRepo(SubjectRepository):
         pass

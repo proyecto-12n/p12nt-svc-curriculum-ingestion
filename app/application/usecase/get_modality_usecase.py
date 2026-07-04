@@ -9,14 +9,15 @@ All rights reserved.
 
 import asyncio
 from typing import Optional
-from app.domain.model.modality import Modality
-from app.domain.port.inbound.get_modality_use_case import GetModalityUseCase
-from app.domain.port.outbound.modality_repository import ModalityRepository
+
+from domain.model.modality import Modality
+from domain.port.inbound.get_modality_use_case import GetModalityUseCase
+from domain.port.outbound import KnowledgeRepository
 
 
 class GetModalityUseCaseImpl(GetModalityUseCase):
-    def __init__(self, modality_repository: ModalityRepository):
+    def __init__(self, modality_repository: KnowledgeRepository[Modality]):
         self.modality_repository = modality_repository
 
     async def execute(self, id: int) -> Optional[Modality]:
-        return await asyncio.to_thread(self.modality_repository.find_modality_by_id, id)
+        return await asyncio.to_thread(self.modality_repository.find_by_id, id)

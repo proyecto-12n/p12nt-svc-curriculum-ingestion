@@ -9,11 +9,11 @@ All rights reserved.
 
 import asyncio
 from typing import List, Optional
-from app.domain.model.study_program import StudyProgram
-from app.domain.port.inbound.list_study_programs_use_case import (
+from domain.model.study_program import StudyProgram
+from domain.port.inbound.list_study_programs_use_case import (
     ListStudyProgramsUseCase,
 )
-from app.domain.port.outbound.study_program_repository import StudyProgramRepository
+from domain.port.outbound.study_program_repository import StudyProgramRepository
 
 
 class ListStudyProgramsUseCaseImpl(ListStudyProgramsUseCase):

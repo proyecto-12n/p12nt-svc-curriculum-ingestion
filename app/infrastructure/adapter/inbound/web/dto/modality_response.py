@@ -9,7 +9,7 @@ All rights reserved.
 
 from datetime import datetime
 from pydantic import BaseModel
-from app.domain.model.modality import Modality
+from domain.model.modality import Modality
 
 
 class ModalityResponse(BaseModel):

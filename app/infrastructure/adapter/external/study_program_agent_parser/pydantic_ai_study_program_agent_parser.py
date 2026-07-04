@@ -8,8 +8,8 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 from pydantic_ai import Agent, TextContent
 from pydantic_ai.models import Model
 
-from app.domain.model.study_program import StudyProgram
-from app.domain.port.outbound.study_program_agent_parser import StudyProgramAgentParser
+from domain.model.study_program import StudyProgram
+from domain.port.outbound.study_program_agent_parser import StudyProgramAgentParser
 
 
 class PydanticAiStudyProgramAgentParser(StudyProgramAgentParser):

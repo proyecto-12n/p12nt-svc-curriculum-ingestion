@@ -9,9 +9,9 @@ All rights reserved.
 
 import asyncio
 from typing import Optional
-from app.domain.model.study_program import StudyProgram
-from app.domain.port.inbound.get_study_program_use_case import GetStudyProgramUseCase
-from app.domain.port.outbound.study_program_repository import StudyProgramRepository
+from domain.model.study_program import StudyProgram
+from domain.port.inbound.get_study_program_use_case import GetStudyProgramUseCase
+from domain.port.outbound.study_program_repository import StudyProgramRepository
 
 
 class GetStudyProgramUseCaseImpl(GetStudyProgramUseCase):

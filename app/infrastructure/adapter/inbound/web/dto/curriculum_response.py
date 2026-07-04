@@ -9,7 +9,7 @@ All rights reserved.
 
 from datetime import datetime
 from pydantic import BaseModel
-from app.domain.model.curriculum import Curriculum
+from domain.model.curriculum import Curriculum
 
 
 class CurriculumResponse(BaseModel):

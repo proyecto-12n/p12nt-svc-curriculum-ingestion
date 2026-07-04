@@ -7,19 +7,19 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from typing import Protocol, Optional
-from app.domain.model.modality import Modality
+from typing import Protocol, Optional, List
+from domain.model.modality import Modality
 
 
 class ModalityRepository(Protocol):
-    def find_modality_by_url(self, url: str) -> Optional[Modality]:
+    def find_by_url(self, url: str) -> Optional[Modality]:
         pass
 
-    def save_modality(self, modality: Modality) -> Modality:
+    def save(self, modality: Modality) -> Modality:
         pass
 
-    def find_modality_by_id(self, id: int) -> Optional[Modality]:
+    def find_by_id(self, id: int) -> Optional[Modality]:
         pass
 
-    def list_modalities(self, curriculum_id: Optional[int] = None) -> list[Modality]:
+    def list(self, curriculum_id: Optional[int] = None) -> List[Modality]:
         pass

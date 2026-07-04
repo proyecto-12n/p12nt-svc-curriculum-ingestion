@@ -8,7 +8,7 @@ All rights reserved.
 """
 
 from typing import Protocol, Optional
-from app.domain.model.study_program_ref import StudyProgramRef
+from domain.model.study_program_ref import StudyProgramRef
 
 
 class GetStudyProgramRefUseCase(Protocol):

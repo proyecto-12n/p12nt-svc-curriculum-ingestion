@@ -11,12 +11,12 @@ from datetime import datetime
 import logging
 from typing import Any
 
-from app.domain.model.node import Node
-from app.domain.model.study_program import StudyProgram
-from app.domain.port.outbound import StudyProgramRepository
-from app.application.usecase.curriculum_node_resolver import CurriculumNodeResolver
-from app.infrastructure.adapter.outbound.http.parser.impl import StudyProgramNodeParser
-from app.infrastructure.util.id_generator import generate_id
+from domain.model.node import Node
+from domain.model.study_program import StudyProgram
+from domain.port.outbound import StudyProgramRepository
+from application.usecase.curriculum_node_resolver import CurriculumNodeResolver
+from infrastructure.adapter.outbound.http.parser.impl import StudyProgramNodeParser
+from infrastructure.util.id_generator import generate_id
 
 logger = logging.getLogger(__name__)
 

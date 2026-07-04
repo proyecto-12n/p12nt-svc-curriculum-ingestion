@@ -9,13 +9,13 @@ All rights reserved.
 
 from typing import Optional
 from sqlmodel import Session, select
-from app.domain.port.outbound.grade_level_repository import GradeLevelRepository
+from domain.port.outbound.grade_level_repository import GradeLevelRepository
 
 # Domain models
-from app.domain.model.grade_level import GradeLevel as DomainGradeLevel
+from domain.model.grade_level import GradeLevel as DomainGradeLevel
 
 # SQLModel models
-from app.infrastructure.models.grade_level import GradeLevel as SqlGradeLevel
+from infrastructure.models.grade_level import GradeLevel as SqlGradeLevel
 
 
 class SqlGradeLevelRepositoryAdapter(GradeLevelRepository):

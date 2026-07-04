@@ -9,15 +9,15 @@ All rights reserved.
 
 from typing import Optional
 from sqlmodel import Session, select
-from app.domain.port.outbound.study_program_ref_repository import (
+from domain.port.outbound.study_program_ref_repository import (
     StudyProgramRefRepository,
 )
 
 # Domain models
-from app.domain.model.study_program_ref import StudyProgramRef as DomainStudyProgramRef
+from domain.model.study_program_ref import StudyProgramRef as DomainStudyProgramRef
 
 # SQLModel models
-from app.infrastructure.models.study_program_ref import (
+from infrastructure.models.study_program_ref import (
     StudyProgramRef as SqlStudyProgramRef,
 )
 

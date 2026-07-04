@@ -9,16 +9,16 @@ All rights reserved.
 
 import asyncio
 from typing import Optional
-from app.domain.model.curriculum import Curriculum
-from app.domain.port.inbound.get_curriculum_use_case import GetCurriculumUseCase
-from app.domain.port.outbound.curriculum_repository import CurriculumRepository
+from domain.model.curriculum import Curriculum
+from domain.port.inbound.get_curriculum_use_case import GetCurriculumUseCase
+from domain.port.outbound.knowledge_repository import KnowledgeRepository
 
 
 class GetCurriculumUseCaseImpl(GetCurriculumUseCase):
-    def __init__(self, curriculum_repository: CurriculumRepository):
+    def __init__(self, curriculum_repository: KnowledgeRepository[Curriculum]):
         self.curriculum_repository = curriculum_repository
 
     async def execute(self, id: int) -> Optional[Curriculum]:
         return await asyncio.to_thread(
-            self.curriculum_repository.find_curriculum_by_id, id
+            self.curriculum_repository.find_by_id, id
         )

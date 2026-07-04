@@ -7,11 +7,11 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 
 from typing import Dict
 
-from app.domain.port.outbound.study_program_agent_parser import StudyProgramAgentParser
-from app.infrastructure.adapter.external.study_program_agent_parser.pydantic_ai_study_program_agent_parser import (
+from domain.port.outbound.study_program_agent_parser import StudyProgramAgentParser
+from infrastructure.adapter.external.study_program_agent_parser.pydantic_ai_study_program_agent_parser import (
     PydanticAiStudyProgramAgentParser,
 )
-from app.infrastructure.adapter.external.study_program_agent_parser import (
+from infrastructure.adapter.external.study_program_agent_parser import (
     LLMModelFactory,
     OllamaModelFactory,
     GeminiModelFactory,

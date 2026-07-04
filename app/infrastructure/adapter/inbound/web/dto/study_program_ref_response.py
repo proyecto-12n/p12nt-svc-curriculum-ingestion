@@ -9,7 +9,7 @@ All rights reserved.
 
 from datetime import datetime
 from pydantic import BaseModel
-from app.domain.model.study_program_ref import StudyProgramRef
+from domain.model.study_program_ref import StudyProgramRef
 
 
 class StudyProgramRefResponse(BaseModel):

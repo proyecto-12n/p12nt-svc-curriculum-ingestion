@@ -9,7 +9,7 @@ All rights reserved.
 
 from datetime import datetime
 from pydantic import BaseModel
-from app.domain.model.grade_level import GradeLevel
+from domain.model.grade_level import GradeLevel
 
 
 class GradeLevelResponse(BaseModel):

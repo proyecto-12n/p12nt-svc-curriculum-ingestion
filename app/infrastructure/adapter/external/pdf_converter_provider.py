@@ -7,8 +7,8 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 
 import logging
 
-from app.domain.port.outbound.pdf_converter import PDFConverter
-from app.domain.port.outbound.pdf_converter_provider import (
+from domain.port.outbound.pdf_converter import PDFConverter
+from domain.port.outbound.pdf_converter_provider import (
     PDFConverterProvider as PDFConverterProviderPort,
 )
 
@@ -31,13 +31,13 @@ class PDFConverterProvider(PDFConverterProviderPort):
 
         name = provider_name.lower()
         if name == "markitdown":
-            from app.infrastructure.adapter.external.pdf_converter.markitdown_pdf_converter import (
+            from infrastructure.adapter.external.pdf_converter.markitdown_pdf_converter import (
                 MarkItDownPDFConverter,
             )
 
             converter_class = MarkItDownPDFConverter
         elif name == "pymupdf4llm":
-            from app.infrastructure.adapter.external.pdf_converter.pymupdf_pdf_converter import (
+            from infrastructure.adapter.external.pdf_converter.pymupdf_pdf_converter import (
                 PyMuPDFPDFConverter,
             )
 

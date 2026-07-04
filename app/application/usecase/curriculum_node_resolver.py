@@ -11,9 +11,9 @@ import asyncio
 import logging
 from typing import Any, Callable, List, Tuple
 
-from app.domain.model.node import Node
-from app.domain.model.resource_type import ResourceType
-from app.domain.port.outbound import DownloaderProvider
+from domain.model.node import Node
+from domain.model.resource_type import ResourceType
+from domain.port.outbound import DownloaderProvider
 
 logger = logging.getLogger(__name__)
 

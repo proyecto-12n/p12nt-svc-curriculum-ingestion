@@ -7,22 +7,34 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from typing import Optional
+from typing import Optional, List
+
 from sqlmodel import Session, select
-from app.domain.port.outbound.modality_repository import ModalityRepository
 
-# Domain models
-from app.domain.model.modality import Modality as DomainModality
-
-# SQLModel models
-from app.infrastructure.models.modality import Modality as SqlModality
+from domain.model.modality import Modality as DomainModality
+from domain.port.outbound import KnowledgeRepository
+from infrastructure.models.modality import Modality as SqlModality
 
 
-class SqlModalityRepositoryAdapter(ModalityRepository):
+class SqlModalityRepositoryAdapter(KnowledgeRepository[DomainModality]):
     def __init__(self, session: Session):
         self.session = session
 
-    def find_modality_by_url(self, url: str) -> Optional[DomainModality]:
+    def find_by_id(self, id: int) -> Optional[DomainModality]:
+        statement = select(SqlModality).where(SqlModality.id == id)
+        sql_mod = self.session.exec(statement).first()
+        if sql_mod:
+            return DomainModality(
+                id=sql_mod.id,
+                curriculum_id=sql_mod.curriculum_id,
+                title=sql_mod.title,
+                url=sql_mod.url,
+                content=sql_mod.content,
+                extracted_at=sql_mod.extracted_at,
+            )
+        return None
+
+    def find_by_url(self, url: str) -> Optional[DomainModality]:
         statement = select(SqlModality).where(SqlModality.url == url)
         sql_mod = self.session.exec(statement).first()
         if sql_mod:
@@ -36,7 +48,7 @@ class SqlModalityRepositoryAdapter(ModalityRepository):
             )
         return None
 
-    def save_modality(self, modality: DomainModality) -> DomainModality:
+    def save(self, modality: DomainModality) -> DomainModality:
         statement = select(SqlModality).where(SqlModality.url == modality.url)
         sql_mod = self.session.exec(statement).first()
         if sql_mod:
@@ -58,23 +70,9 @@ class SqlModalityRepositoryAdapter(ModalityRepository):
         modality.id = sql_mod.id
         return modality
 
-    def find_modality_by_id(self, id: int) -> Optional[DomainModality]:
-        statement = select(SqlModality).where(SqlModality.id == id)
-        sql_mod = self.session.exec(statement).first()
-        if sql_mod:
-            return DomainModality(
-                id=sql_mod.id,
-                curriculum_id=sql_mod.curriculum_id,
-                title=sql_mod.title,
-                url=sql_mod.url,
-                content=sql_mod.content,
-                extracted_at=sql_mod.extracted_at,
-            )
-        return None
-
-    def list_modalities(
-        self, curriculum_id: Optional[int] = None
-    ) -> list[DomainModality]:
+    def list(
+            self, curriculum_id: Optional[int] = None
+    ) -> List[DomainModality]:
         statement = select(SqlModality)
         if curriculum_id is not None:
             statement = statement.where(SqlModality.curriculum_id == curriculum_id)

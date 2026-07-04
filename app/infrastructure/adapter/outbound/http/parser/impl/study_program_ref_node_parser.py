@@ -8,16 +8,16 @@ All rights reserved.
 """
 
 from typing import Tuple, List, Optional
-from app.domain.model import StudyProgramRef
-from app.domain.model.node import Node
-from app.domain.model.resource_type import ResourceType
-from app.infrastructure.adapter.outbound.http.parser.node_parser import NodeParser
+from domain.model import StudyProgramRef
+from domain.model.node import Node
+from domain.model.resource_type import ResourceType
+from infrastructure.adapter.outbound.http.parser.node_parser import NodeParser
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 
-from app.infrastructure.util.id_generator import generate_id
-from app.domain.model.curriculum_node_type import CurriculumNodeType
+from infrastructure.util.id_generator import generate_id
+from domain.model.curriculum_node_type import CurriculumNodeType
 
 
 class StudyProgramRefNodeParser(NodeParser[str]):

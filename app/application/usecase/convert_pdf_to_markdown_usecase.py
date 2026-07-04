@@ -11,11 +11,11 @@ import asyncio
 from hashlib import sha256
 from typing import Dict
 
-from app.domain.model.pdf_resource import PDFResource
-from app.domain.port.inbound.convert_pdf_to_markdown_use_case import (
+from domain.model.pdf_resource import PDFResource
+from domain.port.inbound.convert_pdf_to_markdown_use_case import (
     ConvertPDFToMarkdownUseCase,
 )
-from app.domain.port.outbound.pdf_converter_provider import PDFConverterProvider
+from domain.port.outbound.pdf_converter_provider import PDFConverterProvider
 
 
 class ConvertPDFToMarkdownUseCaseImpl(ConvertPDFToMarkdownUseCase):

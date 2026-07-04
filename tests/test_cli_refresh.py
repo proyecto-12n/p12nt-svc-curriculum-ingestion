@@ -11,19 +11,19 @@ from unittest.mock import MagicMock, patch
 import pytest
 from sqlmodel import Session, SQLModel, create_engine
 
-from app.domain.model.curriculum import Curriculum
-from app.domain.model.modality import Modality
-from app.domain.model.subject import Subject
-from app.domain.model.grade_level import GradeLevel
-from app.domain.model.study_program_ref import StudyProgramRef
-from app.domain.model.study_program import StudyProgram
-from app.domain.model.node import Node
-from app.domain.model.resource_type import ResourceType
-from app.application.usecase.ingest_curriculum_usecase import (
+from domain.model.curriculum import Curriculum
+from domain.model.modality import Modality
+from domain.model.subject import Subject
+from domain.model.grade_level import GradeLevel
+from domain.model.study_program_ref import StudyProgramRef
+from domain.model.study_program import StudyProgram
+from domain.model.node import Node
+from domain.model.resource_type import ResourceType
+from application.usecase.ingest_curriculum_usecase import (
     IngestCurriculumUseCaseImpl,
 )
-from app.infrastructure.cli.ingest_curriculum import run_cli
-from app.infrastructure.adapter.outbound.db import (
+from infrastructure.cli.ingest_curriculum import run_cli
+from infrastructure.adapter.outbound.db import (
     SqlCurriculumRepositoryAdapter,
     SqlModalityRepositoryAdapter,
     SqlSubjectRepositoryAdapter,
@@ -57,13 +57,13 @@ def test_repository_upsert_behavior(db_session):
     curriculum = Curriculum(
         id=1, url="http://test.url/cur", title="Initial Curriculum", content="Init"
     )
-    curr_repo.save_curriculum(curriculum)
+    curr_repo.save(curriculum)
 
     curriculum.title = "Updated Curriculum"
     curriculum.content = "Updated"
-    curr_repo.save_curriculum(curriculum)
+    curr_repo.save(curriculum)
 
-    saved_cur = curr_repo.find_curriculum_by_url("http://test.url/cur")
+    saved_cur = curr_repo.find_by_url("http://test.url/cur")
     assert saved_cur.title == "Updated Curriculum"
     assert saved_cur.content == "Updated"
 
@@ -75,12 +75,12 @@ def test_repository_upsert_behavior(db_session):
         title="Initial Modality",
         content="Init",
     )
-    modality_repo.save_modality(modality)
+    modality_repo.save(modality)
 
     modality.title = "Updated Modality"
-    modality_repo.save_modality(modality)
+    modality_repo.save(modality)
 
-    saved_mod = modality_repo.find_modality_by_url("http://test.url/mod")
+    saved_mod = modality_repo.find_by_url("http://test.url/mod")
     assert saved_mod.title == "Updated Modality"
 
     # 3. Test Subject Upsert
@@ -195,11 +195,9 @@ def test_ingest_curriculum_usecase_refresh_behavior(db_session):
 
 def test_cli_refresh_flag_propagation():
     with (
-        patch("app.infrastructure.cli.ingest_curriculum.Session") as mock_session_class,
-        patch("app.infrastructure.database.init_db") as mock_init_db,
-        patch(
-            "app.infrastructure.cli.ingest_curriculum.IngestCurriculumUseCaseImpl"
-        ) as mock_usecase_class,
+        patch("infrastructure.cli.ingest_curriculum.Session") as mock_session_class,
+        patch("infrastructure.database.init_db") as mock_init_db,
+        patch("infrastructure.cli.ingest_curriculum.IngestCurriculumUseCaseImpl") as mock_usecase_class,
         patch("argparse.ArgumentParser.parse_args") as mock_parse_args,
     ):
         # Configure mock arguments to have refresh = True
@@ -217,7 +215,7 @@ def test_cli_refresh_flag_propagation():
         mock_usecase = MagicMock()
         mock_usecase_class.return_value = mock_usecase
 
-        with patch("app.infrastructure.database.engine", new=mock_engine):
+        with patch("infrastructure.database.engine", new=mock_engine):
             run_cli()
 
             mock_init_db.assert_called_once()

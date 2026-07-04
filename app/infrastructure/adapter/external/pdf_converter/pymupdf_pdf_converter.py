@@ -8,8 +8,8 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 from io import BytesIO
 from fitz import Document
 import pymupdf4llm
-from app.domain.port.outbound.pdf_converter import PDFConverter
-from app.domain.model.pdf_resource import PDFResource
+from domain.port.outbound.pdf_converter import PDFConverter
+from domain.model.pdf_resource import PDFResource
 from app.utils import log_execution_time
 
 

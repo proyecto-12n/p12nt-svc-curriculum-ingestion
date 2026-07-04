@@ -11,15 +11,15 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session
 
-from app.domain.port.inbound.get_modality_use_case import GetModalityUseCase
-from app.domain.port.inbound.list_modalities_use_case import ListModalitiesUseCase
-from app.application.usecase.get_modality_usecase import GetModalityUseCaseImpl
-from app.application.usecase.list_modalities_usecase import ListModalitiesUseCaseImpl
-from app.infrastructure.adapter.outbound.db.sql_modality_repository_adapter import (
+from domain.port.inbound.get_modality_use_case import GetModalityUseCase
+from domain.port.inbound.list_modalities_use_case import ListModalitiesUseCase
+from application.usecase.get_modality_usecase import GetModalityUseCaseImpl
+from application.usecase.list_modalities_usecase import ListModalitiesUseCaseImpl
+from infrastructure.adapter.outbound.db.sql_modality_repository_adapter import (
     SqlModalityRepositoryAdapter,
 )
-from app.infrastructure.database import get_db
-from app.infrastructure.adapter.inbound.web.dto.modality_response import (
+from infrastructure.database import get_db
+from infrastructure.adapter.inbound.web.dto.modality_response import (
     ModalityResponse,
 )
 

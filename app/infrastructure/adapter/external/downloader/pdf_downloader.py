@@ -7,9 +7,9 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 
 import httpx
 
-from app.domain.port.outbound.content_downloader import ContentDownloader
-from app.domain.model.node import Node
-from app.domain.model.resource_type import ResourceType
+from domain.port.outbound.content_downloader import ContentDownloader
+from domain.model.node import Node
+from domain.model.resource_type import ResourceType
 
 
 class PDFDownloader(ContentDownloader[bytes]):

@@ -9,7 +9,7 @@ from pydantic_ai.models import Model
 from pydantic_ai.models.google import GoogleModel
 from pydantic_ai.providers.google import GoogleProvider
 
-from app.infrastructure.adapter.external.study_program_agent_parser.llm_model_factory import (
+from infrastructure.adapter.external.study_program_agent_parser.llm_model_factory import (
     LLMModelFactory,
 )
 from app.config import Settings

@@ -7,8 +7,8 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from app.infrastructure.adapter.outbound.http.parser.node_parser import NodeParser
-from app.infrastructure.adapter.outbound.http.parser.http_node_parser_provider_adapter import (
+from infrastructure.adapter.outbound.http.parser.node_parser import NodeParser
+from infrastructure.adapter.outbound.http.parser.http_node_parser_provider_adapter import (
     HttpNodeParserProviderAdapter,
 )
 

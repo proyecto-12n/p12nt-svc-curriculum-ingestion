@@ -11,15 +11,15 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session
 
-from app.domain.port.inbound.get_subject_use_case import GetSubjectUseCase
-from app.domain.port.inbound.list_subjects_use_case import ListSubjectsUseCase
-from app.application.usecase.get_subject_usecase import GetSubjectUseCaseImpl
-from app.application.usecase.list_subjects_usecase import ListSubjectsUseCaseImpl
-from app.infrastructure.adapter.outbound.db.sql_subject_repository_adapter import (
+from domain.port.inbound.get_subject_use_case import GetSubjectUseCase
+from domain.port.inbound.list_subjects_use_case import ListSubjectsUseCase
+from application.usecase.get_subject_usecase import GetSubjectUseCaseImpl
+from application.usecase.list_subjects_usecase import ListSubjectsUseCaseImpl
+from infrastructure.adapter.outbound.db.sql_subject_repository_adapter import (
     SqlSubjectRepositoryAdapter,
 )
-from app.infrastructure.database import get_db
-from app.infrastructure.adapter.inbound.web.dto.subject_response import (
+from infrastructure.database import get_db
+from infrastructure.adapter.inbound.web.dto.subject_response import (
     SubjectResponse,
 )
 

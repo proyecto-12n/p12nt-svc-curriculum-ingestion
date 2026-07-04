@@ -11,21 +11,21 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session
 
-from app.domain.port.inbound.get_study_program_use_case import GetStudyProgramUseCase
-from app.domain.port.inbound.list_study_programs_use_case import (
+from domain.port.inbound.get_study_program_use_case import GetStudyProgramUseCase
+from domain.port.inbound.list_study_programs_use_case import (
     ListStudyProgramsUseCase,
 )
-from app.application.usecase.get_study_program_usecase import (
+from application.usecase.get_study_program_usecase import (
     GetStudyProgramUseCaseImpl,
 )
-from app.application.usecase.list_study_programs_usecase import (
+from application.usecase.list_study_programs_usecase import (
     ListStudyProgramsUseCaseImpl,
 )
-from app.infrastructure.adapter.outbound.db.sql_study_program_repository_adapter import (
+from infrastructure.adapter.outbound.db.sql_study_program_repository_adapter import (
     SqlStudyProgramRepositoryAdapter,
 )
-from app.infrastructure.database import get_db
-from app.infrastructure.adapter.inbound.web.dto.study_program_response import (
+from infrastructure.database import get_db
+from infrastructure.adapter.inbound.web.dto.study_program_response import (
     StudyProgramResponse,
 )
 

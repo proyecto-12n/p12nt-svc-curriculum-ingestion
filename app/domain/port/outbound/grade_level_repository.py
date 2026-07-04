@@ -8,7 +8,7 @@ All rights reserved.
 """
 
 from typing import Protocol, Optional
-from app.domain.model.grade_level import GradeLevel
+from domain.model.grade_level import GradeLevel
 
 
 class GradeLevelRepository(Protocol):

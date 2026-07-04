@@ -3,23 +3,23 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
-from app.infrastructure.database import init_db
-from app.infrastructure.adapter.inbound.web.routers.curriculum_router import (
+from infrastructure.database import init_db
+from infrastructure.adapter.inbound.web.routers.curriculum_router import (
     router as curriculum_router,
 )
-from app.infrastructure.adapter.inbound.web.routers.modality_router import (
+from infrastructure.adapter.inbound.web.routers.modality_router import (
     router as modality_router,
 )
-from app.infrastructure.adapter.inbound.web.routers.subject_router import (
+from infrastructure.adapter.inbound.web.routers.subject_router import (
     router as subject_router,
 )
-from app.infrastructure.adapter.inbound.web.routers.grade_level_router import (
+from infrastructure.adapter.inbound.web.routers.grade_level_router import (
     router as grade_level_router,
 )
-from app.infrastructure.adapter.inbound.web.routers.study_program_ref_router import (
+from infrastructure.adapter.inbound.web.routers.study_program_ref_router import (
     router as study_program_ref_router,
 )
-from app.infrastructure.adapter.inbound.web.routers.study_program_router import (
+from infrastructure.adapter.inbound.web.routers.study_program_router import (
     router as study_program_router,
 )
 

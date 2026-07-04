@@ -9,26 +9,26 @@ All rights reserved.
 
 import logging
 
-from app.domain.model.resource_type import ResourceType
-from app.domain.port.inbound import IngestCurriculumUseCase
-from app.domain.port.outbound import (
-    CurriculumRepository,
-    ModalityRepository,
+from application.usecase.curriculum_node_resolver import CurriculumNodeResolver
+from application.usecase.study_program_resolver import StudyProgramResolver
+from domain.model.resource_type import ResourceType
+from domain.port.inbound import IngestCurriculumUseCase
+from domain.port.outbound import (
     SubjectRepository,
     GradeLevelRepository,
     StudyProgramRefRepository,
     StudyProgramRepository,
     DownloaderProvider,
 )
-from app.application.usecase.curriculum_node_resolver import CurriculumNodeResolver
-from app.application.usecase.study_program_resolver import StudyProgramResolver
-from app.infrastructure.adapter.outbound.http.parser.impl import (
+from infrastructure.adapter.outbound.http.parser.impl import (
     CurriculumNodeParser,
     GradeLevelNodeParser,
     ModalityNodeParser,
     StudyProgramRefNodeParser,
     SubjectNodeParser,
 )
+from domain.model import Curriculum, Modality
+from domain.port.outbound.knowledge_repository import KnowledgeRepository
 
 logger = logging.getLogger(__name__)
 
@@ -37,16 +37,16 @@ _ROOT_URL = "https://www.curriculumnacional.cl/curriculum"
 
 class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
     def __init__(
-        self,
-        curriculum_repository: CurriculumRepository,
-        modality_repository: ModalityRepository,
-        subject_repository: SubjectRepository,
-        grade_level_repository: GradeLevelRepository,
-        study_program_ref_repository: StudyProgramRefRepository,
-        study_program_repository: StudyProgramRepository,
-        downloader_provider: DownloaderProvider,
-        node_resolver: CurriculumNodeResolver = None,
-        study_program_resolver: StudyProgramResolver = None,
+            self,
+            curriculum_repository: KnowledgeRepository[Curriculum],
+            modality_repository: KnowledgeRepository[Modality],
+            subject_repository: SubjectRepository,
+            grade_level_repository: GradeLevelRepository,
+            study_program_ref_repository: StudyProgramRefRepository,
+            study_program_repository: StudyProgramRepository,
+            downloader_provider: DownloaderProvider,
+            node_resolver: CurriculumNodeResolver = None,
+            study_program_resolver: StudyProgramResolver = None,
     ):
         self.curriculum_repository = curriculum_repository
         self.modality_repository = modality_repository
@@ -71,10 +71,10 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
         curriculum, modality_nodes = self.node_resolver.resolve_node(
             url=_ROOT_URL,
             resource_type=ResourceType.HTML,
-            find_fn=lambda: self.curriculum_repository.find_curriculum_by_url(
+            find_fn=lambda: self.curriculum_repository.find_by_url(
                 _ROOT_URL
             ),
-            save_fn=self.curriculum_repository.save_curriculum,
+            save_fn=self.curriculum_repository.save,
             parser=CurriculumNodeParser(),
             parent_id=0,
             refresh=refresh,
@@ -85,10 +85,10 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                 modality, subject_nodes = self.node_resolver.resolve_node(
                     url=mod_node.url,
                     resource_type=ResourceType.HTML,
-                    find_fn=lambda: self.modality_repository.find_modality_by_url(
+                    find_fn=lambda: self.modality_repository.find_by_url(
                         self.node_resolver.absolute_url(mod_node.url)
                     ),
-                    save_fn=self.modality_repository.save_modality,
+                    save_fn=self.modality_repository.save,
                     parser=ModalityNodeParser(),
                     parent_id=curriculum.id,
                     title_hint=mod_node.title,

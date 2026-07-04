@@ -9,7 +9,7 @@ All rights reserved.
 
 from datetime import datetime
 from pydantic import BaseModel
-from app.domain.model.subject import Subject
+from domain.model.subject import Subject
 
 
 class SubjectResponse(BaseModel):

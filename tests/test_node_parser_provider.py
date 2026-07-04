@@ -1,25 +1,25 @@
 # -*- coding: utf-8 -*-
 import pytest
-from app.domain.model.curriculum_node_type import CurriculumNodeType
-from app.infrastructure.adapter.outbound.http.parser.http_node_parser_provider_adapter import (
+from domain.model.curriculum_node_type import CurriculumNodeType
+from infrastructure.adapter.outbound.http.parser.http_node_parser_provider_adapter import (
     HttpNodeParserProviderAdapter,
 )
-from app.infrastructure.adapter.outbound.http.parser.impl.curriculum_node_parser import (
+from infrastructure.adapter.outbound.http.parser.impl.curriculum_node_parser import (
     CurriculumNodeParser,
 )
-from app.infrastructure.adapter.outbound.http.parser.impl.modality_node_parser import (
+from infrastructure.adapter.outbound.http.parser.impl.modality_node_parser import (
     ModalityNodeParser,
 )
-from app.infrastructure.adapter.outbound.http.parser.impl.subject_node_parser import (
+from infrastructure.adapter.outbound.http.parser.impl.subject_node_parser import (
     SubjectNodeParser,
 )
-from app.infrastructure.adapter.outbound.http.parser.impl.grade_level_node_parser import (
+from infrastructure.adapter.outbound.http.parser.impl.grade_level_node_parser import (
     GradeLevelNodeParser,
 )
-from app.infrastructure.adapter.outbound.http.parser.impl.study_program_ref_node_parser import (
+from infrastructure.adapter.outbound.http.parser.impl.study_program_ref_node_parser import (
     StudyProgramRefNodeParser,
 )
-from app.infrastructure.adapter.outbound.http.parser.impl.study_program_node_parser import (
+from infrastructure.adapter.outbound.http.parser.impl.study_program_node_parser import (
     StudyProgramNodeParser,
 )
 

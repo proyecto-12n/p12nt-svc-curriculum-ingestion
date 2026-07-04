@@ -8,7 +8,7 @@ All rights reserved.
 """
 
 from typing import Protocol, Optional
-from app.domain.model.subject import Subject
+from domain.model.subject import Subject
 
 
 class SubjectRepository(Protocol):

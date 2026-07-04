@@ -8,7 +8,7 @@ All rights reserved.
 """
 
 from typing import Protocol
-from app.domain.model.pdf_resource import PDFResource
+from domain.model.pdf_resource import PDFResource
 
 
 class ConvertPDFToMarkdownUseCase(Protocol):

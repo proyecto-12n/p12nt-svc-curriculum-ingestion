@@ -9,9 +9,9 @@ All rights reserved.
 
 import asyncio
 from typing import Optional
-from app.domain.model.grade_level import GradeLevel
-from app.domain.port.inbound.get_grade_level_use_case import GetGradeLevelUseCase
-from app.domain.port.outbound.grade_level_repository import GradeLevelRepository
+from domain.model.grade_level import GradeLevel
+from domain.port.inbound.get_grade_level_use_case import GetGradeLevelUseCase
+from domain.port.outbound.grade_level_repository import GradeLevelRepository
 
 
 class GetGradeLevelUseCaseImpl(GetGradeLevelUseCase):

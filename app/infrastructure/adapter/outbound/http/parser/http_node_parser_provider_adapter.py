@@ -9,10 +9,10 @@ All rights reserved.
 
 from typing import Dict
 
-from app.domain.port.outbound.node_parser_provider import NodeParserProvider
-from app.domain.model.curriculum_node_type import CurriculumNodeType
-from app.infrastructure.adapter.outbound.http.parser.node_parser import NodeParser
-from app.infrastructure.adapter.outbound.http.parser.impl import (
+from domain.port.outbound.node_parser_provider import NodeParserProvider
+from domain.model.curriculum_node_type import CurriculumNodeType
+from infrastructure.adapter.outbound.http.parser.node_parser import NodeParser
+from infrastructure.adapter.outbound.http.parser.impl import (
     CurriculumNodeParser,
     GradeLevelNodeParser,
     ModalityNodeParser,

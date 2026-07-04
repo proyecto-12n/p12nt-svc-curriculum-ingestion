@@ -6,9 +6,9 @@ from unittest.mock import MagicMock
 if importlib.util.find_spec("pymupdf") is None:
     sys.modules["pymupdf"] = MagicMock()
 
-from app.domain.model.node import Node
-from app.domain.model.resource_type import ResourceType
-from app.infrastructure.adapter.outbound.http.parser.impl import (
+from domain.model.node import Node
+from domain.model.resource_type import ResourceType
+from infrastructure.adapter.outbound.http.parser.impl import (
     CurriculumNodeParser,
     ModalityNodeParser,
     SubjectNodeParser,

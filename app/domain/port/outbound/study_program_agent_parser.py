@@ -4,7 +4,7 @@ NextProject © 2026
 """
 
 from typing import Protocol
-from app.domain.model.study_program import StudyProgram
+from domain.model.study_program import StudyProgram
 
 
 class StudyProgramAgentParser(Protocol):

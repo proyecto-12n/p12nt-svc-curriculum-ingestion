@@ -9,13 +9,13 @@ All rights reserved.
 
 from typing import Optional
 from sqlmodel import Session, select
-from app.domain.port.outbound.subject_repository import SubjectRepository
+from domain.port.outbound.subject_repository import SubjectRepository
 
 # Domain models
-from app.domain.model.subject import Subject as DomainSubject
+from domain.model.subject import Subject as DomainSubject
 
 # SQLModel models
-from app.infrastructure.models.subject import Subject as SqlSubject
+from infrastructure.models.subject import Subject as SqlSubject
 
 
 class SqlSubjectRepositoryAdapter(SubjectRepository):

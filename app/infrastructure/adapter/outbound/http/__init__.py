@@ -7,7 +7,7 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from app.infrastructure.adapter.outbound.http.parser import (
+from infrastructure.adapter.outbound.http.parser import (
     HttpNodeParserProviderAdapter,
 )
 

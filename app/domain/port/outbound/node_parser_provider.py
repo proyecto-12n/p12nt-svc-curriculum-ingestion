@@ -8,7 +8,7 @@ All rights reserved.
 """
 
 from typing import Protocol, Any
-from app.domain.model.curriculum_node_type import CurriculumNodeType
+from domain.model.curriculum_node_type import CurriculumNodeType
 
 
 class NodeParserProvider(Protocol):

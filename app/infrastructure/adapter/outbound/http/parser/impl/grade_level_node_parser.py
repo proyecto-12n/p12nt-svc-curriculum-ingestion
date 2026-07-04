@@ -11,12 +11,12 @@ from typing import Tuple, List, Optional
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
-from app.domain.model import GradeLevel
-from app.domain.model.node import Node
-from app.domain.model.resource_type import ResourceType
-from app.infrastructure.adapter.outbound.http.parser.node_parser import NodeParser
-from app.infrastructure.util.id_generator import generate_id
-from app.domain.model.curriculum_node_type import CurriculumNodeType
+from domain.model import GradeLevel
+from domain.model.node import Node
+from domain.model.resource_type import ResourceType
+from infrastructure.adapter.outbound.http.parser.node_parser import NodeParser
+from infrastructure.util.id_generator import generate_id
+from domain.model.curriculum_node_type import CurriculumNodeType
 
 
 class GradeLevelNodeParser(NodeParser[str]):

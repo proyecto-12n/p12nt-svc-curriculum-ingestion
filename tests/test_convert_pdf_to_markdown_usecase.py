@@ -10,10 +10,10 @@ All rights reserved.
 from unittest.mock import MagicMock
 import pytest
 
-from app.application.usecase.convert_pdf_to_markdown_usecase import (
+from application.usecase.convert_pdf_to_markdown_usecase import (
     ConvertPDFToMarkdownUseCaseImpl,
 )
-from app.domain.model.pdf_resource import PDFResource
+from domain.model.pdf_resource import PDFResource
 
 
 @pytest.mark.asyncio

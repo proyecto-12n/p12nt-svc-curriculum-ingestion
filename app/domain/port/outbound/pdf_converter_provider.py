@@ -4,7 +4,7 @@ NextProject © 2026
 """
 
 from typing import Protocol
-from app.domain.port.outbound.pdf_converter import PDFConverter
+from domain.port.outbound.pdf_converter import PDFConverter
 
 
 class PDFConverterProvider(Protocol):

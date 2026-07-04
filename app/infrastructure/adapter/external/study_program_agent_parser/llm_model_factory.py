@@ -6,13 +6,14 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 """
 
 from abc import ABC, abstractmethod
+from typing import Protocol
 
 from pydantic_ai.models import Model
 
 from app.config import Settings
 
 
-class LLMModelFactory(ABC):
+class LLMModelFactory(Protocol):
     """
     Abstract Factory for creating PydanticAI Model instances (Factory Method Pattern).
     """
@@ -22,4 +23,4 @@ class LLMModelFactory(ABC):
         """
         Creates and returns a PydanticAI Model.
         """
-        pass
+        ...
