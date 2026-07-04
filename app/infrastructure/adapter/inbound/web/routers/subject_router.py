@@ -8,20 +8,26 @@ All rights reserved.
 """
 
 from typing import List, Optional
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session
 
-from domain.port.inbound.get_subject_use_case import GetSubjectUseCase
-from domain.port.inbound.list_subjects_use_case import ListSubjectsUseCase
-from application.usecase.get_subject_usecase import GetSubjectUseCaseImpl
+from application.usecase.get_curriculum_hierarchy_item_usecase import (
+    GetCurriculumHierarchyItemUseCaseImpl,
+)
 from application.usecase.list_subjects_usecase import ListSubjectsUseCaseImpl
+from domain.model import Subject
+from domain.port.inbound.get_curriculum_hierarchy_item_use_case import (
+    GetCurriculumHierarchyItemUseCase,
+)
+from domain.port.inbound.list_subjects_use_case import ListSubjectsUseCase
+from infrastructure.adapter.inbound.web.dto.subject_response import (
+    SubjectResponse,
+)
 from infrastructure.adapter.outbound.db.sql_subject_repository_adapter import (
     SqlSubjectRepositoryAdapter,
 )
 from infrastructure.database import get_db
-from infrastructure.adapter.inbound.web.dto.subject_response import (
-    SubjectResponse,
-)
 
 router = APIRouter(prefix="/subjects", tags=["Subjects"])
 
@@ -35,9 +41,9 @@ def get_list_subjects_use_case(
 
 def get_get_subject_use_case(
     session: Session = Depends(get_db),
-) -> GetSubjectUseCase:
+) -> GetCurriculumHierarchyItemUseCase[Subject]:
     repo = SqlSubjectRepositoryAdapter(session)
-    return GetSubjectUseCaseImpl(repo)
+    return GetCurriculumHierarchyItemUseCaseImpl(repo)
 
 
 @router.get("", response_model=List[SubjectResponse])
@@ -52,7 +58,9 @@ async def list_subjects(
 @router.get("/{id}", response_model=SubjectResponse)
 async def get_subject(
     id: int,
-    use_case: GetSubjectUseCase = Depends(get_get_subject_use_case),
+    use_case: GetCurriculumHierarchyItemUseCase[Subject] = Depends(
+        get_get_subject_use_case
+    ),
 ):
     result = await use_case.execute(id)
     if result is None:

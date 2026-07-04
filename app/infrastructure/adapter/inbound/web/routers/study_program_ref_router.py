@@ -8,28 +8,28 @@ All rights reserved.
 """
 
 from typing import List, Optional
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session
 
-from domain.port.inbound.get_study_program_ref_use_case import (
-    GetStudyProgramRefUseCase,
-)
-from domain.port.inbound.list_study_program_refs_use_case import (
-    ListStudyProgramRefsUseCase,
-)
-from application.usecase.get_study_program_ref_usecase import (
-    GetStudyProgramRefUseCaseImpl,
+from application.usecase.get_curriculum_hierarchy_item_usecase import (
+    GetCurriculumHierarchyItemUseCaseImpl,
 )
 from application.usecase.list_study_program_refs_usecase import (
     ListStudyProgramRefsUseCaseImpl,
+)
+from domain.model import StudyProgramRef
+from domain.port.inbound.list_study_program_refs_use_case import (
+    ListStudyProgramRefsUseCase,
+)
+from domain.port.outbound import CurriculumHierarchyRepository
+from infrastructure.adapter.inbound.web.dto.study_program_ref_response import (
+    StudyProgramRefResponse,
 )
 from infrastructure.adapter.outbound.db.sql_study_program_ref_repository_adapter import (
     SqlStudyProgramRefRepositoryAdapter,
 )
 from infrastructure.database import get_db
-from infrastructure.adapter.inbound.web.dto.study_program_ref_response import (
-    StudyProgramRefResponse,
-)
 
 router = APIRouter(prefix="/study-program-refs", tags=["Study Program Refs"])
 
@@ -43,9 +43,9 @@ def get_list_study_program_refs_use_case(
 
 def get_get_study_program_ref_use_case(
     session: Session = Depends(get_db),
-) -> GetStudyProgramRefUseCase:
+) -> CurriculumHierarchyRepository[StudyProgramRef]:
     repo = SqlStudyProgramRefRepositoryAdapter(session)
-    return GetStudyProgramRefUseCaseImpl(repo)
+    return GetCurriculumHierarchyItemUseCaseImpl(repo)
 
 
 @router.get("", response_model=List[StudyProgramRefResponse])
@@ -62,7 +62,9 @@ async def list_study_program_refs(
 @router.get("/{id}", response_model=StudyProgramRefResponse)
 async def get_study_program_ref(
     id: int,
-    use_case: GetStudyProgramRefUseCase = Depends(get_get_study_program_ref_use_case),
+    use_case: CurriculumHierarchyRepository[StudyProgramRef] = Depends(
+        get_get_study_program_ref_use_case
+    ),
 ):
     result = await use_case.execute(id)
     if result is None:

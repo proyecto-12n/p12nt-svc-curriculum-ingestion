@@ -8,20 +8,26 @@ All rights reserved.
 """
 
 from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 
-from domain.port.inbound.get_curriculum_use_case import GetCurriculumUseCase
-from domain.port.inbound.list_curriculums_use_case import ListCurriculumsUseCase
-from application.usecase.get_curriculum_usecase import GetCurriculumUseCaseImpl
+from application.usecase.get_curriculum_hierarchy_item_usecase import (
+    GetCurriculumHierarchyItemUseCaseImpl,
+)
 from application.usecase.list_curriculums_usecase import ListCurriculumsUseCaseImpl
+from domain.model import Curriculum
+from domain.port.inbound.get_curriculum_hierarchy_item_use_case import (
+    GetCurriculumHierarchyItemUseCase,
+)
+from domain.port.inbound.list_curriculums_use_case import ListCurriculumsUseCase
+from infrastructure.adapter.inbound.web.dto.curriculum_response import (
+    CurriculumResponse,
+)
 from infrastructure.adapter.outbound.db.sql_curriculum_repository_adapter import (
     SqlCurriculumRepositoryAdapter,
 )
 from infrastructure.database import get_db
-from infrastructure.adapter.inbound.web.dto.curriculum_response import (
-    CurriculumResponse,
-)
 
 router = APIRouter(prefix="/curriculums", tags=["Curriculums"])
 
@@ -35,9 +41,9 @@ def get_list_curriculums_use_case(
 
 def get_get_curriculum_use_case(
     session: Session = Depends(get_db),
-) -> GetCurriculumUseCase:
+) -> GetCurriculumHierarchyItemUseCase[Curriculum]:
     repo = SqlCurriculumRepositoryAdapter(session)
-    return GetCurriculumUseCaseImpl(repo)
+    return GetCurriculumHierarchyItemUseCaseImpl(repo)
 
 
 @router.get("", response_model=List[CurriculumResponse])
@@ -51,7 +57,9 @@ async def list_curriculums(
 @router.get("/{id}", response_model=CurriculumResponse)
 async def get_curriculum(
     id: int,
-    use_case: GetCurriculumUseCase = Depends(get_get_curriculum_use_case),
+    use_case: GetCurriculumHierarchyItemUseCase[Curriculum] = Depends(
+        get_get_curriculum_use_case
+    ),
 ):
     result = await use_case.execute(id)
     if result is None:

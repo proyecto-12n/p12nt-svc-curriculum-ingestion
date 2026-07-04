@@ -8,26 +8,30 @@ All rights reserved.
 """
 
 from typing import List, Optional
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session
 
-from domain.port.inbound.get_study_program_use_case import GetStudyProgramUseCase
-from domain.port.inbound.list_study_programs_use_case import (
-    ListStudyProgramsUseCase,
-)
-from application.usecase.get_study_program_usecase import (
-    GetStudyProgramUseCaseImpl,
+from application.usecase.get_curriculum_hierarchy_item_usecase import (
+    GetCurriculumHierarchyItemUseCaseImpl,
 )
 from application.usecase.list_study_programs_usecase import (
     ListStudyProgramsUseCaseImpl,
+)
+from domain.model import StudyProgram
+from domain.port.inbound.get_curriculum_hierarchy_item_use_case import (
+    GetCurriculumHierarchyItemUseCase,
+)
+from domain.port.inbound.list_study_programs_use_case import (
+    ListStudyProgramsUseCase,
+)
+from infrastructure.adapter.inbound.web.dto.study_program_response import (
+    StudyProgramResponse,
 )
 from infrastructure.adapter.outbound.db.sql_study_program_repository_adapter import (
     SqlStudyProgramRepositoryAdapter,
 )
 from infrastructure.database import get_db
-from infrastructure.adapter.inbound.web.dto.study_program_response import (
-    StudyProgramResponse,
-)
 
 router = APIRouter(prefix="/study-programs", tags=["Study Programs"])
 
@@ -41,9 +45,9 @@ def get_list_study_programs_use_case(
 
 def get_get_study_program_use_case(
     session: Session = Depends(get_db),
-) -> GetStudyProgramUseCase:
+) -> GetCurriculumHierarchyItemUseCase[StudyProgram]:
     repo = SqlStudyProgramRepositoryAdapter(session)
-    return GetStudyProgramUseCaseImpl(repo)
+    return GetCurriculumHierarchyItemUseCaseImpl(repo)
 
 
 @router.get("", response_model=List[StudyProgramResponse])
@@ -60,7 +64,9 @@ async def list_study_programs(
 @router.get("/{id}", response_model=StudyProgramResponse)
 async def get_study_program(
     id: int,
-    use_case: GetStudyProgramUseCase = Depends(get_get_study_program_use_case),
+    use_case: GetCurriculumHierarchyItemUseCase[StudyProgram] = Depends(
+        get_get_study_program_use_case
+    ),
 ):
     result = await use_case.execute(id)
     if result is None:

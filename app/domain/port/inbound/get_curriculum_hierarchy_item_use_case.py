@@ -7,10 +7,11 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from typing import Protocol, Optional
-from domain.model.study_program import StudyProgram
+from typing import Protocol, Optional, TypeVar
+
+K = TypeVar("K")
 
 
-class GetStudyProgramUseCase(Protocol):
-    async def execute(self, id: int) -> Optional[StudyProgram]:
+class GetCurriculumHierarchyItemUseCase(Protocol[K]):
+    async def execute(self, id: int) -> Optional[K]:
         pass

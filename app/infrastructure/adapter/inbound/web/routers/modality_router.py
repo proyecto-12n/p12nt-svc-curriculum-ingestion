@@ -8,20 +8,26 @@ All rights reserved.
 """
 
 from typing import List, Optional
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session
 
-from domain.port.inbound.get_modality_use_case import GetModalityUseCase
-from domain.port.inbound.list_modalities_use_case import ListModalitiesUseCase
-from application.usecase.get_modality_usecase import GetModalityUseCaseImpl
+from application.usecase.get_curriculum_hierarchy_item_usecase import (
+    GetCurriculumHierarchyItemUseCaseImpl,
+)
 from application.usecase.list_modalities_usecase import ListModalitiesUseCaseImpl
+from domain.model import Modality
+from domain.port.inbound.get_curriculum_hierarchy_item_use_case import (
+    GetCurriculumHierarchyItemUseCase,
+)
+from domain.port.inbound.list_modalities_use_case import ListModalitiesUseCase
+from infrastructure.adapter.inbound.web.dto.modality_response import (
+    ModalityResponse,
+)
 from infrastructure.adapter.outbound.db.sql_modality_repository_adapter import (
     SqlModalityRepositoryAdapter,
 )
 from infrastructure.database import get_db
-from infrastructure.adapter.inbound.web.dto.modality_response import (
-    ModalityResponse,
-)
 
 router = APIRouter(prefix="/modalities", tags=["Modalities"])
 
@@ -35,9 +41,9 @@ def get_list_modalities_use_case(
 
 def get_get_modality_use_case(
     session: Session = Depends(get_db),
-) -> GetModalityUseCase:
+) -> GetCurriculumHierarchyItemUseCase[Modality]:
     repo = SqlModalityRepositoryAdapter(session)
-    return GetModalityUseCaseImpl(repo)
+    return GetCurriculumHierarchyItemUseCaseImpl(repo)
 
 
 @router.get("", response_model=List[ModalityResponse])
@@ -52,7 +58,9 @@ async def list_modalities(
 @router.get("/{id}", response_model=ModalityResponse)
 async def get_modality(
     id: int,
-    use_case: GetModalityUseCase = Depends(get_get_modality_use_case),
+    use_case: GetCurriculumHierarchyItemUseCase[Modality] = Depends(
+        get_get_modality_use_case
+    ),
 ):
     result = await use_case.execute(id)
     if result is None:
