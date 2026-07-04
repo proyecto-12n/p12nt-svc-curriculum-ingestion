@@ -254,7 +254,7 @@ def test_init_db_postgresql():
         mock_engine.connect.assert_called_once()
         mock_create_all.assert_called_once_with(mock_engine)
         mock_text.assert_called_once_with(
-            'CREATE SCHEMA IF NOT EXISTS "curriculum-ingestion"'
+            'CREATE SCHEMA IF NOT EXISTS "curriculum_ingestion"'
         )
 
 

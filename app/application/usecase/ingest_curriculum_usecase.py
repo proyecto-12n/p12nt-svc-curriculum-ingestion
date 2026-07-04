@@ -57,16 +57,16 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
     async def _navigator(
         self, node: Node, refresh: bool = False, parent_id: Optional[int] = None
     ) -> AsyncGenerator[Node, Any]:
-
         # repository = self.repository_provider_adapter.get_repository(node.level)
         cache, resource = await self.__get_resource(node, refresh)
-        parser = self.resource_parser_provider_adapter.get_parser(node.hierarchy)
-
-        model, children = await parser.parse(resource, parent_id=parent_id)
+        # parser = self.resource_parser_provider_adapter.get_parser(node.hierarchy)
 
         logger.info(f"Ingesting curriculum data for {resource}")
 
         yield node
+
+        # async for child in parser.get_children(resource):
+        #    yield child
 
     async def __get_resource(
         self, node: Node, refresh: bool = False

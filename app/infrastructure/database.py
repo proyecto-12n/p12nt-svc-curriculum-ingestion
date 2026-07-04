@@ -36,7 +36,7 @@ def init_db() -> None:
         from sqlalchemy import text
 
         with engine.connect() as conn:
-            conn.execute(text('CREATE SCHEMA IF NOT EXISTS "curriculum-ingestion"'))
+            conn.execute(text('CREATE SCHEMA IF NOT EXISTS "curriculum_ingestion"'))
             conn.commit()
 
     # Create tables

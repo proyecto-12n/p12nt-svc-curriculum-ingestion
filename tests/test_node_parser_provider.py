@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import pytest
 from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
-from infrastructure.adapter.outbound.http.parser.scrap_resource_parser_provider_adapter import (
+from infrastructure.adapter.outbound.http.scrap_resource_parser_provider_adapter import (
     ScrapResourceParserProviderAdapter,
 )
 from infrastructure.adapter.outbound.http.parser.impl.curriculum_node_parser import (

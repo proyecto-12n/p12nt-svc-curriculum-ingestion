@@ -6,11 +6,3 @@ This file is part of *P12nt*.
 Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
-
-from infrastructure.adapter.outbound.http.parser import (
-    ScrapResourceParserProviderAdapter,
-)
-
-__all__ = [
-    "ScrapResourceParserProviderAdapter",
-]

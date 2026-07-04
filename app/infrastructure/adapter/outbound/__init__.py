@@ -15,7 +15,6 @@ from infrastructure.adapter.outbound.db import (
     SqlStudyProgramRefRepositoryAdapter,
     SqlStudyProgramRepositoryAdapter,
 )
-from infrastructure.adapter.outbound.http import ScrapResourceParserProviderAdapter
 
 __all__ = [
     "SqlCurriculumRepositoryAdapter",
@@ -24,5 +23,4 @@ __all__ = [
     "SqlGradeLevelRepositoryAdapter",
     "SqlStudyProgramRefRepositoryAdapter",
     "SqlStudyProgramRepositoryAdapter",
-    "ScrapResourceParserProviderAdapter",
 ]

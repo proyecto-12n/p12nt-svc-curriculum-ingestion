@@ -14,12 +14,13 @@ from sqlmodel import Session
 from application.usecase.ingest_curriculum_usecase import (
     IngestCurriculumUseCaseImpl,
 )
-from infrastructure.adapter.outbound import ScrapResourceParserProviderAdapter
 from infrastructure.adapter.outbound.db import (
     SqlCurriculumHierarchyRepositoryProviderAdapter,
 )
+from infrastructure.adapter.outbound.http.scrap_resource_parser_provider_adapter import (
+    ScrapResourceParserProviderAdapter,
+)
 from infrastructure.mapper import CurriculumHierarchyMapperProviderAdapter
-
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
@@ -46,7 +47,7 @@ def run_cli():
     init_db()
 
     with Session(engine) as session:
-        from infrastructure.adapter.external.downloader_provider import (
+        from infrastructure.adapter.external.downloader.downloader_provider import (
             DownloaderProvider,
         )
 

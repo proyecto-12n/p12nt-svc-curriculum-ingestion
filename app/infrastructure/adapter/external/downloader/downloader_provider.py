@@ -12,7 +12,10 @@ from domain.port.outbound.downloader_provider import (
     DownloaderProvider as DownloaderProviderPort,
 )
 from domain.model.resource_type import ResourceType
-from infrastructure.adapter.external.downloader import HTMLDownloader, PDFDownloader
+from infrastructure.adapter.external.downloader.impl import (
+    HTMLDownloader,
+    PDFDownloader,
+)
 
 
 class DownloaderProvider(DownloaderProviderPort):

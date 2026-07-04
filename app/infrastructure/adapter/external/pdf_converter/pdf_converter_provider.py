@@ -31,13 +31,13 @@ class PDFConverterProvider(PDFConverterProviderPort):
 
         name = provider_name.lower()
         if name == "markitdown":
-            from infrastructure.adapter.external.pdf_converter.markitdown_pdf_converter import (
+            from infrastructure.adapter.external.pdf_converter.impl.markitdown_pdf_converter import (
                 MarkItDownPDFConverter,
             )
 
             converter_class = MarkItDownPDFConverter
         elif name == "pymupdf4llm":
-            from infrastructure.adapter.external.pdf_converter.pymupdf_pdf_converter import (
+            from infrastructure.adapter.external.pdf_converter.impl.pymupdf_pdf_converter import (
                 PyMuPDFPDFConverter,
             )
 
