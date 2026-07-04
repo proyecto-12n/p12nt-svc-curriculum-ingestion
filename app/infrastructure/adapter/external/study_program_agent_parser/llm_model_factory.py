@@ -5,7 +5,7 @@ This file is part of the NP Collector Curriculum project.
 Unauthorized copying of this file, via any medium is strictly prohibited.
 """
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from typing import Protocol
 
 from pydantic_ai.models import Model

@@ -13,14 +13,14 @@ from domain.model.study_program import StudyProgram
 from domain.port.inbound.list_study_programs_use_case import (
     ListStudyProgramsUseCase,
 )
-from domain.port.outbound import KnowledgeRepository
+from domain.port.outbound import CurriculumHierarchyRepository
 
 
 class ListStudyProgramsUseCaseImpl(ListStudyProgramsUseCase):
-    def __init__(self, study_program_repository: KnowledgeRepository[StudyProgram]):
+    def __init__(
+        self, study_program_repository: CurriculumHierarchyRepository[StudyProgram]
+    ):
         self.study_program_repository = study_program_repository
 
-    async def execute(
-            self, parent_id: Optional[int] = None
-    ) -> List[StudyProgram]:
+    async def execute(self, parent_id: Optional[int] = None) -> List[StudyProgram]:
         return await self.study_program_repository.list(parent_id)

@@ -12,11 +12,11 @@ from typing import Optional, List
 from sqlmodel import Session, select
 
 from domain.model.modality import Modality as DomainModality
-from domain.port.outbound import KnowledgeRepository
+from domain.port.outbound import CurriculumHierarchyRepository
 from infrastructure.models.modality import Modality as SqlModality
 
 
-class SqlModalityRepositoryAdapter(KnowledgeRepository[DomainModality]):
+class SqlModalityRepositoryAdapter(CurriculumHierarchyRepository[DomainModality]):
     def __init__(self, session: Session):
         self.session = session
 
@@ -70,9 +70,7 @@ class SqlModalityRepositoryAdapter(KnowledgeRepository[DomainModality]):
         modality.id = sql_mod.id
         return modality
 
-    async def list(
-            self, curriculum_id: Optional[int] = None
-    ) -> List[DomainModality]:
+    async def list(self, curriculum_id: Optional[int] = None) -> List[DomainModality]:
         statement = select(SqlModality)
         if curriculum_id is not None:
             statement = statement.where(SqlModality.curriculum_id == curriculum_id)

@@ -7,15 +7,18 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-import asyncio
 from typing import Optional
 from domain.model.curriculum import Curriculum
 from domain.port.inbound.get_curriculum_use_case import GetCurriculumUseCase
-from domain.port.outbound.knowledge_repository import KnowledgeRepository
+from domain.port.outbound.curriculum_hierarchy_repository import (
+    CurriculumHierarchyRepository,
+)
 
 
 class GetCurriculumUseCaseImpl(GetCurriculumUseCase):
-    def __init__(self, curriculum_repository: KnowledgeRepository[Curriculum]):
+    def __init__(
+        self, curriculum_repository: CurriculumHierarchyRepository[Curriculum]
+    ):
         self.curriculum_repository = curriculum_repository
 
     async def execute(self, id: int) -> Optional[Curriculum]:

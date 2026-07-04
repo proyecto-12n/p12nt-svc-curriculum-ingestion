@@ -7,16 +7,15 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-import asyncio
 from typing import List, Optional
 
 from domain.model.modality import Modality
 from domain.port.inbound.list_modalities_use_case import ListModalitiesUseCase
-from domain.port.outbound import KnowledgeRepository
+from domain.port.outbound import CurriculumHierarchyRepository
 
 
 class ListModalitiesUseCaseImpl(ListModalitiesUseCase):
-    def __init__(self, modality_repository: KnowledgeRepository[Modality]):
+    def __init__(self, modality_repository: CurriculumHierarchyRepository[Modality]):
         self.modality_repository = modality_repository
 
     async def execute(self, curriculum_id: Optional[int] = None) -> List[Modality]:

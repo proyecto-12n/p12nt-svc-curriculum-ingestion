@@ -13,17 +13,17 @@ from warnings import deprecated
 from sqlmodel import Session, select
 
 from domain.model.grade_level import GradeLevel as DomainGradeLevel
-from domain.port.outbound import KnowledgeRepository
+from domain.port.outbound import CurriculumHierarchyRepository
 from infrastructure.models.grade_level import GradeLevel as SqlGradeLevel
 
 
-class SqlGradeLevelRepositoryAdapter(KnowledgeRepository[DomainGradeLevel]):
+class SqlGradeLevelRepositoryAdapter(CurriculumHierarchyRepository[DomainGradeLevel]):
     def __init__(self, session: Session):
         self.session = session
 
     @deprecated("Use find_by_url instead of find_grade_level_by_title_and_subject")
     async def find_grade_level_by_title_and_subject(
-            self, title: str, subject_id: int
+        self, title: str, subject_id: int
     ) -> Optional[DomainGradeLevel]:
         statement = select(SqlGradeLevel).where(
             SqlGradeLevel.title == title, SqlGradeLevel.subject_id == subject_id
@@ -92,9 +92,7 @@ class SqlGradeLevelRepositoryAdapter(KnowledgeRepository[DomainGradeLevel]):
             )
         return None
 
-    async def list(
-            self, parent_id: Optional[int] = None
-    ) -> List[DomainGradeLevel]:
+    async def list(self, parent_id: Optional[int] = None) -> List[DomainGradeLevel]:
         statement = select(SqlGradeLevel)
         if parent_id is not None:
             statement = statement.where(SqlGradeLevel.subject_id == parent_id)

@@ -87,6 +87,7 @@ def mock_get_mock_content(url: str) -> str | bytes:
         return b"PDF content"
     return ""
 
+
 @pytest.mark.asyncio
 async def test_ingest_curriculum_usecase_with_force_mock():
     # Setup in-memory SQLite database
@@ -221,8 +222,10 @@ def test_run_cli_postgresql_dialect():
         mock_session_class.return_value.__enter__.return_value = mock_session
 
         mock_usecase = MagicMock()
+
         async def mock_execute(*args, **kwargs):
             pass
+
         mock_usecase.execute = MagicMock(side_effect=mock_execute)
         mock_usecase_class.return_value = mock_usecase
 

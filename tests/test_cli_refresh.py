@@ -43,6 +43,7 @@ def db_session_fixture():
     with Session(engine) as session:
         yield session
 
+
 @pytest.mark.asyncio
 async def test_repository_upsert_behavior(db_session):
     # Arrange
@@ -96,7 +97,9 @@ async def test_repository_upsert_behavior(db_session):
     subject.url = "http://test.url/sub-updated"
     await subject_repo.save(subject)
 
-    saved_sub = await subject_repo.find_subject_by_title_and_modality("Initial Subject", 1)
+    saved_sub = await subject_repo.find_subject_by_title_and_modality(
+        "Initial Subject", 1
+    )
     assert saved_sub.url == "http://test.url/sub-updated"
 
     # 4. Test GradeLevel Upsert
@@ -112,7 +115,9 @@ async def test_repository_upsert_behavior(db_session):
     grade.url = "http://test.url/grade-updated"
     await grade_repo.save(grade)
 
-    saved_grade = await grade_repo.find_grade_level_by_title_and_subject("Initial Grade", 1)
+    saved_grade = await grade_repo.find_grade_level_by_title_and_subject(
+        "Initial Grade", 1
+    )
     assert saved_grade.url == "http://test.url/grade-updated"
 
     # 5. Test StudyProgramRef Upsert
@@ -147,6 +152,7 @@ async def test_repository_upsert_behavior(db_session):
 
     saved_prog = await prog_repo.find_by_url("http://test.url/prog")
     assert saved_prog.title == "Updated Program"
+
 
 @pytest.mark.asyncio
 async def test_ingest_curriculum_usecase_refresh_behavior(db_session):
@@ -197,7 +203,9 @@ def test_cli_refresh_flag_propagation():
     with (
         patch("infrastructure.cli.ingest_curriculum.Session") as mock_session_class,
         patch("infrastructure.database.init_db") as mock_init_db,
-        patch("infrastructure.cli.ingest_curriculum.IngestCurriculumUseCaseImpl") as mock_usecase_class,
+        patch(
+            "infrastructure.cli.ingest_curriculum.IngestCurriculumUseCaseImpl"
+        ) as mock_usecase_class,
         patch("argparse.ArgumentParser.parse_args") as mock_parse_args,
     ):
         # Configure mock arguments to have refresh = True
@@ -213,8 +221,10 @@ def test_cli_refresh_flag_propagation():
         mock_session_class.return_value.__enter__.return_value = mock_session
 
         mock_usecase = MagicMock()
+
         async def mock_execute(*args, **kwargs):
             pass
+
         mock_usecase.execute = MagicMock(side_effect=mock_execute)
         mock_usecase_class.return_value = mock_usecase
 

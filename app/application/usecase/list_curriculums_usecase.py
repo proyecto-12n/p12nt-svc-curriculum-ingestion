@@ -11,11 +11,15 @@ from typing import List
 
 from domain.model.curriculum import Curriculum
 from domain.port.inbound.list_curriculums_use_case import ListCurriculumsUseCase
-from domain.port.outbound.knowledge_repository import KnowledgeRepository
+from domain.port.outbound.curriculum_hierarchy_repository import (
+    CurriculumHierarchyRepository,
+)
 
 
 class ListCurriculumsUseCaseImpl(ListCurriculumsUseCase):
-    def __init__(self, curriculum_repository: KnowledgeRepository[Curriculum]):
+    def __init__(
+        self, curriculum_repository: CurriculumHierarchyRepository[Curriculum]
+    ):
         self.curriculum_repository = curriculum_repository
 
     async def execute(self) -> List[Curriculum]:

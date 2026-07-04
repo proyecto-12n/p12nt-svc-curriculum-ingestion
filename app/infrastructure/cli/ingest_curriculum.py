@@ -73,6 +73,7 @@ def run_cli():
             downloader_provider=downloader_provider,
         )
         import asyncio
+
         asyncio.run(use_case.execute(refresh=args.refresh))
 
     logger.info("Ingestion completed successfully.")

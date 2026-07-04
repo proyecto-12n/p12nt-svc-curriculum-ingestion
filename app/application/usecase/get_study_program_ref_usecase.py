@@ -13,11 +13,14 @@ from domain.model.study_program_ref import StudyProgramRef
 from domain.port.inbound.get_study_program_ref_use_case import (
     GetStudyProgramRefUseCase,
 )
-from domain.port.outbound import KnowledgeRepository
+from domain.port.outbound import CurriculumHierarchyRepository
 
 
 class GetStudyProgramRefUseCaseImpl(GetStudyProgramRefUseCase):
-    def __init__(self, study_program_ref_repository: KnowledgeRepository[StudyProgramRef]):
+    def __init__(
+        self,
+        study_program_ref_repository: CurriculumHierarchyRepository[StudyProgramRef],
+    ):
         self.study_program_ref_repository = study_program_ref_repository
 
     async def execute(self, id: int) -> Optional[StudyProgramRef]:

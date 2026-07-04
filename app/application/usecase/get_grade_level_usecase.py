@@ -11,11 +11,13 @@ from typing import Optional
 
 from domain.model.grade_level import GradeLevel
 from domain.port.inbound.get_grade_level_use_case import GetGradeLevelUseCase
-from domain.port.outbound import KnowledgeRepository
+from domain.port.outbound import CurriculumHierarchyRepository
 
 
 class GetGradeLevelUseCaseImpl(GetGradeLevelUseCase):
-    def __init__(self, grade_level_repository: KnowledgeRepository[GradeLevel]):
+    def __init__(
+        self, grade_level_repository: CurriculumHierarchyRepository[GradeLevel]
+    ):
         self.grade_level_repository = grade_level_repository
 
     async def execute(self, id: int) -> Optional[GradeLevel]:

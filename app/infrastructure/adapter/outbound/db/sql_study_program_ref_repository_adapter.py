@@ -12,19 +12,19 @@ from typing import Optional
 from sqlmodel import Session, select
 
 from domain.model.study_program_ref import StudyProgramRef as DomainStudyProgramRef
-from domain.port.outbound import KnowledgeRepository
+from domain.port.outbound import CurriculumHierarchyRepository
 from infrastructure.models.study_program_ref import (
     StudyProgramRef as SqlStudyProgramRef,
 )
 
 
-class SqlStudyProgramRefRepositoryAdapter(KnowledgeRepository[DomainStudyProgramRef]):
+class SqlStudyProgramRefRepositoryAdapter(
+    CurriculumHierarchyRepository[DomainStudyProgramRef]
+):
     def __init__(self, session: Session):
         self.session = session
 
-    async def find_by_url(
-            self, url: str
-    ) -> Optional[DomainStudyProgramRef]:
+    async def find_by_url(self, url: str) -> Optional[DomainStudyProgramRef]:
         statement = select(SqlStudyProgramRef).where(SqlStudyProgramRef.url == url)
         sql_ref = self.session.exec(statement).first()
         if sql_ref:
@@ -39,7 +39,7 @@ class SqlStudyProgramRefRepositoryAdapter(KnowledgeRepository[DomainStudyProgram
         return None
 
     async def save(
-            self, study_program_ref: DomainStudyProgramRef
+        self, study_program_ref: DomainStudyProgramRef
     ) -> DomainStudyProgramRef:
         statement = select(SqlStudyProgramRef).where(
             SqlStudyProgramRef.url == study_program_ref.url
@@ -79,7 +79,7 @@ class SqlStudyProgramRefRepositoryAdapter(KnowledgeRepository[DomainStudyProgram
         return None
 
     async def list(
-            self, grade_level_id: Optional[int] = None
+        self, grade_level_id: Optional[int] = None
     ) -> list[DomainStudyProgramRef]:
         statement = select(SqlStudyProgramRef)
         if grade_level_id is not None:

@@ -13,10 +13,12 @@ from sqlmodel import Session, select
 
 from domain.model.curriculum import Curriculum as DomainCurriculum
 from infrastructure.models.curriculum import Curriculum as SqlCurriculum
-from domain.port.outbound.knowledge_repository import KnowledgeRepository
+from domain.port.outbound.curriculum_hierarchy_repository import (
+    CurriculumHierarchyRepository,
+)
 
 
-class SqlCurriculumRepositoryAdapter(KnowledgeRepository[DomainCurriculum]):
+class SqlCurriculumRepositoryAdapter(CurriculumHierarchyRepository[DomainCurriculum]):
     def __init__(self, session: Session):
         self.session = session
 

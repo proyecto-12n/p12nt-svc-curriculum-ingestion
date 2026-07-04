@@ -11,11 +11,11 @@ from typing import Optional
 
 from domain.model.subject import Subject
 from domain.port.inbound.get_subject_use_case import GetSubjectUseCase
-from domain.port.outbound import KnowledgeRepository
+from domain.port.outbound import CurriculumHierarchyRepository
 
 
 class GetSubjectUseCaseImpl(GetSubjectUseCase):
-    def __init__(self, subject_repository: KnowledgeRepository[Subject]):
+    def __init__(self, subject_repository: CurriculumHierarchyRepository[Subject]):
         self.subject_repository = subject_repository
 
     async def execute(self, id: int) -> Optional[Subject]:

@@ -9,7 +9,9 @@ All rights reserved.
 
 from domain.port.outbound.content_downloader import ContentDownloader
 from domain.port.outbound.downloader_provider import DownloaderProvider
-from domain.port.outbound.knowledge_repository import KnowledgeRepository
+from domain.port.outbound.curriculum_hierarchy_repository import (
+    CurriculumHierarchyRepository,
+)
 from domain.port.outbound.node_parser_provider import NodeParserProvider
 from domain.port.outbound.pdf_converter import PDFConverter
 from domain.port.outbound.pdf_converter_provider import PDFConverterProvider
@@ -24,5 +26,5 @@ __all__ = [
     "PDFConverter",
     "PDFConverterProvider",
     "StudyProgramAgentParser",
-    "KnowledgeRepository"
+    "CurriculumHierarchyRepository",
 ]

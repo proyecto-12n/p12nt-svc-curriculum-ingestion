@@ -12,11 +12,13 @@ from typing import Optional, List
 from sqlmodel import Session, select
 
 from domain.model.study_program import StudyProgram as DomainStudyProgram
-from domain.port.outbound import KnowledgeRepository
+from domain.port.outbound import CurriculumHierarchyRepository
 from infrastructure.models.study_program import StudyProgram as SqlStudyProgram
 
 
-class SqlStudyProgramRepositoryAdapter(KnowledgeRepository[DomainStudyProgram]):
+class SqlStudyProgramRepositoryAdapter(
+    CurriculumHierarchyRepository[DomainStudyProgram]
+):
     def __init__(self, session: Session):
         self.session = session
 
@@ -35,9 +37,7 @@ class SqlStudyProgramRepositoryAdapter(KnowledgeRepository[DomainStudyProgram]):
             )
         return None
 
-    async def save(
-            self, study_program: DomainStudyProgram
-    ) -> DomainStudyProgram:
+    async def save(self, study_program: DomainStudyProgram) -> DomainStudyProgram:
         statement = select(SqlStudyProgram).where(
             SqlStudyProgram.url == study_program.url
         )
@@ -79,7 +79,7 @@ class SqlStudyProgramRepositoryAdapter(KnowledgeRepository[DomainStudyProgram]):
         return None
 
     async def list(
-            self, study_program_ref_id: Optional[int] = None
+        self, study_program_ref_id: Optional[int] = None
     ) -> List[DomainStudyProgram]:
         statement = select(SqlStudyProgram)
         if study_program_ref_id is not None:

@@ -22,7 +22,9 @@ from domain.model import (
     StudyProgramRef,
     StudyProgram,
 )
-from domain.port.outbound.knowledge_repository import KnowledgeRepository
+from domain.port.outbound.curriculum_hierarchy_repository import (
+    CurriculumHierarchyRepository,
+)
 from infrastructure.adapter.outbound.http.parser.impl import (
     CurriculumNodeParser,
     GradeLevelNodeParser,
@@ -38,16 +40,16 @@ _ROOT_URL = "https://www.curriculumnacional.cl/curriculum"
 
 class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
     def __init__(
-            self,
-            curriculum_repository: KnowledgeRepository[Curriculum],
-            modality_repository: KnowledgeRepository[Modality],
-            subject_repository: KnowledgeRepository[Subject],
-            grade_level_repository: KnowledgeRepository[GradeLevel],
-            study_program_ref_repository: KnowledgeRepository[StudyProgramRef],
-            study_program_repository: KnowledgeRepository[StudyProgram],
-            downloader_provider: DownloaderProvider,
-            node_resolver: CurriculumNodeResolver = None,
-            study_program_resolver: StudyProgramResolver = None,
+        self,
+        curriculum_repository: CurriculumHierarchyRepository[Curriculum],
+        modality_repository: CurriculumHierarchyRepository[Modality],
+        subject_repository: CurriculumHierarchyRepository[Subject],
+        grade_level_repository: CurriculumHierarchyRepository[GradeLevel],
+        study_program_ref_repository: CurriculumHierarchyRepository[StudyProgramRef],
+        study_program_repository: CurriculumHierarchyRepository[StudyProgram],
+        downloader_provider: DownloaderProvider,
+        node_resolver: CurriculumNodeResolver = None,
+        study_program_resolver: StudyProgramResolver = None,
     ):
         self.curriculum_repository = curriculum_repository
         self.modality_repository = modality_repository
@@ -72,9 +74,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
         curriculum, modality_nodes = await self.node_resolver.resolve_node(
             url=_ROOT_URL,
             resource_type=ResourceType.HTML,
-            find_fn=lambda: self.curriculum_repository.find_by_url(
-                _ROOT_URL
-            ),
+            find_fn=lambda: self.curriculum_repository.find_by_url(_ROOT_URL),
             save_fn=self.curriculum_repository.save,
             parser=CurriculumNodeParser(),
             parent_id=0,
@@ -143,7 +143,10 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
 
                     for ref_node in ref_nodes:
                         try:
-                            program_ref, prog_nodes = await self.node_resolver.resolve_node(
+                            (
+                                program_ref,
+                                prog_nodes,
+                            ) = await self.node_resolver.resolve_node(
                                 url=ref_node.url,
                                 resource_type=ref_node.type,
                                 find_fn=lambda: (

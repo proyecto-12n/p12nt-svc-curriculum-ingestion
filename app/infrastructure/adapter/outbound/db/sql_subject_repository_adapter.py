@@ -13,18 +13,18 @@ from warnings import deprecated
 from sqlmodel import Session, select
 
 from domain.model.subject import Subject as DomainSubject
-from domain.port.outbound import KnowledgeRepository
+from domain.port.outbound import CurriculumHierarchyRepository
 
 from infrastructure.models.subject import Subject as SqlSubject
 
 
-class SqlSubjectRepositoryAdapter(KnowledgeRepository[DomainSubject]):
+class SqlSubjectRepositoryAdapter(CurriculumHierarchyRepository[DomainSubject]):
     def __init__(self, session: Session):
         self.session = session
 
     @deprecated("Use find_by_url instead of find_subject_by_title_and_modality")
     async def find_subject_by_title_and_modality(
-            self, title: str, modality_id: int
+        self, title: str, modality_id: int
     ) -> Optional[DomainSubject]:
         statement = select(SqlSubject).where(
             SqlSubject.title == title, SqlSubject.modality_id == modality_id

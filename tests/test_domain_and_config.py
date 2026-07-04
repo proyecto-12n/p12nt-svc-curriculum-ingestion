@@ -10,7 +10,9 @@ from app.utils import log_execution_time
 from domain.exceptions import EntityNotFoundException, DomainException
 from domain.model import Curriculum, Modality, Subject, GradeLevel, StudyProgramRef
 from domain.model.study_program import StudyProgram
-from domain.port.outbound.knowledge_repository import KnowledgeRepository
+from domain.port.outbound.curriculum_hierarchy_repository import (
+    CurriculumHierarchyRepository,
+)
 from infrastructure.database import get_db
 
 
@@ -69,42 +71,42 @@ def test_get_db():
 
 @pytest.mark.asyncio
 async def test_curriculum_repository_protocol():
-    class DummyCurriculumRepo(KnowledgeRepository[Curriculum]):
+    class DummyCurriculumRepo(CurriculumHierarchyRepository[Curriculum]):
         pass
 
     repo1 = DummyCurriculumRepo()
     await repo1.find_by_url("url")
     await repo1.save(None)
 
-    class DummyModalityRepo(KnowledgeRepository[Modality]):
+    class DummyModalityRepo(CurriculumHierarchyRepository[Modality]):
         pass
 
     repo2 = DummyModalityRepo()
     await repo2.find_by_url("url")
     await repo2.save(None)
 
-    class DummySubjectRepo(KnowledgeRepository[Subject]):
+    class DummySubjectRepo(CurriculumHierarchyRepository[Subject]):
         pass
 
     repo3 = DummySubjectRepo()
     await repo3.find_by_url("url")
     await repo3.save(None)
 
-    class DummyGradeLevelRepo(KnowledgeRepository[GradeLevel]):
+    class DummyGradeLevelRepo(CurriculumHierarchyRepository[GradeLevel]):
         pass
 
     repo4 = DummyGradeLevelRepo()
     await repo4.find_by_url("url")
     await repo4.save(None)
 
-    class DummyStudyProgramRefRepo(KnowledgeRepository[StudyProgramRef]):
+    class DummyStudyProgramRefRepo(CurriculumHierarchyRepository[StudyProgramRef]):
         pass
 
     repo5 = DummyStudyProgramRefRepo()
     await repo5.find_by_url("url")
     await repo5.save(None)
 
-    class DummyStudyProgramRepo(KnowledgeRepository[StudyProgram]):
+    class DummyStudyProgramRepo(CurriculumHierarchyRepository[StudyProgram]):
         pass
 
     repo6 = DummyStudyProgramRepo()

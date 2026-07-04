@@ -11,11 +11,13 @@ from typing import Optional
 
 from domain.model.study_program import StudyProgram
 from domain.port.inbound.get_study_program_use_case import GetStudyProgramUseCase
-from domain.port.outbound import KnowledgeRepository
+from domain.port.outbound import CurriculumHierarchyRepository
 
 
 class GetStudyProgramUseCaseImpl(GetStudyProgramUseCase):
-    def __init__(self, study_program_repository: KnowledgeRepository[StudyProgram]):
+    def __init__(
+        self, study_program_repository: CurriculumHierarchyRepository[StudyProgram]
+    ):
         self.study_program_repository = study_program_repository
 
     async def execute(self, id: int) -> Optional[StudyProgram]:

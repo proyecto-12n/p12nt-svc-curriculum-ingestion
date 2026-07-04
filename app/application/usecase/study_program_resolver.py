@@ -14,7 +14,7 @@ from typing import Any
 from application.usecase.curriculum_node_resolver import CurriculumNodeResolver
 from domain.model.node import Node
 from domain.model.study_program import StudyProgram
-from domain.port.outbound import KnowledgeRepository
+from domain.port.outbound import CurriculumHierarchyRepository
 from infrastructure.adapter.outbound.http.parser.impl import StudyProgramNodeParser
 from infrastructure.util.id_generator import generate_id
 
@@ -23,15 +23,15 @@ logger = logging.getLogger(__name__)
 
 class StudyProgramResolver:
     def __init__(
-            self,
-            study_program_repository: KnowledgeRepository[StudyProgram],
-            node_resolver: CurriculumNodeResolver,
+        self,
+        study_program_repository: CurriculumHierarchyRepository[StudyProgram],
+        node_resolver: CurriculumNodeResolver,
     ):
         self.study_program_repository = study_program_repository
         self.node_resolver = node_resolver
 
     async def resolve_study_program(
-            self, prog_node: Node, program_ref: Any, refresh: bool = False
+        self, prog_node: Node, program_ref: Any, refresh: bool = False
     ) -> None:
         prog_url = self.node_resolver.absolute_url(prog_node.url)
         program = await self.study_program_repository.find_by_url(prog_url)

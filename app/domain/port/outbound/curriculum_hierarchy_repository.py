@@ -8,12 +8,11 @@ All rights reserved.
 """
 
 from typing import Protocol, Optional, TypeVar, List
-from domain.model.curriculum import Curriculum
 
 K = TypeVar("K")
 
 
-class KnowledgeRepository(Protocol[K]):
+class CurriculumHierarchyRepository(Protocol[K]):
     async def find_by_id(self, id: int) -> Optional[K]:
         pass
 
