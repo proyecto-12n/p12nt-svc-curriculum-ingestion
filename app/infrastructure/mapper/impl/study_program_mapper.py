@@ -19,7 +19,7 @@ class StudyProgramMapper(CurriculumHierarchyMapper[StudyProgram, bytes]):
         return Node(
             url=model.url,
             type=ResourceType.PDF,
-            level=CurriculumHierarchyType.STUDY_PROGRAM,
+            hierarchy=CurriculumHierarchyType.STUDY_PROGRAM,
             title=model.title,
             content=model.content,
         )

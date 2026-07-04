@@ -5,6 +5,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from domain.model import CurriculumHierarchyType
 from domain.model.scrap_resource import ScrapResource
 
 if importlib.util.find_spec("pymupdf") is None:
@@ -38,14 +39,23 @@ async def test_curriculum_node_parser():
     </html>
     """
     resource = ScrapResource(
-        url="http://test.url/curr", type=ResourceType.HTML, content=html_content
+        url="https://test.url/curr", type=ResourceType.HTML, content=html_content
     )
-    curriculum, children = await parser.parse(resource, 0)
 
-    assert curriculum.title == "Bases Curriculares"
-    assert curriculum.content == html_content
+    node = await parser.get_node(resource)
+
+    assert node.url == "https://test.url/curr"
+    assert node.type == ResourceType.HTML
+    assert node.hierarchy == CurriculumHierarchyType.CURRICULUM
+
+    assert node.title == "Bases Curriculares"
+    assert node.content == html_content
+
+    children = [x async for x in parser.get_children(resource)]
     assert len(children) == 1
-    assert children[0].url == "http://test.url/curriculum/educacion-parvularia"
+    assert children[0].url == "/curriculum/educacion-parvularia"
+    assert children[0].type == ResourceType.HTML
+    assert children[0].hierarchy == CurriculumHierarchyType.MODALITY
 
 
 @pytest.mark.asyncio
@@ -64,14 +74,24 @@ async def test_modality_node_parser():
     </html>
     """
     resource = ScrapResource(
-        url="http://test.url/mod", type=ResourceType.HTML, content=html_content
+        url="https://test.url/mod", type=ResourceType.HTML, content=html_content
     )
-    modality, children = await parser.parse(resource, 123)
+    node = await parser.get_node(resource)
 
-    assert modality.title == "Educacion Parvularia"
-    assert modality.curriculum_id == 123
-    assert modality.content == html_content
+    assert node.url == "https://test.url/mod"
+    assert node.type == ResourceType.HTML
+    assert node.hierarchy == CurriculumHierarchyType.MODALITY
+
+    assert node.title == "Educacion Parvularia"
+    assert node.content == html_content
+
+    children = [x async for x in parser.get_children(resource)]
     assert len(children) == 1
+    assert (
+        children[0].url == "/curriculum/educacion-parvularia/desarrollo-personal-social"
+    )
+    assert children[0].type == ResourceType.HTML
+    assert children[0].hierarchy == CurriculumHierarchyType.SUBJECT
 
 
 @pytest.mark.asyncio
@@ -90,14 +110,22 @@ async def test_subject_node_parser():
     </html>
     """
     resource = ScrapResource(
-        url="http://test.url/sub", type=ResourceType.HTML, content=html_content
+        url="https://test.url/sub", type=ResourceType.HTML, content=html_content
     )
-    subject, children = await parser.parse(resource, 10)
+    node = await parser.get_node(resource)
 
-    assert subject.title == "Matemáticas"
-    assert subject.modality_id == 10
-    assert subject.content == html_content
+    assert node.url == "https://test.url/sub"
+    assert node.type == ResourceType.HTML
+    assert node.hierarchy == CurriculumHierarchyType.SUBJECT
+
+    assert node.title == "Matemáticas"
+    assert node.content == html_content
+
+    children = [x async for x in parser.get_children(resource)]
     assert len(children) == 1
+    assert children[0].url == "/curriculum/1o-6o-basico/matematicas/1-basico"
+    assert children[0].type == ResourceType.HTML
+    assert children[0].hierarchy == CurriculumHierarchyType.GRADE_LEVEL
 
 
 @pytest.mark.asyncio
@@ -117,21 +145,23 @@ async def test_grade_level_node_parser():
     </html>
     """
     resource = ScrapResource(
-        url="http://test.url/grade", type=ResourceType.HTML, content=html_content
-    )
-    grade, children = await parser.parse(
-        resource,
-        100,
+        url="https://test.url/grade", type=ResourceType.HTML, content=html_content
     )
 
-    assert grade.title == "1 Básico"
-    assert grade.subject_id == 100
-    assert grade.content == html_content
+    node = await parser.get_node(resource)
+
+    assert node.url == "https://test.url/grade"
+    assert node.type == ResourceType.HTML
+    assert node.hierarchy == CurriculumHierarchyType.GRADE_LEVEL
+
+    assert node.title == "1 Básico"
+    assert node.content == html_content
+
+    children = [x async for x in parser.get_children(resource)]
     assert len(children) == 1
-    assert (
-        children[0].url
-        == "http://test.url/recursos/programa-estudio-matematica-1-basico"
-    )
+    assert children[0].url == "/recursos/programa-estudio-matematica-1-basico"
+    assert children[0].type == ResourceType.HTML
+    assert children[0].hierarchy == CurriculumHierarchyType.STUDY_PROGRAM_REF
 
 
 @pytest.mark.asyncio
@@ -146,19 +176,22 @@ async def test_study_program_ref_node_parser():
     </html>
     """
     resource = ScrapResource(
-        url="http://test.url/ref", type=ResourceType.HTML, content=html_content
+        url="https://test.url/ref", type=ResourceType.HTML, content=html_content
     )
-    ref, children = await parser.parse(
-        resource,
-        1000,
-    )
+    node = await parser.get_node(resource)
 
-    assert ref.title == "Programa Matematica"
-    assert ref.grade_level_id == 1000
-    assert ref.content == html_content
+    assert node.url == "https://test.url/ref"
+    assert node.type == ResourceType.HTML
+    assert node.hierarchy == CurriculumHierarchyType.STUDY_PROGRAM_REF
+
+    assert node.title == "Programa Matematica"
+    assert node.content == html_content
+
+    children = [x async for x in parser.get_children(resource)]
     assert len(children) == 1
-    assert children[0].url == "http://test.url/sites/default/files/matematica.pdf"
+    assert children[0].url == "/sites/default/files/matematica.pdf"
     assert children[0].type == ResourceType.PDF
+    assert children[0].hierarchy == CurriculumHierarchyType.STUDY_PROGRAM
 
 
 @pytest.mark.asyncio
@@ -166,17 +199,16 @@ async def test_study_program_node_parser():
     parser = StudyProgramScrapResourceParser()
     pdf_content = b"PDF content bytes"
     resource = ScrapResource(
-        url="http://test.url/prog.pdf", type=ResourceType.PDF, content=pdf_content
+        url="https://test.url/prog.pdf", type=ResourceType.PDF, content=pdf_content
     )
-    program, children = await parser.parse(
-        resource,
-        2000,
-    )
+    node = await parser.get_node(resource)
 
-    assert program.study_program_ref_id == 2000
-    assert program.title == "prog"
-    assert program.content == pdf_content
-    assert program.checksum != ""
+    assert node.title == "prog"
+    assert node.content == pdf_content
+
+    children = []
+    async for child in parser.get_children(resource):
+        children.append(child)
     assert len(children) == 0
 
     # Test using PDF metadata title
@@ -190,8 +222,14 @@ async def test_study_program_node_parser():
         "pymupdf.Document",
         return_value=mock_doc,
     ):
-        program, children = await parser.parse(
-            resource,
-            2000,
-        )
-        assert program.title == "My Extracted PDF Title"
+        node = await parser.get_node(resource)
+        assert node.title == "My Extracted PDF Title"
+
+    # Test URL-encoded filename fallback (%20 → space)
+    encoded_resource = ScrapResource(
+        url="https://test.url/Programa%20de%20Estudio%201%C2%BA.pdf",
+        type=ResourceType.PDF,
+        content=pdf_content,
+    )
+    node = await parser.get_node(encoded_resource)
+    assert node.title == "Programa de Estudio 1º"

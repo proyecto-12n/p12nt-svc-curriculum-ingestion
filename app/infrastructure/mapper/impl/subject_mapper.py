@@ -19,7 +19,7 @@ class SubjectMapper(CurriculumHierarchyMapper[Subject, str]):
         return Node(
             url=model.url,
             type=ResourceType.HTML,
-            level=CurriculumHierarchyType.SUBJECT,
+            hierarchy=CurriculumHierarchyType.SUBJECT,
             title=model.title,
             content=model.content,
         )

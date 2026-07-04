@@ -19,7 +19,7 @@ class CurriculumMapper(CurriculumHierarchyMapper[Curriculum, str]):
         return Node(
             url=model.url,
             type=ResourceType.HTML,
-            level=CurriculumHierarchyType.CURRICULUM,
+            hierarchy=CurriculumHierarchyType.CURRICULUM,
             title=model.title,
             content=model.content,
         )

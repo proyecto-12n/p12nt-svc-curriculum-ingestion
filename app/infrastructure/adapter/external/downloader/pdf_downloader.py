@@ -5,17 +5,17 @@ This file is part of the NP Collector Curriculum project.
 Unauthorized copying of this file, via any medium is strictly prohibited.
 """
 
-import httpx
+from aiohttp import ClientSession
 
+from domain.model.resource_type import ResourceType
 from domain.model.scrap_resource import ScrapResource
 from domain.port.outbound.content_downloader import ContentDownloader
-from domain.model.resource_type import ResourceType
 
 
 class PDFDownloader(ContentDownloader[bytes]):
     async def download(self, url: str, timeout: float = 120.0) -> ScrapResource[bytes]:
-        async with httpx.AsyncClient(timeout=timeout) as client:
-            response = await client.get(url, follow_redirects=True)
+        async with ClientSession(timeout=timeout) as client:
+            response = await client.get(url, allow_redirects=True)
             response.raise_for_status()
             return ScrapResource(
                 url=url, type=ResourceType.PDF, content=response.content

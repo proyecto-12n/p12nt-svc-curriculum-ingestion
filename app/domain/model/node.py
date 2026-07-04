@@ -19,7 +19,7 @@ T = TypeVar("T")
 class Node(Generic[T]):
     url: str
     type: ResourceType
-    level: CurriculumHierarchyType
+    hierarchy: CurriculumHierarchyType
 
     title: Optional[str] = None
     content: Optional[T] = None

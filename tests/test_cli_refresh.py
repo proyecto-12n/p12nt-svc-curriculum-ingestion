@@ -53,7 +53,7 @@ async def test_repository_upsert_behavior(db_session):
 
     # 1. Test Curriculum Upsert
     curriculum = Curriculum(
-        id=1, url="http://test.url/cur", title="Initial Curriculum", content="Init"
+        id=1, url="https://test.url/cur", title="Initial Curriculum", content="Init"
     )
     await curr_repo.save(curriculum)
 
@@ -61,7 +61,7 @@ async def test_repository_upsert_behavior(db_session):
     curriculum.content = "Updated"
     await curr_repo.save(curriculum)
 
-    saved_cur = await curr_repo.find_by_url("http://test.url/cur")
+    saved_cur = await curr_repo.find_by_url("https://test.url/cur")
     assert saved_cur.title == "Updated Curriculum"
     assert saved_cur.content == "Updated"
 
@@ -69,7 +69,7 @@ async def test_repository_upsert_behavior(db_session):
     modality = Modality(
         id=1,
         curriculum_id=1,
-        url="http://test.url/mod",
+        url="https://test.url/mod",
         title="Initial Modality",
         content="Init",
     )
@@ -78,50 +78,50 @@ async def test_repository_upsert_behavior(db_session):
     modality.title = "Updated Modality"
     await modality_repo.save(modality)
 
-    saved_mod = await modality_repo.find_by_url("http://test.url/mod")
+    saved_mod = await modality_repo.find_by_url("https://test.url/mod")
     assert saved_mod.title == "Updated Modality"
 
     # 3. Test Subject Upsert
     subject = Subject(
         id=1,
         modality_id=1,
-        url="http://test.url/sub",
+        url="https://test.url/sub",
         title="Initial Subject",
         content="Init",
     )
     await subject_repo.save(subject)
 
-    subject.url = "http://test.url/sub-updated"
+    subject.url = "https://test.url/sub-updated"
     await subject_repo.save(subject)
 
     saved_sub = await subject_repo.find_subject_by_title_and_modality(
         "Initial Subject", 1
     )
-    assert saved_sub.url == "http://test.url/sub-updated"
+    assert saved_sub.url == "https://test.url/sub-updated"
 
     # 4. Test GradeLevel Upsert
     grade = GradeLevel(
         id=1,
         subject_id=1,
-        url="http://test.url/grade",
+        url="https://test.url/grade",
         title="Initial Grade",
         content="Init",
     )
     await grade_repo.save(grade)
 
-    grade.url = "http://test.url/grade-updated"
+    grade.url = "https://test.url/grade-updated"
     await grade_repo.save(grade)
 
     saved_grade = await grade_repo.find_grade_level_by_title_and_subject(
         "Initial Grade", 1
     )
-    assert saved_grade.url == "http://test.url/grade-updated"
+    assert saved_grade.url == "https://test.url/grade-updated"
 
     # 5. Test StudyProgramRef Upsert
     ref = StudyProgramRef(
         id=1,
         grade_level_id=1,
-        url="http://test.url/ref",
+        url="https://test.url/ref",
         title="Initial Ref",
         content="Init",
     )
@@ -130,14 +130,14 @@ async def test_repository_upsert_behavior(db_session):
     ref.title = "Updated Ref"
     await ref_repo.save(ref)
 
-    saved_ref = await ref_repo.find_by_url("http://test.url/ref")
+    saved_ref = await ref_repo.find_by_url("https://test.url/ref")
     assert saved_ref.title == "Updated Ref"
 
     # 6. Test StudyProgram Upsert
     program = StudyProgram(
         id=1,
         study_program_ref_id=1,
-        url="http://test.url/prog",
+        url="https://test.url/prog",
         title="Initial Program",
         checksum="123",
         content=b"Init",
@@ -147,7 +147,7 @@ async def test_repository_upsert_behavior(db_session):
     program.title = "Updated Program"
     await prog_repo.save(program)
 
-    saved_prog = await prog_repo.find_by_url("http://test.url/prog")
+    saved_prog = await prog_repo.find_by_url("https://test.url/prog")
     assert saved_prog.title == "Updated Program"
 
 

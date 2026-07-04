@@ -34,12 +34,12 @@ def session_fixture():
 async def test_save_and_find_curriculum(session):
     adapter = SqlCurriculumRepositoryAdapter(session)
     curr = Curriculum(
-        id=1, title="Parvularia", url="http://test.url/curr", content="HTML content"
+        id=1, title="Parvularia", url="https://test.url/curr", content="HTML content"
     )
     saved = await adapter.save(curr)
     assert saved.id == 1
 
-    found = await adapter.find_by_url("http://test.url/curr")
+    found = await adapter.find_by_url("https://test.url/curr")
     assert found is not None
     assert found.title == "Parvularia"
     assert found.content == "HTML content"
@@ -52,20 +52,20 @@ async def test_save_and_find_modality(session):
     mod_adapter = SqlModalityRepositoryAdapter(session)
 
     curr = Curriculum(
-        id=1, title="Parvularia", url="http://test.url/curr", content="HTML"
+        id=1, title="Parvularia", url="https://test.url/curr", content="HTML"
     )
     await curr_adapter.save(curr)
 
     mod = Modality(
         id=10,
         curriculum_id=1,
-        url="http://test.url/mod",
+        url="https://test.url/mod",
         title="Nivel Medio",
         content="HTML Mod",
     )
     await mod_adapter.save(mod)
 
-    found = await mod_adapter.find_by_url("http://test.url/mod")
+    found = await mod_adapter.find_by_url("https://test.url/mod")
     assert found is not None
     assert found.title == "Nivel Medio"
     assert found.content == "HTML Mod"
@@ -79,14 +79,14 @@ async def test_save_and_find_subject(session):
     sub_adapter = SqlSubjectRepositoryAdapter(session)
 
     curr = Curriculum(
-        id=1, title="Parvularia", url="http://test.url/curr", content="HTML"
+        id=1, title="Parvularia", url="https://test.url/curr", content="HTML"
     )
     await curr_adapter.save(curr)
 
     mod = Modality(
         id=10,
         curriculum_id=1,
-        url="http://test.url/mod",
+        url="https://test.url/mod",
         title="Nivel Medio",
         content="HTML Mod",
     )
@@ -95,7 +95,7 @@ async def test_save_and_find_subject(session):
     sub = Subject(
         id=100,
         modality_id=10,
-        url="http://test.url/sub",
+        url="https://test.url/sub",
         title="Matemáticas",
         content="HTML Sub",
     )
@@ -103,7 +103,7 @@ async def test_save_and_find_subject(session):
 
     found = await sub_adapter.find_subject_by_title_and_modality("Matemáticas", 10)
     assert found is not None
-    assert found.url == "http://test.url/sub"
+    assert found.url == "https://test.url/sub"
     assert found.content == "HTML Sub"
 
 
@@ -116,14 +116,14 @@ async def test_save_and_find_grade_level(session):
     grade_adapter = SqlGradeLevelRepositoryAdapter(session)
 
     curr = Curriculum(
-        id=1, title="Parvularia", url="http://test.url/curr", content="HTML"
+        id=1, title="Parvularia", url="https://test.url/curr", content="HTML"
     )
     await curr_adapter.save(curr)
 
     mod = Modality(
         id=10,
         curriculum_id=1,
-        url="http://test.url/mod",
+        url="https://test.url/mod",
         title="Nivel Medio",
         content="HTML Mod",
     )
@@ -132,7 +132,7 @@ async def test_save_and_find_grade_level(session):
     sub = Subject(
         id=100,
         modality_id=10,
-        url="http://test.url/sub",
+        url="https://test.url/sub",
         title="Matemáticas",
         content="HTML Sub",
     )
@@ -141,15 +141,15 @@ async def test_save_and_find_grade_level(session):
     grade = GradeLevel(
         id=1000,
         subject_id=100,
-        url="http://test.url/grade",
+        url="https://test.url/grade",
         title="1 Básico",
         content="HTML Grade",
     )
     await grade_adapter.save(grade)
 
-    found = await grade_adapter.find_by_url("http://test.url/grade")
+    found = await grade_adapter.find_by_url("https://test.url/grade")
     assert found is not None
-    assert found.url == "http://test.url/grade"
+    assert found.url == "https://test.url/grade"
     assert found.content == "HTML Grade"
 
 
@@ -163,14 +163,14 @@ async def test_save_and_find_study_program_ref(session):
     ref_adapter = SqlStudyProgramRefRepositoryAdapter(session)
 
     curr = Curriculum(
-        id=1, title="Parvularia", url="http://test.url/curr", content="HTML"
+        id=1, title="Parvularia", url="https://test.url/curr", content="HTML"
     )
     await curr_adapter.save(curr)
 
     mod = Modality(
         id=10,
         curriculum_id=1,
-        url="http://test.url/mod",
+        url="https://test.url/mod",
         title="Nivel Medio",
         content="HTML Mod",
     )
@@ -179,7 +179,7 @@ async def test_save_and_find_study_program_ref(session):
     sub = Subject(
         id=100,
         modality_id=10,
-        url="http://test.url/sub",
+        url="https://test.url/sub",
         title="Matemáticas",
         content="HTML Sub",
     )
@@ -188,7 +188,7 @@ async def test_save_and_find_study_program_ref(session):
     grade = GradeLevel(
         id=1000,
         subject_id=100,
-        url="http://test.url/grade",
+        url="https://test.url/grade",
         title="1 Básico",
         content="HTML Grade",
     )
@@ -197,13 +197,13 @@ async def test_save_and_find_study_program_ref(session):
     ref = StudyProgramRef(
         id=2000,
         grade_level_id=1000,
-        url="http://test.url/ref",
+        url="https://test.url/ref",
         title="Ref Programa",
         content="HTML Ref",
     )
     await ref_adapter.save(ref)
 
-    found = await ref_adapter.find_by_url("http://test.url/ref")
+    found = await ref_adapter.find_by_url("https://test.url/ref")
     assert found is not None
     assert found.title == "Ref Programa"
     assert found.content == "HTML Ref"
@@ -220,14 +220,14 @@ async def test_save_and_find_study_program(session):
     prog_adapter = SqlStudyProgramRepositoryAdapter(session)
 
     curr = Curriculum(
-        id=1, title="Parvularia", url="http://test.url/curr", content="HTML"
+        id=1, title="Parvularia", url="https://test.url/curr", content="HTML"
     )
     await curr_adapter.save(curr)
 
     mod = Modality(
         id=10,
         curriculum_id=1,
-        url="http://test.url/mod",
+        url="https://test.url/mod",
         title="Nivel Medio",
         content="HTML Mod",
     )
@@ -236,7 +236,7 @@ async def test_save_and_find_study_program(session):
     sub = Subject(
         id=100,
         modality_id=10,
-        url="http://test.url/sub",
+        url="https://test.url/sub",
         title="Matemáticas",
         content="HTML Sub",
     )
@@ -245,7 +245,7 @@ async def test_save_and_find_study_program(session):
     grade = GradeLevel(
         id=1000,
         subject_id=100,
-        url="http://test.url/grade",
+        url="https://test.url/grade",
         title="1 Básico",
         content="HTML Grade",
     )
@@ -254,7 +254,7 @@ async def test_save_and_find_study_program(session):
     ref = StudyProgramRef(
         id=2000,
         grade_level_id=1000,
-        url="http://test.url/ref",
+        url="https://test.url/ref",
         title="Ref Programa",
         content="HTML Ref",
     )
@@ -263,14 +263,14 @@ async def test_save_and_find_study_program(session):
     prog = StudyProgram(
         id=3000,
         study_program_ref_id=2000,
-        url="http://test.url/prog.pdf",
+        url="https://test.url/prog.pdf",
         title="Art-1.pdf",
         content=b"binary pdf data",
         checksum="abcd",
     )
     await prog_adapter.save(prog)
 
-    found = await prog_adapter.find_by_url("http://test.url/prog.pdf")
+    found = await prog_adapter.find_by_url("https://test.url/prog.pdf")
     assert found is not None
     assert found.title == "Art-1.pdf"
     assert found.content == b"binary pdf data"

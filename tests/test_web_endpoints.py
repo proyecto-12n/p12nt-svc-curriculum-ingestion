@@ -38,7 +38,7 @@ async def test_curriculum_endpoints(mock_init_db, db_session):
     # Seed database
     repo = SqlCurriculumRepositoryAdapter(db_session)
     curr = Curriculum(
-        id=1, url="http://test.url/cur", title="Initial Curriculum", content="Init"
+        id=1, url="https://test.url/cur", title="Initial Curriculum", content="Init"
     )
     saved_curr = await repo.save(curr)
 
@@ -52,7 +52,7 @@ async def test_curriculum_endpoints(mock_init_db, db_session):
     assert response.status_code == 200
     data = response.json()
     assert len(data) == 1
-    assert data[0]["url"] == "http://test.url/cur"
+    assert data[0]["url"] == "https://test.url/cur"
 
     # Test get by ID
     response = client.get(f"/api/v1/curriculums/{saved_curr.id}")
@@ -80,13 +80,13 @@ async def test_modality_endpoints(mock_init_db, db_session):
     curr_repo = SqlCurriculumRepositoryAdapter(db_session)
     mod_repo = SqlModalityRepositoryAdapter(db_session)
 
-    curr = Curriculum(id=1, url="http://test.url/cur", title="Cur", content="Init")
+    curr = Curriculum(id=1, url="https://test.url/cur", title="Cur", content="Init")
     saved_curr = await curr_repo.save(curr)
 
     mod = Modality(
         id=10,
         curriculum_id=saved_curr.id,
-        url="http://test.url/mod",
+        url="https://test.url/mod",
         title="Mod",
         content="Init",
     )
@@ -112,7 +112,7 @@ async def test_modality_endpoints(mock_init_db, db_session):
     # Get by ID
     response = client.get(f"/api/v1/modalities/{saved_mod.id}")
     assert response.status_code == 200
-    assert response.json()["url"] == "http://test.url/mod"
+    assert response.json()["url"] == "https://test.url/mod"
 
     # Get by ID 404
     response = client.get("/api/v1/modalities/999")
@@ -136,13 +136,13 @@ async def test_subject_endpoints(mock_init_db, db_session):
     mod_repo = SqlModalityRepositoryAdapter(db_session)
     sub_repo = SqlSubjectRepositoryAdapter(db_session)
 
-    curr = Curriculum(id=1, url="http://test.url/cur", title="Cur", content="Init")
+    curr = Curriculum(id=1, url="https://test.url/cur", title="Cur", content="Init")
     saved_curr = await curr_repo.save(curr)
 
     mod = Modality(
         id=10,
         curriculum_id=saved_curr.id,
-        url="http://test.url/mod",
+        url="https://test.url/mod",
         title="Mod",
         content="Init",
     )
@@ -151,7 +151,7 @@ async def test_subject_endpoints(mock_init_db, db_session):
     sub = Subject(
         id=100,
         modality_id=saved_mod.id,
-        url="http://test.url/sub",
+        url="https://test.url/sub",
         title="Math",
         content="Init",
     )
@@ -195,13 +195,13 @@ async def test_grade_level_endpoints(mock_init_db, db_session):
     sub_repo = SqlSubjectRepositoryAdapter(db_session)
     grade_repo = SqlGradeLevelRepositoryAdapter(db_session)
 
-    curr = Curriculum(id=1, url="http://test.url/cur", title="Cur", content="Init")
+    curr = Curriculum(id=1, url="https://test.url/cur", title="Cur", content="Init")
     saved_curr = await curr_repo.save(curr)
 
     mod = Modality(
         id=10,
         curriculum_id=saved_curr.id,
-        url="http://test.url/mod",
+        url="https://test.url/mod",
         title="Mod",
         content="Init",
     )
@@ -210,7 +210,7 @@ async def test_grade_level_endpoints(mock_init_db, db_session):
     sub = Subject(
         id=100,
         modality_id=saved_mod.id,
-        url="http://test.url/sub",
+        url="https://test.url/sub",
         title="Math",
         content="Init",
     )
@@ -219,7 +219,7 @@ async def test_grade_level_endpoints(mock_init_db, db_session):
     grade = GradeLevel(
         id=1000,
         subject_id=saved_sub.id,
-        url="http://test.url/grade",
+        url="https://test.url/grade",
         title="1st Grade",
         content="Init",
     )
@@ -265,13 +265,13 @@ async def test_study_program_ref_endpoints(mock_init_db, db_session):
     grade_repo = SqlGradeLevelRepositoryAdapter(db_session)
     ref_repo = SqlStudyProgramRefRepositoryAdapter(db_session)
 
-    curr = Curriculum(id=1, url="http://test.url/cur", title="Cur", content="Init")
+    curr = Curriculum(id=1, url="https://test.url/cur", title="Cur", content="Init")
     saved_curr = await curr_repo.save(curr)
 
     mod = Modality(
         id=10,
         curriculum_id=saved_curr.id,
-        url="http://test.url/mod",
+        url="https://test.url/mod",
         title="Mod",
         content="Init",
     )
@@ -280,7 +280,7 @@ async def test_study_program_ref_endpoints(mock_init_db, db_session):
     sub = Subject(
         id=100,
         modality_id=saved_mod.id,
-        url="http://test.url/sub",
+        url="https://test.url/sub",
         title="Math",
         content="Init",
     )
@@ -289,7 +289,7 @@ async def test_study_program_ref_endpoints(mock_init_db, db_session):
     grade = GradeLevel(
         id=1000,
         subject_id=saved_sub.id,
-        url="http://test.url/grade",
+        url="https://test.url/grade",
         title="1st Grade",
         content="Init",
     )
@@ -298,7 +298,7 @@ async def test_study_program_ref_endpoints(mock_init_db, db_session):
     ref = StudyProgramRef(
         id=2000,
         grade_level_id=saved_grade.id,
-        url="http://test.url/ref",
+        url="https://test.url/ref",
         title="Ref",
         content="Init",
     )
@@ -346,13 +346,13 @@ async def test_study_program_endpoints(mock_init_db, db_session):
     ref_repo = SqlStudyProgramRefRepositoryAdapter(db_session)
     prog_repo = SqlStudyProgramRepositoryAdapter(db_session)
 
-    curr = Curriculum(id=1, url="http://test.url/cur", title="Cur", content="Init")
+    curr = Curriculum(id=1, url="https://test.url/cur", title="Cur", content="Init")
     saved_curr = await curr_repo.save(curr)
 
     mod = Modality(
         id=10,
         curriculum_id=saved_curr.id,
-        url="http://test.url/mod",
+        url="https://test.url/mod",
         title="Mod",
         content="Init",
     )
@@ -361,7 +361,7 @@ async def test_study_program_endpoints(mock_init_db, db_session):
     sub = Subject(
         id=100,
         modality_id=saved_mod.id,
-        url="http://test.url/sub",
+        url="https://test.url/sub",
         title="Math",
         content="Init",
     )
@@ -370,7 +370,7 @@ async def test_study_program_endpoints(mock_init_db, db_session):
     grade = GradeLevel(
         id=1000,
         subject_id=saved_sub.id,
-        url="http://test.url/grade",
+        url="https://test.url/grade",
         title="1st Grade",
         content="Init",
     )
@@ -379,7 +379,7 @@ async def test_study_program_endpoints(mock_init_db, db_session):
     ref = StudyProgramRef(
         id=2000,
         grade_level_id=saved_grade.id,
-        url="http://test.url/ref",
+        url="https://test.url/ref",
         title="Ref",
         content="Init",
     )
@@ -388,7 +388,7 @@ async def test_study_program_endpoints(mock_init_db, db_session):
     prog = StudyProgram(
         id=3000,
         study_program_ref_id=saved_ref.id,
-        url="http://test.url/prog",
+        url="https://test.url/prog",
         title="Math Program",
         content=b"test PDF data",
         checksum="12345",

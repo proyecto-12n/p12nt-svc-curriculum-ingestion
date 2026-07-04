@@ -7,59 +7,51 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from hashlib import sha256
-from datetime import datetime
 from os import path
-from typing import Tuple, List
-from urllib.parse import urlparse
+from typing import AsyncGenerator, Any
+from urllib.parse import unquote, urlparse
 
-from domain.model import StudyProgram
+from domain.model import ResourceType, CurriculumHierarchyType
 from domain.model.node import Node
 from domain.model.scrap_resource import ScrapResource
 from infrastructure.adapter.outbound.http.parser.scrap_resource_parser import (
     ScrapResourceParser,
 )
-from infrastructure.util.id_generator import generate_id
 
 
 class StudyProgramScrapResourceParser(ScrapResourceParser[bytes]):
-    async def parse(
-        self,
-        resource: ScrapResource[bytes],
-        parent_id: int,
-    ) -> Tuple[StudyProgram, List[Node]]:
-        checksum = sha256(resource.content)
-        title = self._calculate_title(resource)
+    async def get_node(self, resource: ScrapResource[bytes]) -> Node[bytes]:
 
-        return StudyProgram(
-            id=generate_id(resource.url),
-            study_program_ref_id=parent_id,
+        title = self.__extract_title(resource)
+
+        return Node(
             url=resource.url,
+            type=ResourceType.PDF,
+            hierarchy=CurriculumHierarchyType.STUDY_PROGRAM,
             title=title,
             content=resource.content,
-            checksum=checksum.hexdigest(),
-            extracted_at=datetime.now(),
-        ), []
+        )
 
-    def _calculate_title(self, node: Node[bytes]) -> str:
-        parsed_url = urlparse(node.url)
-        filename = path.basename(parsed_url.path)
+    async def get_children(
+        self, resource: ScrapResource[bytes]
+    ) -> AsyncGenerator[Node[bytes], Any]:
+        if False:
+            yield
 
-        title = None
+    @staticmethod
+    def __extract_title(resource: ScrapResource[bytes]) -> str:
         try:
             from io import BytesIO
             import pymupdf
 
-            with pymupdf.Document(stream=BytesIO(node.content), filetype="pdf") as doc:
-                metadata = doc.metadata
-                if metadata:
-                    title = metadata.get("title")
+            with pymupdf.Document(
+                stream=BytesIO(resource.content), filetype="pdf"
+            ) as doc:
+                title = (doc.metadata or {}).get("title", "")
+                if title and title.strip():
+                    return title.strip()
         except Exception:
             pass
 
-        if not isinstance(title, str) or not title.strip():
-            title, _ = path.splitext(filename) if filename else ("", "")
-        else:
-            title = title.strip()
-
-        return title
+        filename = unquote(path.basename(urlparse(resource.url).path))
+        return path.splitext(filename)[0] if filename else ""

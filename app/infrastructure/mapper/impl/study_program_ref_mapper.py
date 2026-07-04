@@ -19,7 +19,7 @@ class StudyProgramRefMapper(CurriculumHierarchyMapper[StudyProgramRef, str]):
         return Node(
             url=model.url,
             type=ResourceType.HTML,
-            level=CurriculumHierarchyType.STUDY_PROGRAM_REF,
+            hierarchy=CurriculumHierarchyType.STUDY_PROGRAM_REF,
             title=model.title,
             content=model.content,
         )

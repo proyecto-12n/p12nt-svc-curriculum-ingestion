@@ -19,7 +19,7 @@ class GradeLevelMapper(CurriculumHierarchyMapper[GradeLevel, str]):
         return Node(
             url=model.url,
             type=ResourceType.HTML,
-            level=CurriculumHierarchyType.GRADE_LEVEL,
+            hierarchy=CurriculumHierarchyType.GRADE_LEVEL,
             title=model.title,
             content=model.content,
         )

@@ -26,7 +26,7 @@ def test_study_program_md5sum():
     prog = StudyProgram(
         id=1,
         study_program_ref_id=2,
-        url="http://test",
+        url="https://test",
         title="test",
         content=b"test",
         checksum="my-checksum",

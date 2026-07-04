@@ -19,7 +19,7 @@ class ModalityMapper(CurriculumHierarchyMapper[Modality, str]):
         return Node(
             url=model.url,
             type=ResourceType.HTML,
-            level=CurriculumHierarchyType.MODALITY,
+            hierarchy=CurriculumHierarchyType.MODALITY,
             title=model.title,
             content=model.content,
         )

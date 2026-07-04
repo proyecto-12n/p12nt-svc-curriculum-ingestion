@@ -7,63 +7,57 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from typing import List, Optional, Tuple
-from urllib.parse import urljoin
+from typing import Optional, Any, AsyncGenerator
 
 from bs4 import BeautifulSoup
 
-from domain.model.curriculum import Curriculum
+from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
 from domain.model.node import Node
 from domain.model.resource_type import ResourceType
 from domain.model.scrap_resource import ScrapResource
 from infrastructure.adapter.outbound.http.parser.scrap_resource_parser import (
     ScrapResourceParser,
 )
-from infrastructure.util.id_generator import generate_id
-from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
+from infrastructure.util import BeautifulSoupBuilder
 
 
 class CurriculumScrapResourceParser(ScrapResourceParser[str]):
-    async def parse(
-        self,
-        resource: ScrapResource[str],
-        parent_id: int,
-    ) -> Tuple[Curriculum, List[Node]]:
-        soup = BeautifulSoup(resource.content, "html.parser")
+    async def get_node(self, resource: ScrapResource[str]) -> Node[str]:
 
-        title = CurriculumScrapResourceParser._extract_title(soup)
-        children = CurriculumScrapResourceParser._extract_nodes(resource.url, soup)
+        soup = BeautifulSoupBuilder.build(resource)
+        title = await self.__extract_title(soup)
 
-        return Curriculum(
-            id=generate_id(resource.url),
+        return Node(
             url=resource.url,
+            type=ResourceType.HTML,
+            hierarchy=CurriculumHierarchyType.CURRICULUM,
             title=title,
             content=resource.content,
-        ), children
+        )
+
+    async def get_children(
+        self, resource: ScrapResource[str]
+    ) -> AsyncGenerator[Node[str], Any]:
+        soup = BeautifulSoupBuilder.build(resource)
+        async for x in self.__extract_nodes(soup):
+            yield x
 
     @staticmethod
-    def _extract_title(soup: BeautifulSoup) -> Optional[str]:
+    async def __extract_title(soup: BeautifulSoup) -> Optional[str]:
         h1_tag = soup.find("h1")
         title = h1_tag.get_text(strip=True) if h1_tag else None
         return title
 
     @staticmethod
-    def _extract_nodes(base_url: str, soup: BeautifulSoup) -> List[Node]:
-        nodes = []
+    async def __extract_nodes(soup: BeautifulSoup) -> AsyncGenerator[Node, Any]:
         for div in soup.find_all("div", class_="menu"):
             for a in div.find_all("a", href=True):
                 h3 = a.find("h3")
                 if h3 is None:
                     continue
 
-                u = urljoin(base_url, a.get("href"))
-                nodes.append(
-                    Node(
-                        url=u,
-                        type=ResourceType.HTML,
-                        level=CurriculumHierarchyType.MODALITY,
-                        title=h3.get_text(strip=True),
-                    )
+                yield Node(
+                    url=a.get("href"),
+                    type=ResourceType.HTML,
+                    hierarchy=CurriculumHierarchyType.MODALITY,
                 )
-
-        return nodes

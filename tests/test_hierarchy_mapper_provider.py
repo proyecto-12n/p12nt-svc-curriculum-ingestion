@@ -56,16 +56,16 @@ def test_modality_mapping():
     model = Modality(
         id=1,
         curriculum_id=10,
-        url="http://test.url/modality",
+        url="https://test.url/modality",
         title="Modality Title",
         content="Modality Content",
         extracted_at=now,
     )
 
     node = mapper.to_domain_node(model)
-    assert node.url == "http://test.url/modality"
+    assert node.url == "https://test.url/modality"
     assert node.type == ResourceType.HTML
-    assert node.level == CurriculumHierarchyType.MODALITY
+    assert node.hierarchy == CurriculumHierarchyType.MODALITY
     assert node.title == "Modality Title"
     assert node.content == "Modality Content"
 
@@ -76,7 +76,7 @@ def test_study_program_mapping():
     model = StudyProgram(
         id=2,
         study_program_ref_id=20,
-        url="http://test.url/program.pdf",
+        url="https://test.url/program.pdf",
         title="Program Title",
         content=b"PDF BINARY CONTENT",
         checksum="123456",
@@ -84,8 +84,8 @@ def test_study_program_mapping():
     )
 
     node = mapper.to_domain_node(model)
-    assert node.url == "http://test.url/program.pdf"
+    assert node.url == "https://test.url/program.pdf"
     assert node.type == ResourceType.PDF
-    assert node.level == CurriculumHierarchyType.STUDY_PROGRAM
+    assert node.hierarchy == CurriculumHierarchyType.STUDY_PROGRAM
     assert node.title == "Program Title"
     assert node.content == b"PDF BINARY CONTENT"

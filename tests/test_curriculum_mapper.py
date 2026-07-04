@@ -21,6 +21,6 @@ def test_to_domain_node_mapping():
 
     assert node.url == "https://www.curriculumnacional.cl/curriculum"
     assert node.type == ResourceType.HTML
-    assert node.level == CurriculumHierarchyType.CURRICULUM
+    assert node.hierarchy == CurriculumHierarchyType.CURRICULUM
     assert node.title == "Test Title"
     assert node.content == "Test Content HTML"
