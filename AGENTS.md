@@ -85,3 +85,9 @@ The ladder runs after you understand the problem, not instead of it: read the ta
 - Shortest working diff wins, but only once you understand the problem.
 - Question complex requests: "Do you actually need X, or does Y cover it?"
 - Mark intentional simplifications with a `ponytail:` comment. p12nt/svc-curriculum-ingestion
+
+## 💻 Environment & Testing Execution
+* **Virtual Environment Executables**: If global command runners (such as `uv`) are not recognized or installed in the host's `%PATH%`, always run test commands, linters, or checkers directly using the local virtual environment executable:
+  - **Windows (PowerShell/CMD)**: Use `.venv\Scripts\<tool>` (e.g., `.venv\Scripts\pytest`, `.venv\Scripts\ruff`).
+  - **Unix/macOS (Bash/Zsh)**: Use `.venv/bin/<tool>` (e.g., `.venv/bin/pytest`, `.venv/bin/ruff`).
+
