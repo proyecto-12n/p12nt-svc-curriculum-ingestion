@@ -20,6 +20,4 @@ class ListModalitiesUseCaseImpl(ListModalitiesUseCase):
         self.modality_repository = modality_repository
 
     async def execute(self, curriculum_id: Optional[int] = None) -> List[Modality]:
-        return await asyncio.to_thread(
-            self.modality_repository.list, curriculum_id
-        )
+        return await self.modality_repository.list(curriculum_id)

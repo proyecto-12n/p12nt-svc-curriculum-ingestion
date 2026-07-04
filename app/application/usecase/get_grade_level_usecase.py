@@ -7,18 +7,16 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-import asyncio
 from typing import Optional
+
 from domain.model.grade_level import GradeLevel
 from domain.port.inbound.get_grade_level_use_case import GetGradeLevelUseCase
-from domain.port.outbound.grade_level_repository import GradeLevelRepository
+from domain.port.outbound import KnowledgeRepository
 
 
 class GetGradeLevelUseCaseImpl(GetGradeLevelUseCase):
-    def __init__(self, grade_level_repository: GradeLevelRepository):
+    def __init__(self, grade_level_repository: KnowledgeRepository[GradeLevel]):
         self.grade_level_repository = grade_level_repository
 
     async def execute(self, id: int) -> Optional[GradeLevel]:
-        return await asyncio.to_thread(
-            self.grade_level_repository.find_grade_level_by_id, id
-        )
+        return await self.grade_level_repository.find_by_id(id)

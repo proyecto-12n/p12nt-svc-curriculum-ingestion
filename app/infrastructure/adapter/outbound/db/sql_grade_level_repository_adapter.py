@@ -7,23 +7,23 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from typing import Optional
+from typing import Optional, List
+from warnings import deprecated
+
 from sqlmodel import Session, select
-from domain.port.outbound.grade_level_repository import GradeLevelRepository
 
-# Domain models
 from domain.model.grade_level import GradeLevel as DomainGradeLevel
-
-# SQLModel models
+from domain.port.outbound import KnowledgeRepository
 from infrastructure.models.grade_level import GradeLevel as SqlGradeLevel
 
 
-class SqlGradeLevelRepositoryAdapter(GradeLevelRepository):
+class SqlGradeLevelRepositoryAdapter(KnowledgeRepository[DomainGradeLevel]):
     def __init__(self, session: Session):
         self.session = session
 
-    def find_grade_level_by_title_and_subject(
-        self, title: str, subject_id: int
+    @deprecated("Use find_by_url instead of find_grade_level_by_title_and_subject")
+    async def find_grade_level_by_title_and_subject(
+            self, title: str, subject_id: int
     ) -> Optional[DomainGradeLevel]:
         statement = select(SqlGradeLevel).where(
             SqlGradeLevel.title == title, SqlGradeLevel.subject_id == subject_id
@@ -40,7 +40,7 @@ class SqlGradeLevelRepositoryAdapter(GradeLevelRepository):
             )
         return None
 
-    def save_grade_level(self, grade_level: DomainGradeLevel) -> DomainGradeLevel:
+    async def save(self, grade_level: DomainGradeLevel) -> DomainGradeLevel:
         statement = select(SqlGradeLevel).where(
             SqlGradeLevel.title == grade_level.title,
             SqlGradeLevel.subject_id == grade_level.subject_id,
@@ -64,7 +64,21 @@ class SqlGradeLevelRepositoryAdapter(GradeLevelRepository):
         grade_level.id = sql_grade.id
         return grade_level
 
-    def find_grade_level_by_id(self, id: int) -> Optional[DomainGradeLevel]:
+    async def find_by_url(self, url: str) -> Optional[DomainGradeLevel]:
+        statement = select(SqlGradeLevel).where(SqlGradeLevel.url == url)
+        sql_grade = self.session.exec(statement).first()
+        if sql_grade:
+            return DomainGradeLevel(
+                id=sql_grade.id,
+                title=sql_grade.title,
+                subject_id=sql_grade.subject_id,
+                url=sql_grade.url,
+                content=sql_grade.content,
+                extracted_at=sql_grade.extracted_at,
+            )
+        return None
+
+    async def find_by_id(self, id: int) -> Optional[DomainGradeLevel]:
         statement = select(SqlGradeLevel).where(SqlGradeLevel.id == id)
         sql_grade = self.session.exec(statement).first()
         if sql_grade:
@@ -78,12 +92,12 @@ class SqlGradeLevelRepositoryAdapter(GradeLevelRepository):
             )
         return None
 
-    def list_grade_levels(
-        self, subject_id: Optional[int] = None
-    ) -> list[DomainGradeLevel]:
+    async def list(
+            self, parent_id: Optional[int] = None
+    ) -> List[DomainGradeLevel]:
         statement = select(SqlGradeLevel)
-        if subject_id is not None:
-            statement = statement.where(SqlGradeLevel.subject_id == subject_id)
+        if parent_id is not None:
+            statement = statement.where(SqlGradeLevel.subject_id == parent_id)
         results = self.session.exec(statement).all()
         return [
             DomainGradeLevel(

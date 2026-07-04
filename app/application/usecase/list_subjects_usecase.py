@@ -7,18 +7,16 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-import asyncio
 from typing import List, Optional
+
 from domain.model.subject import Subject
 from domain.port.inbound.list_subjects_use_case import ListSubjectsUseCase
-from domain.port.outbound.subject_repository import SubjectRepository
+from domain.port.outbound import KnowledgeRepository
 
 
 class ListSubjectsUseCaseImpl(ListSubjectsUseCase):
-    def __init__(self, subject_repository: SubjectRepository):
+    def __init__(self, subject_repository: KnowledgeRepository[Subject]):
         self.subject_repository = subject_repository
 
-    async def execute(self, modality_id: Optional[int] = None) -> List[Subject]:
-        return await asyncio.to_thread(
-            self.subject_repository.list_subjects, modality_id
-        )
+    async def execute(self, parent_id: Optional[int] = None) -> List[Subject]:
+        return await self.subject_repository.list(parent_id)

@@ -11,7 +11,7 @@ from typing import Protocol
 
 
 class IngestCurriculumUseCase(Protocol):
-    def execute(self, refresh: bool = False) -> None:
+    async def execute(self, refresh: bool = False) -> None:
         """Starts the ingestion process to scrape curriculum.cl/curriculum
 
         If a node is already present in the database, it skips fetching it unless refresh is True.

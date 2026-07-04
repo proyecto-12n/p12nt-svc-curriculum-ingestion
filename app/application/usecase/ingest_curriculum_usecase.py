@@ -13,13 +13,16 @@ from application.usecase.curriculum_node_resolver import CurriculumNodeResolver
 from application.usecase.study_program_resolver import StudyProgramResolver
 from domain.model.resource_type import ResourceType
 from domain.port.inbound import IngestCurriculumUseCase
-from domain.port.outbound import (
-    SubjectRepository,
-    GradeLevelRepository,
-    StudyProgramRefRepository,
-    StudyProgramRepository,
-    DownloaderProvider,
+from domain.port.outbound import DownloaderProvider
+from domain.model import (
+    Curriculum,
+    Modality,
+    Subject,
+    GradeLevel,
+    StudyProgramRef,
+    StudyProgram,
 )
+from domain.port.outbound.knowledge_repository import KnowledgeRepository
 from infrastructure.adapter.outbound.http.parser.impl import (
     CurriculumNodeParser,
     GradeLevelNodeParser,
@@ -27,8 +30,6 @@ from infrastructure.adapter.outbound.http.parser.impl import (
     StudyProgramRefNodeParser,
     SubjectNodeParser,
 )
-from domain.model import Curriculum, Modality
-from domain.port.outbound.knowledge_repository import KnowledgeRepository
 
 logger = logging.getLogger(__name__)
 
@@ -40,10 +41,10 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
             self,
             curriculum_repository: KnowledgeRepository[Curriculum],
             modality_repository: KnowledgeRepository[Modality],
-            subject_repository: SubjectRepository,
-            grade_level_repository: GradeLevelRepository,
-            study_program_ref_repository: StudyProgramRefRepository,
-            study_program_repository: StudyProgramRepository,
+            subject_repository: KnowledgeRepository[Subject],
+            grade_level_repository: KnowledgeRepository[GradeLevel],
+            study_program_ref_repository: KnowledgeRepository[StudyProgramRef],
+            study_program_repository: KnowledgeRepository[StudyProgram],
             downloader_provider: DownloaderProvider,
             node_resolver: CurriculumNodeResolver = None,
             study_program_resolver: StudyProgramResolver = None,
@@ -65,10 +66,10 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
             node_resolver=self.node_resolver,
         )
 
-    def execute(self, refresh: bool = False) -> None:
+    async def execute(self, refresh: bool = False) -> None:
         logger.info("Starting ingestion of curriculum data...")
 
-        curriculum, modality_nodes = self.node_resolver.resolve_node(
+        curriculum, modality_nodes = await self.node_resolver.resolve_node(
             url=_ROOT_URL,
             resource_type=ResourceType.HTML,
             find_fn=lambda: self.curriculum_repository.find_by_url(
@@ -82,7 +83,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
 
         for mod_node in modality_nodes:
             try:
-                modality, subject_nodes = self.node_resolver.resolve_node(
+                modality, subject_nodes = await self.node_resolver.resolve_node(
                     url=mod_node.url,
                     resource_type=ResourceType.HTML,
                     find_fn=lambda: self.modality_repository.find_by_url(
@@ -100,7 +101,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
 
             for sub_node in subject_nodes[:3]:
                 try:
-                    subject, grade_nodes = self.node_resolver.resolve_node(
+                    subject, grade_nodes = await self.node_resolver.resolve_node(
                         url=sub_node.url,
                         resource_type=ResourceType.HTML,
                         find_fn=lambda: (
@@ -108,7 +109,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                                 sub_node.title, modality.id
                             )
                         ),
-                        save_fn=self.subject_repository.save_subject,
+                        save_fn=self.subject_repository.save,
                         parser=SubjectNodeParser(),
                         parent_id=modality.id,
                         title_hint=sub_node.title,
@@ -120,7 +121,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
 
                 for grade_node in grade_nodes[:2]:
                     try:
-                        grade, ref_nodes = self.node_resolver.resolve_node(
+                        grade, ref_nodes = await self.node_resolver.resolve_node(
                             url=grade_node.url,
                             resource_type=ResourceType.HTML,
                             find_fn=lambda: (
@@ -128,7 +129,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                                     grade_node.title, subject.id
                                 )
                             ),
-                            save_fn=self.grade_level_repository.save_grade_level,
+                            save_fn=self.grade_level_repository.save,
                             parser=GradeLevelNodeParser(),
                             parent_id=subject.id,
                             title_hint=grade_node.title,
@@ -142,15 +143,15 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
 
                     for ref_node in ref_nodes:
                         try:
-                            program_ref, prog_nodes = self.node_resolver.resolve_node(
+                            program_ref, prog_nodes = await self.node_resolver.resolve_node(
                                 url=ref_node.url,
                                 resource_type=ref_node.type,
                                 find_fn=lambda: (
-                                    self.study_program_ref_repository.find_study_program_ref_by_url(
+                                    self.study_program_ref_repository.find_by_url(
                                         self.node_resolver.absolute_url(ref_node.url)
                                     )
                                 ),
-                                save_fn=self.study_program_ref_repository.save_study_program_ref,
+                                save_fn=self.study_program_ref_repository.save,
                                 parser=StudyProgramRefNodeParser(),
                                 parent_id=grade.id,
                                 refresh=refresh,
@@ -162,7 +163,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                             continue
 
                         for prog_node in prog_nodes:
-                            self.study_program_resolver.resolve_study_program(
+                            await self.study_program_resolver.resolve_study_program(
                                 prog_node, program_ref, refresh=refresh
                             )
 

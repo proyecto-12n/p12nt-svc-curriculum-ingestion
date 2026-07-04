@@ -7,18 +7,16 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-import asyncio
 from typing import Optional
+
 from domain.model.study_program import StudyProgram
 from domain.port.inbound.get_study_program_use_case import GetStudyProgramUseCase
-from domain.port.outbound.study_program_repository import StudyProgramRepository
+from domain.port.outbound import KnowledgeRepository
 
 
 class GetStudyProgramUseCaseImpl(GetStudyProgramUseCase):
-    def __init__(self, study_program_repository: StudyProgramRepository):
+    def __init__(self, study_program_repository: KnowledgeRepository[StudyProgram]):
         self.study_program_repository = study_program_repository
 
     async def execute(self, id: int) -> Optional[StudyProgram]:
-        return await asyncio.to_thread(
-            self.study_program_repository.find_study_program_by_id, id
-        )
+        return await self.study_program_repository.find_by_id(id)

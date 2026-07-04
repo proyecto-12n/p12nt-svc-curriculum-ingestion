@@ -19,6 +19,4 @@ class GetCurriculumUseCaseImpl(GetCurriculumUseCase):
         self.curriculum_repository = curriculum_repository
 
     async def execute(self, id: int) -> Optional[Curriculum]:
-        return await asyncio.to_thread(
-            self.curriculum_repository.find_by_id, id
-        )
+        return await self.curriculum_repository.find_by_id(id)

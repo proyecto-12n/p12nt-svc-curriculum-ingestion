@@ -20,4 +20,4 @@ class GetModalityUseCaseImpl(GetModalityUseCase):
         self.modality_repository = modality_repository
 
     async def execute(self, id: int) -> Optional[Modality]:
-        return await asyncio.to_thread(self.modality_repository.find_by_id, id)
+        return await self.modality_repository.find_by_id(id)

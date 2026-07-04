@@ -7,22 +7,20 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from typing import Optional
+from typing import Optional, List
+
 from sqlmodel import Session, select
-from domain.port.outbound.study_program_repository import StudyProgramRepository
 
-# Domain models
 from domain.model.study_program import StudyProgram as DomainStudyProgram
-
-# SQLModel models
+from domain.port.outbound import KnowledgeRepository
 from infrastructure.models.study_program import StudyProgram as SqlStudyProgram
 
 
-class SqlStudyProgramRepositoryAdapter(StudyProgramRepository):
+class SqlStudyProgramRepositoryAdapter(KnowledgeRepository[DomainStudyProgram]):
     def __init__(self, session: Session):
         self.session = session
 
-    def find_study_program_by_url(self, url: str) -> Optional[DomainStudyProgram]:
+    async def find_by_url(self, url: str) -> Optional[DomainStudyProgram]:
         statement = select(SqlStudyProgram).where(SqlStudyProgram.url == url)
         sql_prog = self.session.exec(statement).first()
         if sql_prog:
@@ -37,8 +35,8 @@ class SqlStudyProgramRepositoryAdapter(StudyProgramRepository):
             )
         return None
 
-    def save_study_program(
-        self, study_program: DomainStudyProgram
+    async def save(
+            self, study_program: DomainStudyProgram
     ) -> DomainStudyProgram:
         statement = select(SqlStudyProgram).where(
             SqlStudyProgram.url == study_program.url
@@ -65,7 +63,7 @@ class SqlStudyProgramRepositoryAdapter(StudyProgramRepository):
         study_program.id = sql_prog.id
         return study_program
 
-    def find_study_program_by_id(self, id: int) -> Optional[DomainStudyProgram]:
+    async def find_by_id(self, id: int) -> Optional[DomainStudyProgram]:
         statement = select(SqlStudyProgram).where(SqlStudyProgram.id == id)
         sql_prog = self.session.exec(statement).first()
         if sql_prog:
@@ -80,9 +78,9 @@ class SqlStudyProgramRepositoryAdapter(StudyProgramRepository):
             )
         return None
 
-    def list_study_programs(
-        self, study_program_ref_id: Optional[int] = None
-    ) -> list[DomainStudyProgram]:
+    async def list(
+            self, study_program_ref_id: Optional[int] = None
+    ) -> List[DomainStudyProgram]:
         statement = select(SqlStudyProgram)
         if study_program_ref_id is not None:
             statement = statement.where(

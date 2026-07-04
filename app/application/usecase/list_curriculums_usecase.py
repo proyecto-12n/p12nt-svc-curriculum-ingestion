@@ -7,7 +7,6 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-import asyncio
 from typing import List
 
 from domain.model.curriculum import Curriculum
@@ -20,4 +19,4 @@ class ListCurriculumsUseCaseImpl(ListCurriculumsUseCase):
         self.curriculum_repository = curriculum_repository
 
     async def execute(self) -> List[Curriculum]:
-        return await asyncio.to_thread(self.curriculum_repository.list)
+        return await self.curriculum_repository.list()

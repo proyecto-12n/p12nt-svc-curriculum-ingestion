@@ -43,8 +43,8 @@ def db_session_fixture():
     with Session(engine) as session:
         yield session
 
-
-def test_repository_upsert_behavior(db_session):
+@pytest.mark.asyncio
+async def test_repository_upsert_behavior(db_session):
     # Arrange
     curr_repo = SqlCurriculumRepositoryAdapter(db_session)
     modality_repo = SqlModalityRepositoryAdapter(db_session)
@@ -57,13 +57,13 @@ def test_repository_upsert_behavior(db_session):
     curriculum = Curriculum(
         id=1, url="http://test.url/cur", title="Initial Curriculum", content="Init"
     )
-    curr_repo.save(curriculum)
+    await curr_repo.save(curriculum)
 
     curriculum.title = "Updated Curriculum"
     curriculum.content = "Updated"
-    curr_repo.save(curriculum)
+    await curr_repo.save(curriculum)
 
-    saved_cur = curr_repo.find_by_url("http://test.url/cur")
+    saved_cur = await curr_repo.find_by_url("http://test.url/cur")
     assert saved_cur.title == "Updated Curriculum"
     assert saved_cur.content == "Updated"
 
@@ -75,12 +75,12 @@ def test_repository_upsert_behavior(db_session):
         title="Initial Modality",
         content="Init",
     )
-    modality_repo.save(modality)
+    await modality_repo.save(modality)
 
     modality.title = "Updated Modality"
-    modality_repo.save(modality)
+    await modality_repo.save(modality)
 
-    saved_mod = modality_repo.find_by_url("http://test.url/mod")
+    saved_mod = await modality_repo.find_by_url("http://test.url/mod")
     assert saved_mod.title == "Updated Modality"
 
     # 3. Test Subject Upsert
@@ -91,12 +91,12 @@ def test_repository_upsert_behavior(db_session):
         title="Initial Subject",
         content="Init",
     )
-    subject_repo.save_subject(subject)
+    await subject_repo.save(subject)
 
     subject.url = "http://test.url/sub-updated"
-    subject_repo.save_subject(subject)
+    await subject_repo.save(subject)
 
-    saved_sub = subject_repo.find_subject_by_title_and_modality("Initial Subject", 1)
+    saved_sub = await subject_repo.find_subject_by_title_and_modality("Initial Subject", 1)
     assert saved_sub.url == "http://test.url/sub-updated"
 
     # 4. Test GradeLevel Upsert
@@ -107,12 +107,12 @@ def test_repository_upsert_behavior(db_session):
         title="Initial Grade",
         content="Init",
     )
-    grade_repo.save_grade_level(grade)
+    await grade_repo.save(grade)
 
     grade.url = "http://test.url/grade-updated"
-    grade_repo.save_grade_level(grade)
+    await grade_repo.save(grade)
 
-    saved_grade = grade_repo.find_grade_level_by_title_and_subject("Initial Grade", 1)
+    saved_grade = await grade_repo.find_grade_level_by_title_and_subject("Initial Grade", 1)
     assert saved_grade.url == "http://test.url/grade-updated"
 
     # 5. Test StudyProgramRef Upsert
@@ -123,12 +123,12 @@ def test_repository_upsert_behavior(db_session):
         title="Initial Ref",
         content="Init",
     )
-    ref_repo.save_study_program_ref(ref)
+    await ref_repo.save(ref)
 
     ref.title = "Updated Ref"
-    ref_repo.save_study_program_ref(ref)
+    await ref_repo.save(ref)
 
-    saved_ref = ref_repo.find_study_program_ref_by_url("http://test.url/ref")
+    saved_ref = await ref_repo.find_by_url("http://test.url/ref")
     assert saved_ref.title == "Updated Ref"
 
     # 6. Test StudyProgram Upsert
@@ -140,16 +140,16 @@ def test_repository_upsert_behavior(db_session):
         checksum="123",
         content=b"Init",
     )
-    prog_repo.save_study_program(program)
+    await prog_repo.save(program)
 
     program.title = "Updated Program"
-    prog_repo.save_study_program(program)
+    await prog_repo.save(program)
 
-    saved_prog = prog_repo.find_study_program_by_url("http://test.url/prog")
+    saved_prog = await prog_repo.find_by_url("http://test.url/prog")
     assert saved_prog.title == "Updated Program"
 
-
-def test_ingest_curriculum_usecase_refresh_behavior(db_session):
+@pytest.mark.asyncio
+async def test_ingest_curriculum_usecase_refresh_behavior(db_session):
     async def mock_download(url, timeout=10.0):
         from tests.test_usecase_and_cli import mock_get_mock_content
 
@@ -178,18 +178,18 @@ def test_ingest_curriculum_usecase_refresh_behavior(db_session):
     )
 
     # First run without refresh
-    use_case.execute(refresh=False)
+    await use_case.execute(refresh=False)
     assert mock_downloader.download.call_count > 0
 
     # Reset call count
     mock_downloader.download.reset_mock()
 
     # Run again without refresh (should not download because it exists in DB)
-    use_case.execute(refresh=False)
+    await use_case.execute(refresh=False)
     mock_downloader.download.assert_not_called()
 
     # Run again WITH refresh (should force downloading again)
-    use_case.execute(refresh=True)
+    await use_case.execute(refresh=True)
     assert mock_downloader.download.call_count > 0
 
 
@@ -213,6 +213,9 @@ def test_cli_refresh_flag_propagation():
         mock_session_class.return_value.__enter__.return_value = mock_session
 
         mock_usecase = MagicMock()
+        async def mock_execute(*args, **kwargs):
+            pass
+        mock_usecase.execute = MagicMock(side_effect=mock_execute)
         mock_usecase_class.return_value = mock_usecase
 
         with patch("infrastructure.database.engine", new=mock_engine):

@@ -5,6 +5,7 @@
 
 from unittest.mock import MagicMock, patch
 
+import pytest
 from sqlmodel import SQLModel, create_engine, Session
 
 from application.usecase.ingest_curriculum_usecase import (
@@ -86,8 +87,8 @@ def mock_get_mock_content(url: str) -> str | bytes:
         return b"PDF content"
     return ""
 
-
-def test_ingest_curriculum_usecase_with_force_mock():
+@pytest.mark.asyncio
+async def test_ingest_curriculum_usecase_with_force_mock():
     # Setup in-memory SQLite database
     engine = create_engine("sqlite:///:memory:")
     for table in SQLModel.metadata.tables.values():
@@ -129,26 +130,27 @@ def test_ingest_curriculum_usecase_with_force_mock():
         )
 
         # Execute
-        use_case.execute()
+        await use_case.execute()
 
         # Verify that data was ingested in the database
-        curr = curriculum_repo.find_by_url(
+        curr = await curriculum_repo.find_by_url(
             "https://www.curriculumnacional.cl/curriculum"
         )
         assert curr is not None
         assert curr.title == "Curriculum Nacional"
 
         # Let's verify modalities were saved
-        mod = modality_repo.find_by_url(
+        mod = await modality_repo.find_by_url(
             "https://www.curriculumnacional.cl/curriculum/basica"
         )
         assert mod is not None
 
         # Check that we can run again and it uses existing records
-        use_case.execute()
+        await use_case.execute()
 
 
-def test_ingest_curriculum_usecase_downloader_failure_fallback():
+@pytest.mark.asyncio
+async def test_ingest_curriculum_usecase_downloader_failure_fallback():
     engine = create_engine("sqlite:///:memory:")
     for table in SQLModel.metadata.tables.values():
         table.schema = None
@@ -185,16 +187,16 @@ def test_ingest_curriculum_usecase_downloader_failure_fallback():
             downloader_provider=mock_downloader_provider,
         )
 
-        use_case.execute()
+        await use_case.execute()
 
         # Verify fallback still populated database structures
-        curr = curriculum_repo.find_by_url(
+        curr = await curriculum_repo.find_by_url(
             "https://www.curriculumnacional.cl/curriculum"
         )
         assert curr is not None
 
         # Verify empty placeholder program was saved on PDF failure
-        prog = study_program_repo.find_study_program_by_url(
+        prog = await study_program_repo.find_by_url(
             "https://www.curriculumnacional.cl/curriculum/basica/matematica/1g/ref/programa.pdf"
         )
         assert prog is not None
@@ -219,6 +221,9 @@ def test_run_cli_postgresql_dialect():
         mock_session_class.return_value.__enter__.return_value = mock_session
 
         mock_usecase = MagicMock()
+        async def mock_execute(*args, **kwargs):
+            pass
+        mock_usecase.execute = MagicMock(side_effect=mock_execute)
         mock_usecase_class.return_value = mock_usecase
 
         with patch("infrastructure.database.engine", new=mock_engine):

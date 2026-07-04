@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-from unittest.mock import patch
 import pytest
+from unittest.mock import patch
 from fastapi.testclient import TestClient
-from sqlmodel import Session, SQLModel, create_engine
+from sqlmodel import SQLModel, create_engine, Session
 
 from domain.model import (
     Curriculum,
     Modality,
     Subject,
     GradeLevel,
-    StudyProgramRef,
     StudyProgram,
+    StudyProgramRef,
 )
 from infrastructure.database import get_db
 
@@ -28,8 +28,9 @@ def db_session_fixture():
         yield session
 
 
+@pytest.mark.asyncio
 @patch("main.init_db")
-def test_curriculum_endpoints(mock_init_db, db_session):
+async def test_curriculum_endpoints(mock_init_db, db_session):
     from app.main import app
     from infrastructure.adapter.outbound.db import SqlCurriculumRepositoryAdapter
 
@@ -38,7 +39,7 @@ def test_curriculum_endpoints(mock_init_db, db_session):
     curr = Curriculum(
         id=1, url="http://test.url/cur", title="Initial Curriculum", content="Init"
     )
-    saved_curr = repo.save(curr)
+    saved_curr = await repo.save(curr)
 
     # Dependency override
     app.dependency_overrides[get_db] = lambda: db_session
@@ -65,8 +66,9 @@ def test_curriculum_endpoints(mock_init_db, db_session):
     app.dependency_overrides.clear()
 
 
+@pytest.mark.asyncio
 @patch("main.init_db")
-def test_modality_endpoints(mock_init_db, db_session):
+async def test_modality_endpoints(mock_init_db, db_session):
     from app.main import app
     from infrastructure.adapter.outbound.db import (
         SqlCurriculumRepositoryAdapter,
@@ -77,7 +79,7 @@ def test_modality_endpoints(mock_init_db, db_session):
     mod_repo = SqlModalityRepositoryAdapter(db_session)
 
     curr = Curriculum(id=1, url="http://test.url/cur", title="Cur", content="Init")
-    saved_curr = curr_repo.save(curr)
+    saved_curr = await curr_repo.save(curr)
 
     mod = Modality(
         id=10,
@@ -86,7 +88,7 @@ def test_modality_endpoints(mock_init_db, db_session):
         title="Mod",
         content="Init",
     )
-    saved_mod = mod_repo.save(mod)
+    saved_mod = await mod_repo.save(mod)
 
     app.dependency_overrides[get_db] = lambda: db_session
     client = TestClient(app)
@@ -117,8 +119,9 @@ def test_modality_endpoints(mock_init_db, db_session):
     app.dependency_overrides.clear()
 
 
+@pytest.mark.asyncio
 @patch("main.init_db")
-def test_subject_endpoints(mock_init_db, db_session):
+async def test_subject_endpoints(mock_init_db, db_session):
     from app.main import app
     from infrastructure.adapter.outbound.db import (
         SqlCurriculumRepositoryAdapter,
@@ -131,7 +134,7 @@ def test_subject_endpoints(mock_init_db, db_session):
     sub_repo = SqlSubjectRepositoryAdapter(db_session)
 
     curr = Curriculum(id=1, url="http://test.url/cur", title="Cur", content="Init")
-    saved_curr = curr_repo.save(curr)
+    saved_curr = await curr_repo.save(curr)
 
     mod = Modality(
         id=10,
@@ -140,7 +143,7 @@ def test_subject_endpoints(mock_init_db, db_session):
         title="Mod",
         content="Init",
     )
-    saved_mod = mod_repo.save(mod)
+    saved_mod = await mod_repo.save(mod)
 
     sub = Subject(
         id=100,
@@ -149,7 +152,7 @@ def test_subject_endpoints(mock_init_db, db_session):
         title="Math",
         content="Init",
     )
-    saved_sub = sub_repo.save_subject(sub)
+    saved_sub = await sub_repo.save(sub)
 
     app.dependency_overrides[get_db] = lambda: db_session
     client = TestClient(app)
@@ -172,8 +175,9 @@ def test_subject_endpoints(mock_init_db, db_session):
     app.dependency_overrides.clear()
 
 
+@pytest.mark.asyncio
 @patch("main.init_db")
-def test_grade_level_endpoints(mock_init_db, db_session):
+async def test_grade_level_endpoints(mock_init_db, db_session):
     from app.main import app
     from infrastructure.adapter.outbound.db import (
         SqlCurriculumRepositoryAdapter,
@@ -188,7 +192,7 @@ def test_grade_level_endpoints(mock_init_db, db_session):
     grade_repo = SqlGradeLevelRepositoryAdapter(db_session)
 
     curr = Curriculum(id=1, url="http://test.url/cur", title="Cur", content="Init")
-    saved_curr = curr_repo.save(curr)
+    saved_curr = await curr_repo.save(curr)
 
     mod = Modality(
         id=10,
@@ -197,7 +201,7 @@ def test_grade_level_endpoints(mock_init_db, db_session):
         title="Mod",
         content="Init",
     )
-    saved_mod = mod_repo.save(mod)
+    saved_mod = await mod_repo.save(mod)
 
     sub = Subject(
         id=100,
@@ -206,7 +210,7 @@ def test_grade_level_endpoints(mock_init_db, db_session):
         title="Math",
         content="Init",
     )
-    saved_sub = sub_repo.save_subject(sub)
+    saved_sub = await sub_repo.save(sub)
 
     grade = GradeLevel(
         id=1000,
@@ -215,7 +219,7 @@ def test_grade_level_endpoints(mock_init_db, db_session):
         title="1st Grade",
         content="Init",
     )
-    saved_grade = grade_repo.save_grade_level(grade)
+    saved_grade = await grade_repo.save(grade)
 
     app.dependency_overrides[get_db] = lambda: db_session
     client = TestClient(app)
@@ -238,8 +242,9 @@ def test_grade_level_endpoints(mock_init_db, db_session):
     app.dependency_overrides.clear()
 
 
+@pytest.mark.asyncio
 @patch("main.init_db")
-def test_study_program_ref_endpoints(mock_init_db, db_session):
+async def test_study_program_ref_endpoints(mock_init_db, db_session):
     from app.main import app
     from infrastructure.adapter.outbound.db import (
         SqlCurriculumRepositoryAdapter,
@@ -256,7 +261,7 @@ def test_study_program_ref_endpoints(mock_init_db, db_session):
     ref_repo = SqlStudyProgramRefRepositoryAdapter(db_session)
 
     curr = Curriculum(id=1, url="http://test.url/cur", title="Cur", content="Init")
-    saved_curr = curr_repo.save(curr)
+    saved_curr = await curr_repo.save(curr)
 
     mod = Modality(
         id=10,
@@ -265,7 +270,7 @@ def test_study_program_ref_endpoints(mock_init_db, db_session):
         title="Mod",
         content="Init",
     )
-    saved_mod = mod_repo.save(mod)
+    saved_mod = await mod_repo.save(mod)
 
     sub = Subject(
         id=100,
@@ -274,7 +279,7 @@ def test_study_program_ref_endpoints(mock_init_db, db_session):
         title="Math",
         content="Init",
     )
-    saved_sub = sub_repo.save_subject(sub)
+    saved_sub = await sub_repo.save(sub)
 
     grade = GradeLevel(
         id=1000,
@@ -283,7 +288,7 @@ def test_study_program_ref_endpoints(mock_init_db, db_session):
         title="1st Grade",
         content="Init",
     )
-    saved_grade = grade_repo.save_grade_level(grade)
+    saved_grade = await grade_repo.save(grade)
 
     ref = StudyProgramRef(
         id=2000,
@@ -292,7 +297,7 @@ def test_study_program_ref_endpoints(mock_init_db, db_session):
         title="Ref",
         content="Init",
     )
-    saved_ref = ref_repo.save_study_program_ref(ref)
+    saved_ref = await ref_repo.save(ref)
 
     app.dependency_overrides[get_db] = lambda: db_session
     client = TestClient(app)
@@ -315,8 +320,9 @@ def test_study_program_ref_endpoints(mock_init_db, db_session):
     app.dependency_overrides.clear()
 
 
+@pytest.mark.asyncio
 @patch("main.init_db")
-def test_study_program_endpoints(mock_init_db, db_session):
+async def test_study_program_endpoints(mock_init_db, db_session):
     from app.main import app
     from infrastructure.adapter.outbound.db import (
         SqlCurriculumRepositoryAdapter,
@@ -335,7 +341,7 @@ def test_study_program_endpoints(mock_init_db, db_session):
     prog_repo = SqlStudyProgramRepositoryAdapter(db_session)
 
     curr = Curriculum(id=1, url="http://test.url/cur", title="Cur", content="Init")
-    saved_curr = curr_repo.save(curr)
+    saved_curr = await curr_repo.save(curr)
 
     mod = Modality(
         id=10,
@@ -344,7 +350,7 @@ def test_study_program_endpoints(mock_init_db, db_session):
         title="Mod",
         content="Init",
     )
-    saved_mod = mod_repo.save(mod)
+    saved_mod = await mod_repo.save(mod)
 
     sub = Subject(
         id=100,
@@ -353,7 +359,7 @@ def test_study_program_endpoints(mock_init_db, db_session):
         title="Math",
         content="Init",
     )
-    saved_sub = sub_repo.save_subject(sub)
+    saved_sub = await sub_repo.save(sub)
 
     grade = GradeLevel(
         id=1000,
@@ -362,7 +368,7 @@ def test_study_program_endpoints(mock_init_db, db_session):
         title="1st Grade",
         content="Init",
     )
-    saved_grade = grade_repo.save_grade_level(grade)
+    saved_grade = await grade_repo.save(grade)
 
     ref = StudyProgramRef(
         id=2000,
@@ -371,7 +377,7 @@ def test_study_program_endpoints(mock_init_db, db_session):
         title="Ref",
         content="Init",
     )
-    saved_ref = ref_repo.save_study_program_ref(ref)
+    saved_ref = await ref_repo.save(ref)
 
     prog = StudyProgram(
         id=3000,
@@ -381,7 +387,7 @@ def test_study_program_endpoints(mock_init_db, db_session):
         content=b"test PDF data",
         checksum="12345",
     )
-    saved_prog = prog_repo.save_study_program(prog)
+    saved_prog = await prog_repo.save(prog)
 
     app.dependency_overrides[get_db] = lambda: db_session
     client = TestClient(app)

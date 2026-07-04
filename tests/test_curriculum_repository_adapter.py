@@ -30,28 +30,30 @@ def session_fixture():
         yield session
 
 
-def test_save_and_find_curriculum(session):
+@pytest.mark.asyncio
+async def test_save_and_find_curriculum(session):
     adapter = SqlCurriculumRepositoryAdapter(session)
     curr = Curriculum(
         id=1, title="Parvularia", url="http://test.url/curr", content="HTML content"
     )
-    saved = adapter.save(curr)
+    saved = await adapter.save(curr)
     assert saved.id == 1
 
-    found = adapter.find_by_url("http://test.url/curr")
+    found = await adapter.find_by_url("http://test.url/curr")
     assert found is not None
     assert found.title == "Parvularia"
     assert found.content == "HTML content"
 
 
-def test_save_and_find_modality(session):
+@pytest.mark.asyncio
+async def test_save_and_find_modality(session):
     curr_adapter = SqlCurriculumRepositoryAdapter(session)
     mod_adapter = SqlModalityRepositoryAdapter(session)
 
     curr = Curriculum(
         id=1, title="Parvularia", url="http://test.url/curr", content="HTML"
     )
-    curr_adapter.save(curr)
+    await curr_adapter.save(curr)
 
     mod = Modality(
         id=10,
@@ -60,15 +62,16 @@ def test_save_and_find_modality(session):
         title="Nivel Medio",
         content="HTML Mod",
     )
-    mod_adapter.save(mod)
+    await mod_adapter.save(mod)
 
-    found = mod_adapter.find_by_url("http://test.url/mod")
+    found = await mod_adapter.find_by_url("http://test.url/mod")
     assert found is not None
     assert found.title == "Nivel Medio"
     assert found.content == "HTML Mod"
 
 
-def test_save_and_find_subject(session):
+@pytest.mark.asyncio
+async def test_save_and_find_subject(session):
     curr_adapter = SqlCurriculumRepositoryAdapter(session)
     mod_adapter = SqlModalityRepositoryAdapter(session)
     sub_adapter = SqlSubjectRepositoryAdapter(session)
@@ -76,7 +79,7 @@ def test_save_and_find_subject(session):
     curr = Curriculum(
         id=1, title="Parvularia", url="http://test.url/curr", content="HTML"
     )
-    curr_adapter.save(curr)
+    await curr_adapter.save(curr)
 
     mod = Modality(
         id=10,
@@ -85,7 +88,7 @@ def test_save_and_find_subject(session):
         title="Nivel Medio",
         content="HTML Mod",
     )
-    mod_adapter.save(mod)
+    await mod_adapter.save(mod)
 
     sub = Subject(
         id=100,
@@ -94,15 +97,16 @@ def test_save_and_find_subject(session):
         title="Matemáticas",
         content="HTML Sub",
     )
-    sub_adapter.save_subject(sub)
+    await sub_adapter.save(sub)
 
-    found = sub_adapter.find_subject_by_title_and_modality("Matemáticas", 10)
+    found = await sub_adapter.find_subject_by_title_and_modality("Matemáticas", 10)
     assert found is not None
     assert found.url == "http://test.url/sub"
     assert found.content == "HTML Sub"
 
 
-def test_save_and_find_grade_level(session):
+@pytest.mark.asyncio
+async def test_save_and_find_grade_level(session):
     curr_adapter = SqlCurriculumRepositoryAdapter(session)
     mod_adapter = SqlModalityRepositoryAdapter(session)
     sub_adapter = SqlSubjectRepositoryAdapter(session)
@@ -111,7 +115,7 @@ def test_save_and_find_grade_level(session):
     curr = Curriculum(
         id=1, title="Parvularia", url="http://test.url/curr", content="HTML"
     )
-    curr_adapter.save(curr)
+    await curr_adapter.save(curr)
 
     mod = Modality(
         id=10,
@@ -120,7 +124,7 @@ def test_save_and_find_grade_level(session):
         title="Nivel Medio",
         content="HTML Mod",
     )
-    mod_adapter.save(mod)
+    await mod_adapter.save(mod)
 
     sub = Subject(
         id=100,
@@ -129,7 +133,7 @@ def test_save_and_find_grade_level(session):
         title="Matemáticas",
         content="HTML Sub",
     )
-    sub_adapter.save_subject(sub)
+    await sub_adapter.save(sub)
 
     grade = GradeLevel(
         id=1000,
@@ -138,15 +142,16 @@ def test_save_and_find_grade_level(session):
         title="1 Básico",
         content="HTML Grade",
     )
-    grade_adapter.save_grade_level(grade)
+    await grade_adapter.save(grade)
 
-    found = grade_adapter.find_grade_level_by_title_and_subject("1 Básico", 100)
+    found = await grade_adapter.find_by_url("http://test.url/grade")
     assert found is not None
     assert found.url == "http://test.url/grade"
     assert found.content == "HTML Grade"
 
 
-def test_save_and_find_study_program_ref(session):
+@pytest.mark.asyncio
+async def test_save_and_find_study_program_ref(session):
     curr_adapter = SqlCurriculumRepositoryAdapter(session)
     mod_adapter = SqlModalityRepositoryAdapter(session)
     sub_adapter = SqlSubjectRepositoryAdapter(session)
@@ -156,7 +161,7 @@ def test_save_and_find_study_program_ref(session):
     curr = Curriculum(
         id=1, title="Parvularia", url="http://test.url/curr", content="HTML"
     )
-    curr_adapter.save(curr)
+    await curr_adapter.save(curr)
 
     mod = Modality(
         id=10,
@@ -165,7 +170,7 @@ def test_save_and_find_study_program_ref(session):
         title="Nivel Medio",
         content="HTML Mod",
     )
-    mod_adapter.save(mod)
+    await mod_adapter.save(mod)
 
     sub = Subject(
         id=100,
@@ -174,7 +179,7 @@ def test_save_and_find_study_program_ref(session):
         title="Matemáticas",
         content="HTML Sub",
     )
-    sub_adapter.save_subject(sub)
+    await sub_adapter.save(sub)
 
     grade = GradeLevel(
         id=1000,
@@ -183,7 +188,7 @@ def test_save_and_find_study_program_ref(session):
         title="1 Básico",
         content="HTML Grade",
     )
-    grade_adapter.save_grade_level(grade)
+    await grade_adapter.save(grade)
 
     ref = StudyProgramRef(
         id=2000,
@@ -192,15 +197,16 @@ def test_save_and_find_study_program_ref(session):
         title="Ref Programa",
         content="HTML Ref",
     )
-    ref_adapter.save_study_program_ref(ref)
+    await ref_adapter.save(ref)
 
-    found = ref_adapter.find_study_program_ref_by_url("http://test.url/ref")
+    found = await ref_adapter.find_by_url("http://test.url/ref")
     assert found is not None
     assert found.title == "Ref Programa"
     assert found.content == "HTML Ref"
 
 
-def test_save_and_find_study_program(session):
+@pytest.mark.asyncio
+async def test_save_and_find_study_program(session):
     curr_adapter = SqlCurriculumRepositoryAdapter(session)
     mod_adapter = SqlModalityRepositoryAdapter(session)
     sub_adapter = SqlSubjectRepositoryAdapter(session)
@@ -211,7 +217,7 @@ def test_save_and_find_study_program(session):
     curr = Curriculum(
         id=1, title="Parvularia", url="http://test.url/curr", content="HTML"
     )
-    curr_adapter.save(curr)
+    await curr_adapter.save(curr)
 
     mod = Modality(
         id=10,
@@ -220,7 +226,7 @@ def test_save_and_find_study_program(session):
         title="Nivel Medio",
         content="HTML Mod",
     )
-    mod_adapter.save(mod)
+    await mod_adapter.save(mod)
 
     sub = Subject(
         id=100,
@@ -229,7 +235,7 @@ def test_save_and_find_study_program(session):
         title="Matemáticas",
         content="HTML Sub",
     )
-    sub_adapter.save_subject(sub)
+    await sub_adapter.save(sub)
 
     grade = GradeLevel(
         id=1000,
@@ -238,7 +244,7 @@ def test_save_and_find_study_program(session):
         title="1 Básico",
         content="HTML Grade",
     )
-    grade_adapter.save_grade_level(grade)
+    await grade_adapter.save(grade)
 
     ref = StudyProgramRef(
         id=2000,
@@ -247,7 +253,7 @@ def test_save_and_find_study_program(session):
         title="Ref Programa",
         content="HTML Ref",
     )
-    ref_adapter.save_study_program_ref(ref)
+    await ref_adapter.save(ref)
 
     prog = StudyProgram(
         id=3000,
@@ -257,9 +263,9 @@ def test_save_and_find_study_program(session):
         content=b"binary pdf data",
         checksum="abcd",
     )
-    prog_adapter.save_study_program(prog)
+    await prog_adapter.save(prog)
 
-    found = prog_adapter.find_study_program_by_url("http://test.url/prog.pdf")
+    found = await prog_adapter.find_by_url("http://test.url/prog.pdf")
     assert found is not None
     assert found.title == "Art-1.pdf"
     assert found.content == b"binary pdf data"

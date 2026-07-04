@@ -8,26 +8,22 @@ All rights reserved.
 """
 
 from typing import Optional
+
 from sqlmodel import Session, select
-from domain.port.outbound.study_program_ref_repository import (
-    StudyProgramRefRepository,
-)
 
-# Domain models
 from domain.model.study_program_ref import StudyProgramRef as DomainStudyProgramRef
-
-# SQLModel models
+from domain.port.outbound import KnowledgeRepository
 from infrastructure.models.study_program_ref import (
     StudyProgramRef as SqlStudyProgramRef,
 )
 
 
-class SqlStudyProgramRefRepositoryAdapter(StudyProgramRefRepository):
+class SqlStudyProgramRefRepositoryAdapter(KnowledgeRepository[DomainStudyProgramRef]):
     def __init__(self, session: Session):
         self.session = session
 
-    def find_study_program_ref_by_url(
-        self, url: str
+    async def find_by_url(
+            self, url: str
     ) -> Optional[DomainStudyProgramRef]:
         statement = select(SqlStudyProgramRef).where(SqlStudyProgramRef.url == url)
         sql_ref = self.session.exec(statement).first()
@@ -42,8 +38,8 @@ class SqlStudyProgramRefRepositoryAdapter(StudyProgramRefRepository):
             )
         return None
 
-    def save_study_program_ref(
-        self, study_program_ref: DomainStudyProgramRef
+    async def save(
+            self, study_program_ref: DomainStudyProgramRef
     ) -> DomainStudyProgramRef:
         statement = select(SqlStudyProgramRef).where(
             SqlStudyProgramRef.url == study_program_ref.url
@@ -68,7 +64,7 @@ class SqlStudyProgramRefRepositoryAdapter(StudyProgramRefRepository):
         study_program_ref.id = sql_ref.id
         return study_program_ref
 
-    def find_study_program_ref_by_id(self, id: int) -> Optional[DomainStudyProgramRef]:
+    async def find_by_id(self, id: int) -> Optional[DomainStudyProgramRef]:
         statement = select(SqlStudyProgramRef).where(SqlStudyProgramRef.id == id)
         sql_ref = self.session.exec(statement).first()
         if sql_ref:
@@ -82,8 +78,8 @@ class SqlStudyProgramRefRepositoryAdapter(StudyProgramRefRepository):
             )
         return None
 
-    def list_study_program_refs(
-        self, grade_level_id: Optional[int] = None
+    async def list(
+            self, grade_level_id: Optional[int] = None
     ) -> list[DomainStudyProgramRef]:
         statement = select(SqlStudyProgramRef)
         if grade_level_id is not None:

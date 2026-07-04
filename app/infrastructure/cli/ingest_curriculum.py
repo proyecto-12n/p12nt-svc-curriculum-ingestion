@@ -72,7 +72,8 @@ def run_cli():
             study_program_repository=study_program_repo,
             downloader_provider=downloader_provider,
         )
-        use_case.execute(refresh=args.refresh)
+        import asyncio
+        asyncio.run(use_case.execute(refresh=args.refresh))
 
     logger.info("Ingestion completed successfully.")
 

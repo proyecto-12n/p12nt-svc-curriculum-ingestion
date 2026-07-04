@@ -20,7 +20,7 @@ class SqlModalityRepositoryAdapter(KnowledgeRepository[DomainModality]):
     def __init__(self, session: Session):
         self.session = session
 
-    def find_by_id(self, id: int) -> Optional[DomainModality]:
+    async def find_by_id(self, id: int) -> Optional[DomainModality]:
         statement = select(SqlModality).where(SqlModality.id == id)
         sql_mod = self.session.exec(statement).first()
         if sql_mod:
@@ -34,7 +34,7 @@ class SqlModalityRepositoryAdapter(KnowledgeRepository[DomainModality]):
             )
         return None
 
-    def find_by_url(self, url: str) -> Optional[DomainModality]:
+    async def find_by_url(self, url: str) -> Optional[DomainModality]:
         statement = select(SqlModality).where(SqlModality.url == url)
         sql_mod = self.session.exec(statement).first()
         if sql_mod:
@@ -48,7 +48,7 @@ class SqlModalityRepositoryAdapter(KnowledgeRepository[DomainModality]):
             )
         return None
 
-    def save(self, modality: DomainModality) -> DomainModality:
+    async def save(self, modality: DomainModality) -> DomainModality:
         statement = select(SqlModality).where(SqlModality.url == modality.url)
         sql_mod = self.session.exec(statement).first()
         if sql_mod:
@@ -70,7 +70,7 @@ class SqlModalityRepositoryAdapter(KnowledgeRepository[DomainModality]):
         modality.id = sql_mod.id
         return modality
 
-    def list(
+    async def list(
             self, curriculum_id: Optional[int] = None
     ) -> List[DomainModality]:
         statement = select(SqlModality)

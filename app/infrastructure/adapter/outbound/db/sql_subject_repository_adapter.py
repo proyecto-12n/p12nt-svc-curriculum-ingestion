@@ -7,23 +7,24 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from typing import Optional
+from typing import Optional, List
+from warnings import deprecated
+
 from sqlmodel import Session, select
-from domain.port.outbound.subject_repository import SubjectRepository
 
-# Domain models
 from domain.model.subject import Subject as DomainSubject
+from domain.port.outbound import KnowledgeRepository
 
-# SQLModel models
 from infrastructure.models.subject import Subject as SqlSubject
 
 
-class SqlSubjectRepositoryAdapter(SubjectRepository):
+class SqlSubjectRepositoryAdapter(KnowledgeRepository[DomainSubject]):
     def __init__(self, session: Session):
         self.session = session
 
-    def find_subject_by_title_and_modality(
-        self, title: str, modality_id: int
+    @deprecated("Use find_by_url instead of find_subject_by_title_and_modality")
+    async def find_subject_by_title_and_modality(
+            self, title: str, modality_id: int
     ) -> Optional[DomainSubject]:
         statement = select(SqlSubject).where(
             SqlSubject.title == title, SqlSubject.modality_id == modality_id
@@ -40,7 +41,52 @@ class SqlSubjectRepositoryAdapter(SubjectRepository):
             )
         return None
 
-    def save_subject(self, subject: DomainSubject) -> DomainSubject:
+    async def find_by_id(self, id: int) -> Optional[DomainSubject]:
+        statement = select(SqlSubject).where(SqlSubject.id == id)
+        sql_sub = self.session.exec(statement).first()
+        if sql_sub:
+            return DomainSubject(
+                id=sql_sub.id,
+                title=sql_sub.title,
+                modality_id=sql_sub.modality_id,
+                url=sql_sub.url,
+                content=sql_sub.content,
+                extracted_at=sql_sub.extracted_at,
+            )
+        return None
+
+    async def find_by_url(self, url: str) -> Optional[DomainSubject]:
+        statement = select(SqlSubject).where(SqlSubject.url == url)
+        sql_sub = self.session.exec(statement).first()
+        if sql_sub:
+            return DomainSubject(
+                id=sql_sub.id,
+                title=sql_sub.title,
+                modality_id=sql_sub.modality_id,
+                url=sql_sub.url,
+                content=sql_sub.content,
+                extracted_at=sql_sub.extracted_at,
+            )
+        return None
+
+    async def list(self, modality_id: Optional[int] = None) -> List[DomainSubject]:
+        statement = select(SqlSubject)
+        if modality_id is not None:
+            statement = statement.where(SqlSubject.modality_id == modality_id)
+        results = self.session.exec(statement).all()
+        return [
+            DomainSubject(
+                id=row.id,
+                title=row.title,
+                modality_id=row.modality_id,
+                url=row.url,
+                content=row.content,
+                extracted_at=row.extracted_at,
+            )
+            for row in results
+        ]
+
+    async def save(self, subject: DomainSubject) -> DomainSubject:
         statement = select(SqlSubject).where(
             SqlSubject.title == subject.title,
             SqlSubject.modality_id == subject.modality_id,
@@ -63,34 +109,3 @@ class SqlSubjectRepositoryAdapter(SubjectRepository):
         self.session.refresh(sql_sub)
         subject.id = sql_sub.id
         return subject
-
-    def find_subject_by_id(self, id: int) -> Optional[DomainSubject]:
-        statement = select(SqlSubject).where(SqlSubject.id == id)
-        sql_sub = self.session.exec(statement).first()
-        if sql_sub:
-            return DomainSubject(
-                id=sql_sub.id,
-                title=sql_sub.title,
-                modality_id=sql_sub.modality_id,
-                url=sql_sub.url,
-                content=sql_sub.content,
-                extracted_at=sql_sub.extracted_at,
-            )
-        return None
-
-    def list_subjects(self, modality_id: Optional[int] = None) -> list[DomainSubject]:
-        statement = select(SqlSubject)
-        if modality_id is not None:
-            statement = statement.where(SqlSubject.modality_id == modality_id)
-        results = self.session.exec(statement).all()
-        return [
-            DomainSubject(
-                id=row.id,
-                title=row.title,
-                modality_id=row.modality_id,
-                url=row.url,
-                content=row.content,
-                extracted_at=row.extracted_at,
-            )
-            for row in results
-        ]

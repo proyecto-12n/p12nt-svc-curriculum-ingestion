@@ -3,10 +3,12 @@ import logging
 from datetime import datetime
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 from app.config import Settings
 from app.utils import log_execution_time
 from domain.exceptions import EntityNotFoundException, DomainException
-from domain.model import Curriculum, Modality
+from domain.model import Curriculum, Modality, Subject, GradeLevel, StudyProgramRef
 from domain.model.study_program import StudyProgram
 from domain.port.outbound.knowledge_repository import KnowledgeRepository
 from infrastructure.database import get_db
@@ -65,52 +67,46 @@ def test_get_db():
         mock_session.close.assert_called_once()
 
 
-def test_curriculum_repository_protocol():
-    from domain.port.outbound import (
-        SubjectRepository,
-        GradeLevelRepository,
-        StudyProgramRefRepository,
-        StudyProgramRepository,
-    )
-
+@pytest.mark.asyncio
+async def test_curriculum_repository_protocol():
     class DummyCurriculumRepo(KnowledgeRepository[Curriculum]):
         pass
 
     repo1 = DummyCurriculumRepo()
-    repo1.find_by_url("url")
-    repo1.save(None)
+    await repo1.find_by_url("url")
+    await repo1.save(None)
 
     class DummyModalityRepo(KnowledgeRepository[Modality]):
         pass
 
     repo2 = DummyModalityRepo()
-    repo2.find_by_url("url")
-    repo2.save(None)
+    await repo2.find_by_url("url")
+    await repo2.save(None)
 
-    class DummySubjectRepo(SubjectRepository):
+    class DummySubjectRepo(KnowledgeRepository[Subject]):
         pass
 
     repo3 = DummySubjectRepo()
-    repo3.find_subject_by_title_and_modality("title", 1)
-    repo3.save_subject(None)
+    await repo3.find_by_url("url")
+    await repo3.save(None)
 
-    class DummyGradeLevelRepo(GradeLevelRepository):
+    class DummyGradeLevelRepo(KnowledgeRepository[GradeLevel]):
         pass
 
     repo4 = DummyGradeLevelRepo()
-    repo4.find_grade_level_by_title_and_subject("title", 1)
-    repo4.save_grade_level(None)
+    await repo4.find_by_url("url")
+    await repo4.save(None)
 
-    class DummyStudyProgramRefRepo(StudyProgramRefRepository):
+    class DummyStudyProgramRefRepo(KnowledgeRepository[StudyProgramRef]):
         pass
 
     repo5 = DummyStudyProgramRefRepo()
-    repo5.find_study_program_ref_by_url("url")
-    repo5.save_study_program_ref(None)
+    await repo5.find_by_url("url")
+    await repo5.save(None)
 
-    class DummyStudyProgramRepo(StudyProgramRepository):
+    class DummyStudyProgramRepo(KnowledgeRepository[StudyProgram]):
         pass
 
     repo6 = DummyStudyProgramRepo()
-    repo6.find_study_program_by_url("url")
-    repo6.save_study_program(None)
+    await repo6.find_by_url("url")
+    await repo6.save(None)

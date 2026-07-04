@@ -14,14 +14,14 @@ K = TypeVar("K")
 
 
 class KnowledgeRepository(Protocol[K]):
-    def find_by_id(self, id: int) -> Optional[K]:
+    async def find_by_id(self, id: int) -> Optional[K]:
         pass
 
-    def find_by_url(self, url: str) -> Optional[K]:
+    async def find_by_url(self, url: str) -> Optional[K]:
         pass
 
-    def list(self) -> List[K]:
+    async def list(self, parent_id: Optional[int] = None) -> List[K]:
         pass
 
-    def save(self, knowledge: K) -> K:
+    async def save(self, knowledge: K) -> K:
         pass

@@ -12,5 +12,5 @@ from domain.model.grade_level import GradeLevel
 
 
 class ListGradeLevelsUseCase(Protocol):
-    async def execute(self, subject_id: Optional[int] = None) -> List[GradeLevel]:
+    async def execute(self, parent_id: Optional[int] = None) -> List[GradeLevel]:
         pass

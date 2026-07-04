@@ -20,7 +20,7 @@ class SqlCurriculumRepositoryAdapter(KnowledgeRepository[DomainCurriculum]):
     def __init__(self, session: Session):
         self.session = session
 
-    def find_by_id(self, id: int) -> Optional[DomainCurriculum]:
+    async def find_by_id(self, id: int) -> Optional[DomainCurriculum]:
         statement = select(SqlCurriculum).where(SqlCurriculum.id == id)
         sql_cur = self.session.exec(statement).first()
         if sql_cur:
@@ -33,7 +33,7 @@ class SqlCurriculumRepositoryAdapter(KnowledgeRepository[DomainCurriculum]):
             )
         return None
 
-    def find_by_url(self, url: str) -> Optional[DomainCurriculum]:
+    async def find_by_url(self, url: str) -> Optional[DomainCurriculum]:
         statement = select(SqlCurriculum).where(SqlCurriculum.url == url)
         sql_cur = self.session.exec(statement).first()
         if sql_cur:
@@ -46,7 +46,7 @@ class SqlCurriculumRepositoryAdapter(KnowledgeRepository[DomainCurriculum]):
             )
         return None
 
-    def list(self) -> List[DomainCurriculum]:
+    async def list(self, parent_id: Optional[int] = None) -> List[DomainCurriculum]:
         statement = select(SqlCurriculum)
         results = self.session.exec(statement).all()
         return [
@@ -60,7 +60,7 @@ class SqlCurriculumRepositoryAdapter(KnowledgeRepository[DomainCurriculum]):
             for row in results
         ]
 
-    def save(self, curriculum: DomainCurriculum) -> DomainCurriculum:
+    async def save(self, curriculum: DomainCurriculum) -> DomainCurriculum:
         statement = select(SqlCurriculum).where(SqlCurriculum.url == curriculum.url)
         sql_cur = self.session.exec(statement).first()
         if sql_cur:
