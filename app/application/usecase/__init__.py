@@ -13,8 +13,14 @@ from application.usecase.convert_pdf_to_markdown_usecase import (
 from application.usecase.curriculum_node_resolver import (
     CurriculumNodeResolver,
 )
+from application.usecase.get_curriculum_hierarchy_item_usecase import (
+    GetCurriculumHierarchyItemUseCaseImpl,
+)
 from application.usecase.ingest_curriculum_usecase import (
     IngestCurriculumUseCaseImpl,
+)
+from application.usecase.list_curriculum_hierarchy_item_usecase import (
+    ListCurriculumHierarchyItemUseCaseImpl,
 )
 from application.usecase.study_program_resolver import (
     StudyProgramResolver,
@@ -25,4 +31,6 @@ __all__ = [
     "CurriculumNodeResolver",
     "StudyProgramResolver",
     "ConvertPDFToMarkdownUseCaseImpl",
+    "GetCurriculumHierarchyItemUseCaseImpl",
+    "ListCurriculumHierarchyItemUseCaseImpl",
 ]
