@@ -17,4 +17,4 @@ class IngestCurriculumUseCase(Protocol):
         If a node is already present in the database, it skips fetching it unless refresh is True.
         If any extraction fails, logs the error and skips the node/branch.
         """
-        pass
+        ...

@@ -15,12 +15,16 @@ from sqlmodel import Session
 from application.usecase.get_curriculum_hierarchy_item_usecase import (
     GetCurriculumHierarchyItemUseCaseImpl,
 )
-from application.usecase.list_modalities_usecase import ListModalitiesUseCaseImpl
+from application.usecase.list_curriculum_hierarchy_item_usecase import (
+    ListCurriculumHierarchyItemUseCaseImpl,
+)
 from domain.model import Modality
 from domain.port.inbound.get_curriculum_hierarchy_item_use_case import (
     GetCurriculumHierarchyItemUseCase,
 )
-from domain.port.inbound.list_modalities_use_case import ListModalitiesUseCase
+from domain.port.inbound.list_curriculum_hierarchy_item_use_case import (
+    ListCurriculumHierarchyItemUseCase,
+)
 from infrastructure.adapter.inbound.web.dto.modality_response import (
     ModalityResponse,
 )
@@ -34,9 +38,9 @@ router = APIRouter(prefix="/modalities", tags=["Modalities"])
 
 def get_list_modalities_use_case(
     session: Session = Depends(get_db),
-) -> ListModalitiesUseCase:
+) -> ListCurriculumHierarchyItemUseCase[Modality]:
     repo = SqlModalityRepositoryAdapter(session)
-    return ListModalitiesUseCaseImpl(repo)
+    return ListCurriculumHierarchyItemUseCaseImpl(repo)
 
 
 def get_get_modality_use_case(
@@ -49,7 +53,9 @@ def get_get_modality_use_case(
 @router.get("", response_model=List[ModalityResponse])
 async def list_modalities(
     curriculum_id: Optional[int] = Query(None, description="Filter by curriculum ID"),
-    use_case: ListModalitiesUseCase = Depends(get_list_modalities_use_case),
+    use_case: ListCurriculumHierarchyItemUseCase[Modality] = Depends(
+        get_list_modalities_use_case
+    ),
 ):
     results = await use_case.execute(curriculum_id)
     return [ModalityResponse.from_domain(m) for m in results]

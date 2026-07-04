@@ -15,14 +15,16 @@ from sqlmodel import Session
 from application.usecase.get_curriculum_hierarchy_item_usecase import (
     GetCurriculumHierarchyItemUseCaseImpl,
 )
-from application.usecase.list_study_program_refs_usecase import (
-    ListStudyProgramRefsUseCaseImpl,
+from application.usecase.list_curriculum_hierarchy_item_usecase import (
+    ListCurriculumHierarchyItemUseCaseImpl,
 )
 from domain.model import StudyProgramRef
-from domain.port.inbound.list_study_program_refs_use_case import (
-    ListStudyProgramRefsUseCase,
+from domain.port.inbound.get_curriculum_hierarchy_item_use_case import (
+    GetCurriculumHierarchyItemUseCase,
 )
-from domain.port.outbound import CurriculumHierarchyRepository
+from domain.port.inbound.list_curriculum_hierarchy_item_use_case import (
+    ListCurriculumHierarchyItemUseCase,
+)
 from infrastructure.adapter.inbound.web.dto.study_program_ref_response import (
     StudyProgramRefResponse,
 )
@@ -36,14 +38,14 @@ router = APIRouter(prefix="/study-program-refs", tags=["Study Program Refs"])
 
 def get_list_study_program_refs_use_case(
     session: Session = Depends(get_db),
-) -> ListStudyProgramRefsUseCase:
+) -> ListCurriculumHierarchyItemUseCase[StudyProgramRef]:
     repo = SqlStudyProgramRefRepositoryAdapter(session)
-    return ListStudyProgramRefsUseCaseImpl(repo)
+    return ListCurriculumHierarchyItemUseCaseImpl(repo)
 
 
 def get_get_study_program_ref_use_case(
     session: Session = Depends(get_db),
-) -> CurriculumHierarchyRepository[StudyProgramRef]:
+) -> GetCurriculumHierarchyItemUseCase[StudyProgramRef]:
     repo = SqlStudyProgramRefRepositoryAdapter(session)
     return GetCurriculumHierarchyItemUseCaseImpl(repo)
 
@@ -51,7 +53,7 @@ def get_get_study_program_ref_use_case(
 @router.get("", response_model=List[StudyProgramRefResponse])
 async def list_study_program_refs(
     grade_level_id: Optional[int] = Query(None, description="Filter by grade level ID"),
-    use_case: ListStudyProgramRefsUseCase = Depends(
+    use_case: ListCurriculumHierarchyItemUseCase[StudyProgramRef] = Depends(
         get_list_study_program_refs_use_case
     ),
 ):
@@ -62,7 +64,7 @@ async def list_study_program_refs(
 @router.get("/{id}", response_model=StudyProgramRefResponse)
 async def get_study_program_ref(
     id: int,
-    use_case: CurriculumHierarchyRepository[StudyProgramRef] = Depends(
+    use_case: GetCurriculumHierarchyItemUseCase[StudyProgramRef] = Depends(
         get_get_study_program_ref_use_case
     ),
 ):

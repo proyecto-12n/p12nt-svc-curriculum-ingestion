@@ -15,15 +15,15 @@ from sqlmodel import Session
 from application.usecase.get_curriculum_hierarchy_item_usecase import (
     GetCurriculumHierarchyItemUseCaseImpl,
 )
-from application.usecase.list_study_programs_usecase import (
-    ListStudyProgramsUseCaseImpl,
+from application.usecase.list_curriculum_hierarchy_item_usecase import (
+    ListCurriculumHierarchyItemUseCaseImpl,
 )
 from domain.model import StudyProgram
 from domain.port.inbound.get_curriculum_hierarchy_item_use_case import (
     GetCurriculumHierarchyItemUseCase,
 )
-from domain.port.inbound.list_study_programs_use_case import (
-    ListStudyProgramsUseCase,
+from domain.port.inbound.list_curriculum_hierarchy_item_use_case import (
+    ListCurriculumHierarchyItemUseCase,
 )
 from infrastructure.adapter.inbound.web.dto.study_program_response import (
     StudyProgramResponse,
@@ -38,9 +38,9 @@ router = APIRouter(prefix="/study-programs", tags=["Study Programs"])
 
 def get_list_study_programs_use_case(
     session: Session = Depends(get_db),
-) -> ListStudyProgramsUseCase:
+) -> ListCurriculumHierarchyItemUseCase[StudyProgram]:
     repo = SqlStudyProgramRepositoryAdapter(session)
-    return ListStudyProgramsUseCaseImpl(repo)
+    return ListCurriculumHierarchyItemUseCaseImpl(repo)
 
 
 def get_get_study_program_use_case(
@@ -55,7 +55,9 @@ async def list_study_programs(
     study_program_ref_id: Optional[int] = Query(
         None, description="Filter by study program ref ID"
     ),
-    use_case: ListStudyProgramsUseCase = Depends(get_list_study_programs_use_case),
+    use_case: ListCurriculumHierarchyItemUseCase[StudyProgram] = Depends(
+        get_list_study_programs_use_case
+    ),
 ):
     results = await use_case.execute(study_program_ref_id)
     return [StudyProgramResponse.from_domain(p) for p in results]

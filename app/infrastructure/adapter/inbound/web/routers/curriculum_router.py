@@ -15,12 +15,16 @@ from sqlmodel import Session
 from application.usecase.get_curriculum_hierarchy_item_usecase import (
     GetCurriculumHierarchyItemUseCaseImpl,
 )
-from application.usecase.list_curriculums_usecase import ListCurriculumsUseCaseImpl
+from application.usecase.list_curriculum_hierarchy_item_usecase import (
+    ListCurriculumHierarchyItemUseCaseImpl,
+)
 from domain.model import Curriculum
 from domain.port.inbound.get_curriculum_hierarchy_item_use_case import (
     GetCurriculumHierarchyItemUseCase,
 )
-from domain.port.inbound.list_curriculums_use_case import ListCurriculumsUseCase
+from domain.port.inbound.list_curriculum_hierarchy_item_use_case import (
+    ListCurriculumHierarchyItemUseCase,
+)
 from infrastructure.adapter.inbound.web.dto.curriculum_response import (
     CurriculumResponse,
 )
@@ -34,9 +38,9 @@ router = APIRouter(prefix="/curriculums", tags=["Curriculums"])
 
 def get_list_curriculums_use_case(
     session: Session = Depends(get_db),
-) -> ListCurriculumsUseCase:
+) -> ListCurriculumHierarchyItemUseCase[Curriculum]:
     repo = SqlCurriculumRepositoryAdapter(session)
-    return ListCurriculumsUseCaseImpl(repo)
+    return ListCurriculumHierarchyItemUseCaseImpl(repo)
 
 
 def get_get_curriculum_use_case(
@@ -48,7 +52,9 @@ def get_get_curriculum_use_case(
 
 @router.get("", response_model=List[CurriculumResponse])
 async def list_curriculums(
-    use_case: ListCurriculumsUseCase = Depends(get_list_curriculums_use_case),
+    use_case: ListCurriculumHierarchyItemUseCase[Curriculum] = Depends(
+        get_list_curriculums_use_case
+    ),
 ):
     results = await use_case.execute()
     return [CurriculumResponse.from_domain(c) for c in results]

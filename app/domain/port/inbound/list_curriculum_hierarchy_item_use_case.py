@@ -7,10 +7,10 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from typing import Protocol, Optional, TypeVar
+from typing import Protocol, List, TypeVar, Optional
 
 K = TypeVar("K")
 
 
-class GetCurriculumHierarchyItemUseCase(Protocol[K]):
-    async def execute(self, id: int) -> Optional[K]: ...
+class ListCurriculumHierarchyItemUseCase(Protocol[K]):
+    async def execute(self, parent_id: Optional[int] = None) -> List[K]: ...

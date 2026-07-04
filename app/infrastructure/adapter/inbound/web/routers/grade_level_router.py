@@ -15,12 +15,16 @@ from sqlmodel import Session
 from application.usecase.get_curriculum_hierarchy_item_usecase import (
     GetCurriculumHierarchyItemUseCaseImpl,
 )
-from application.usecase.list_grade_levels_usecase import ListGradeLevelsUseCaseImpl
+from application.usecase.list_curriculum_hierarchy_item_usecase import (
+    ListCurriculumHierarchyItemUseCaseImpl,
+)
 from domain.model import GradeLevel
 from domain.port.inbound.get_curriculum_hierarchy_item_use_case import (
     GetCurriculumHierarchyItemUseCase,
 )
-from domain.port.inbound.list_grade_levels_use_case import ListGradeLevelsUseCase
+from domain.port.inbound.list_curriculum_hierarchy_item_use_case import (
+    ListCurriculumHierarchyItemUseCase,
+)
 from infrastructure.adapter.inbound.web.dto.grade_level_response import (
     GradeLevelResponse,
 )
@@ -34,9 +38,9 @@ router = APIRouter(prefix="/grade-levels", tags=["Grade Levels"])
 
 def get_list_grade_levels_use_case(
     session: Session = Depends(get_db),
-) -> ListGradeLevelsUseCase:
+) -> ListCurriculumHierarchyItemUseCase[GradeLevel]:
     repo = SqlGradeLevelRepositoryAdapter(session)
-    return ListGradeLevelsUseCaseImpl(repo)
+    return ListCurriculumHierarchyItemUseCaseImpl(repo)
 
 
 def get_get_grade_level_use_case(
@@ -49,7 +53,9 @@ def get_get_grade_level_use_case(
 @router.get("", response_model=List[GradeLevelResponse])
 async def list_grade_levels(
     subject_id: Optional[int] = Query(None, description="Filter by subject ID"),
-    use_case: ListGradeLevelsUseCase = Depends(get_list_grade_levels_use_case),
+    use_case: ListCurriculumHierarchyItemUseCase[GradeLevel] = Depends(
+        get_list_grade_levels_use_case
+    ),
 ):
     results = await use_case.execute(subject_id)
     return [GradeLevelResponse.from_domain(g) for g in results]
