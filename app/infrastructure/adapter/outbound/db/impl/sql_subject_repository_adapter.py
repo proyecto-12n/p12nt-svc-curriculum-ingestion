@@ -27,6 +27,14 @@ class SqlSubjectRepositoryAdapter(CurriculumHierarchyRepository[Subject]):
         statement = select(Subject).where(Subject.url == url)
         return self.session.exec(statement).first()
 
+    async def find_subject_by_title_and_modality(
+        self, title: str, modality_id: int
+    ) -> Optional[Subject]:
+        statement = select(Subject).where(
+            Subject.title == title, Subject.parent_id == modality_id
+        )
+        return self.session.exec(statement).first()
+
     async def list(self, modality_id: Optional[int] = None) -> List[Subject]:
         statement = select(Subject)
         if modality_id is not None:
@@ -35,10 +43,14 @@ class SqlSubjectRepositoryAdapter(CurriculumHierarchyRepository[Subject]):
         return [row for row in results]
 
     async def save(self, subject: Subject) -> Subject:
-        statement = select(Subject).where(Subject.url == subject.url)
+        parent_id = getattr(subject, "parent_id", subject.modality_id)
+        statement = select(Subject).where(
+            (Subject.url == subject.url) | (Subject.id == subject.id)
+        )
         sql_sub = self.session.exec(statement).first()
         if sql_sub:
-            sql_sub.parent_id = subject.parent_id
+            sql_sub.url = subject.url
+            sql_sub.parent_id = parent_id
             sql_sub.title = subject.title
             sql_sub.content = subject.content
             sql_sub.extracted_at = subject.extracted_at
@@ -46,7 +58,7 @@ class SqlSubjectRepositoryAdapter(CurriculumHierarchyRepository[Subject]):
             sql_sub = Subject(
                 id=subject.id,
                 url=subject.url,
-                parent_id=subject.parent_id,
+                parent_id=parent_id,
                 title=subject.title,
                 content=subject.content,
                 extracted_at=subject.extracted_at,

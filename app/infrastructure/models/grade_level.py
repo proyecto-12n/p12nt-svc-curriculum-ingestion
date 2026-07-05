@@ -22,3 +22,16 @@ class GradeLevel(SQLModel, table=True):
     title: str
     content: str
     extracted_at: datetime = Field(default_factory=datetime.utcnow)
+
+    def __init__(self, **data):
+        if "subject_id" in data and "parent_id" not in data:
+            data["parent_id"] = data.pop("subject_id")
+        super().__init__(**data)
+
+    @property
+    def subject_id(self) -> int:
+        return self.parent_id
+
+    @subject_id.setter
+    def subject_id(self, value: int) -> None:
+        self.parent_id = value

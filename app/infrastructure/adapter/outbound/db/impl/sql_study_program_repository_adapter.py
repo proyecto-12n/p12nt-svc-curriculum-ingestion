@@ -24,10 +24,13 @@ class SqlStudyProgramRepositoryAdapter(CurriculumHierarchyRepository[StudyProgra
         return self.session.exec(statement).first()
 
     async def save(self, study_program: StudyProgram) -> StudyProgram:
+        parent_id = getattr(
+            study_program, "parent_id", study_program.study_program_ref_id
+        )
         statement = select(StudyProgram).where(StudyProgram.url == study_program.url)
         sql_prog = self.session.exec(statement).first()
         if sql_prog:
-            sql_prog.parent_id = study_program.parent_id
+            sql_prog.parent_id = parent_id
             sql_prog.title = study_program.title
             sql_prog.content = study_program.content
             sql_prog.checksum = study_program.checksum
@@ -36,7 +39,7 @@ class SqlStudyProgramRepositoryAdapter(CurriculumHierarchyRepository[StudyProgra
             sql_prog = StudyProgram(
                 id=study_program.id,
                 url=study_program.url,
-                parent_id=study_program.parent_id,
+                parent_id=parent_id,
                 title=study_program.title,
                 content=study_program.content,
                 checksum=study_program.checksum,

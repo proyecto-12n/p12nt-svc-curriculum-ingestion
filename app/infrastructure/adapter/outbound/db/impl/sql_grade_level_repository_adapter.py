@@ -20,10 +20,14 @@ class SqlGradeLevelRepositoryAdapter(CurriculumHierarchyRepository[GradeLevel]):
         self.session = session
 
     async def save(self, grade_level: GradeLevel) -> GradeLevel:
-        statement = select(GradeLevel).where(GradeLevel.url == grade_level.url)
+        parent_id = getattr(grade_level, "parent_id", grade_level.subject_id)
+        statement = select(GradeLevel).where(
+            (GradeLevel.url == grade_level.url) | (GradeLevel.id == grade_level.id)
+        )
         sql_grade = self.session.exec(statement).first()
         if sql_grade:
-            sql_grade.parent_id = grade_level.parent_id
+            sql_grade.url = grade_level.url
+            sql_grade.parent_id = parent_id
             sql_grade.title = grade_level.title
             sql_grade.content = grade_level.content
             sql_grade.extracted_at = grade_level.extracted_at
@@ -31,7 +35,7 @@ class SqlGradeLevelRepositoryAdapter(CurriculumHierarchyRepository[GradeLevel]):
             sql_grade = GradeLevel(
                 id=grade_level.id,
                 url=grade_level.url,
-                parent_id=grade_level.parent_id,
+                parent_id=parent_id,
                 title=grade_level.title,
                 content=grade_level.content,
                 extracted_at=grade_level.extracted_at,
@@ -48,6 +52,14 @@ class SqlGradeLevelRepositoryAdapter(CurriculumHierarchyRepository[GradeLevel]):
 
     async def find_by_id(self, id: int) -> Optional[GradeLevel]:
         statement = select(GradeLevel).where(GradeLevel.id == id)
+        return self.session.exec(statement).first()
+
+    async def find_grade_level_by_title_and_subject(
+        self, title: str, subject_id: int
+    ) -> Optional[GradeLevel]:
+        statement = select(GradeLevel).where(
+            GradeLevel.title == title, GradeLevel.parent_id == subject_id
+        )
         return self.session.exec(statement).first()
 
     async def list(self, parent_id: Optional[int] = None) -> List[GradeLevel]:

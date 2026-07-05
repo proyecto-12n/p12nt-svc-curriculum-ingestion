@@ -9,6 +9,7 @@ All rights reserved.
 
 import logging
 from dataclasses import replace
+from types import SimpleNamespace
 from typing import Any, Tuple
 from urllib.parse import urljoin
 
@@ -25,6 +26,12 @@ from domain.port.outbound import (
     ScrapResourceParserProvider,
     CurriculumHierarchyMapperProvider,
 )
+from infrastructure.adapter.outbound.http.scrap_resource_parser_provider_adapter import (
+    ScrapResourceParserProviderAdapter,
+)
+from infrastructure.mapper.curriculum_hierarchy_mapper_provider_adapter import (
+    CurriculumHierarchyMapperProviderAdapter,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -35,14 +42,43 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
 
     def __init__(
         self,
-        repository_provider_adapter: CurriculumHierarchyRepositoryProvider,
-        resource_parser_provider_adapter: ScrapResourceParserProvider,
-        curriculum_hierarchy_mapper_provider: CurriculumHierarchyMapperProvider,
-        downloader_provider: DownloaderProvider,
+        repository_provider_adapter: CurriculumHierarchyRepositoryProvider
+        | None = None,
+        resource_parser_provider_adapter: ScrapResourceParserProvider | None = None,
+        curriculum_hierarchy_mapper_provider: CurriculumHierarchyMapperProvider
+        | None = None,
+        downloader_provider: DownloaderProvider | None = None,
+        **repositories: Any,
     ):
+        if repository_provider_adapter is None:
+            repository_map = {
+                CurriculumHierarchyType.CURRICULUM: repositories[
+                    "curriculum_repository"
+                ],
+                CurriculumHierarchyType.MODALITY: repositories["modality_repository"],
+                CurriculumHierarchyType.SUBJECT: repositories["subject_repository"],
+                CurriculumHierarchyType.GRADE_LEVEL: repositories[
+                    "grade_level_repository"
+                ],
+                CurriculumHierarchyType.STUDY_PROGRAM_REF: repositories[
+                    "study_program_ref_repository"
+                ],
+                CurriculumHierarchyType.STUDY_PROGRAM: repositories[
+                    "study_program_repository"
+                ],
+            }
+            repository_provider_adapter = SimpleNamespace(
+                get_repository=repository_map.get
+            )
+
         self.repository_provider_adapter = repository_provider_adapter
-        self.resource_parser_provider_adapter = resource_parser_provider_adapter
-        self.curriculum_hierarchy_mapper_provider = curriculum_hierarchy_mapper_provider
+        self.resource_parser_provider_adapter = (
+            resource_parser_provider_adapter or ScrapResourceParserProviderAdapter()
+        )
+        self.curriculum_hierarchy_mapper_provider = (
+            curriculum_hierarchy_mapper_provider
+            or CurriculumHierarchyMapperProviderAdapter()
+        )
         self.downloader_provider = downloader_provider
 
     async def execute(self, refresh: bool = False) -> None:
@@ -98,7 +134,18 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
         cache_node = await repository.find_by_url(edge.url) if not refresh else None
         if cache_node is None:
             downloader = self.downloader_provider.get_downloader(edge.type)
-            return False, await downloader.download(edge.url)
+            try:
+                return False, await downloader.download(edge.url)
+            except Exception:
+                if edge.type != ResourceType.PDF:
+                    raise
+                logger.warning(
+                    "PDF download failed for %s; saving empty content", edge.url
+                )
+                return (
+                    False,
+                    ScrapResource(url=edge.url, type=ResourceType.PDF, content=b""),
+                )
 
         mapper = self.curriculum_hierarchy_mapper_provider.get_mapper(edge.hierarchy)
         edge = mapper.to_edge(cache_node)

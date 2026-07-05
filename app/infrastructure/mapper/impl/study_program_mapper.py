@@ -30,7 +30,7 @@ class StudyProgramMapper(CurriculumHierarchyMapper[StudyProgram, bytes]):
     def to_model(self, edge: Edge[bytes]) -> StudyProgram:
         assert edge.hierarchy == CurriculumHierarchyType.STUDY_PROGRAM
         assert edge.parent_url
-        assert edge.content
+        assert edge.content is not None
         assert isinstance(edge.content, bytes), (
             "Content of edge should be bytes {0}".format(type(edge.content))
         )

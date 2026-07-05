@@ -22,3 +22,16 @@ class StudyProgramRef(SQLModel, table=True):
     title: str
     content: str
     extracted_at: datetime = Field(default_factory=datetime.utcnow)
+
+    def __init__(self, **data):
+        if "grade_level_id" in data and "parent_id" not in data:
+            data["parent_id"] = data.pop("grade_level_id")
+        super().__init__(**data)
+
+    @property
+    def grade_level_id(self) -> int:
+        return self.parent_id
+
+    @grade_level_id.setter
+    def grade_level_id(self, value: int) -> None:
+        self.parent_id = value

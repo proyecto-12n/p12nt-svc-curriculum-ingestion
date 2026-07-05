@@ -19,7 +19,7 @@ T = TypeVar("T")
 class Edge(Generic[T]):
     url: str
     type: ResourceType
-    hierarchy: CurriculumHierarchyType
+    hierarchy: Optional[CurriculumHierarchyType] = None
 
     parent_url: Optional[str] = None
     title: Optional[str] = None

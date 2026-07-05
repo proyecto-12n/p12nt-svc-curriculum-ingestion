@@ -28,10 +28,11 @@ class SqlModalityRepositoryAdapter(CurriculumHierarchyRepository[Modality]):
         return self.session.exec(statement).first()
 
     async def save(self, modality: Modality) -> Modality:
+        parent_id = getattr(modality, "parent_id", modality.curriculum_id)
         statement = select(Modality).where(Modality.url == modality.url)
         sql_mod = self.session.exec(statement).first()
         if sql_mod:
-            sql_mod.parent_id = modality.parent_id
+            sql_mod.parent_id = parent_id
             sql_mod.title = modality.title
             sql_mod.content = modality.content
             sql_mod.extracted_at = modality.extracted_at
@@ -39,7 +40,7 @@ class SqlModalityRepositoryAdapter(CurriculumHierarchyRepository[Modality]):
             sql_mod = Modality(
                 id=modality.id,
                 url=modality.url,
-                parent_id=modality.parent_id,
+                parent_id=parent_id,
                 title=modality.title,
                 content=modality.content,
                 extracted_at=modality.extracted_at,

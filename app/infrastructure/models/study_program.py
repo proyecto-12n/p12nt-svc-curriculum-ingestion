@@ -23,3 +23,16 @@ class StudyProgram(SQLModel, table=True):
     content: bytes
     checksum: str
     extracted_at: datetime = Field(default_factory=datetime.utcnow)
+
+    def __init__(self, **data):
+        if "study_program_ref_id" in data and "parent_id" not in data:
+            data["parent_id"] = data.pop("study_program_ref_id")
+        super().__init__(**data)
+
+    @property
+    def study_program_ref_id(self) -> int:
+        return self.parent_id
+
+    @study_program_ref_id.setter
+    def study_program_ref_id(self, value: int) -> None:
+        self.parent_id = value
