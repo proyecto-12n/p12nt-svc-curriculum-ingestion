@@ -7,7 +7,7 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from datetime import datetime
+from datetime import UTC, datetime
 from sqlmodel import Field, SQLModel
 
 
@@ -19,4 +19,4 @@ class Curriculum(SQLModel, table=True):
     url: str = Field(unique=True)
     title: str
     content: str
-    extracted_at: datetime = Field(default_factory=datetime.utcnow)
+    extracted_at: datetime = Field(default_factory=lambda: datetime.now(UTC))

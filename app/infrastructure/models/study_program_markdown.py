@@ -7,7 +7,7 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 from sqlmodel import Field, SQLModel
 
@@ -22,4 +22,4 @@ class StudyProgramMarkdown(SQLModel, table=True):
     )
     content: str
     tool_name: str
-    generated_at: datetime = Field(default_factory=datetime.utcnow)
+    generated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
