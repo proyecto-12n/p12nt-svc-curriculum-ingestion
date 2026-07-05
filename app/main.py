@@ -7,6 +7,9 @@ from infrastructure.database import init_db
 from infrastructure.adapter.inbound.web.routers.curriculum_router import (
     router as curriculum_router,
 )
+from infrastructure.adapter.inbound.web.routers.data_quality_kpi_router import (
+    router as data_quality_kpi_router,
+)
 from infrastructure.adapter.inbound.web.routers.modality_router import (
     router as modality_router,
 )
@@ -54,6 +57,7 @@ def health_check():
 
 
 app.include_router(curriculum_router, prefix=settings.API_V1_STR)
+app.include_router(data_quality_kpi_router, prefix=settings.API_V1_STR)
 app.include_router(modality_router, prefix=settings.API_V1_STR)
 app.include_router(subject_router, prefix=settings.API_V1_STR)
 app.include_router(grade_level_router, prefix=settings.API_V1_STR)
