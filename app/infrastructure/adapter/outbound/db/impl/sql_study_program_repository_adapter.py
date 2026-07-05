@@ -13,6 +13,8 @@ from sqlmodel import Session, select
 
 from infrastructure.adapter.outbound.db import CurriculumHierarchyRepository
 from infrastructure.models.study_program import StudyProgram
+from infrastructure.models.study_program_markdown import StudyProgramMarkdown
+from infrastructure.util import generate_id
 
 
 class SqlStudyProgramRepositoryAdapter(CurriculumHierarchyRepository[StudyProgram]):
@@ -61,3 +63,33 @@ class SqlStudyProgramRepositoryAdapter(CurriculumHierarchyRepository[StudyProgra
             statement = statement.where(StudyProgram.parent_id == study_program_ref_id)
         results = self.session.exec(statement).all()
         return [row for row in results]
+
+    async def find_markdown_by_study_program_id_and_tool_name(
+        self, study_program_id: int, tool_name: str
+    ) -> Optional[StudyProgramMarkdown]:
+        statement = select(StudyProgramMarkdown).where(
+            StudyProgramMarkdown.study_program_id == study_program_id,
+            StudyProgramMarkdown.tool_name == tool_name,
+        )
+        return self.session.exec(statement).first()
+
+    async def save_markdown(
+        self, study_program: StudyProgram, content: str, tool_name: str
+    ) -> StudyProgramMarkdown:
+        markdown = await self.find_markdown_by_study_program_id_and_tool_name(
+            study_program.id, tool_name
+        )
+        if markdown:
+            markdown.content = content
+            markdown.tool_name = tool_name
+        else:
+            markdown = StudyProgramMarkdown(
+                id=generate_id(tool_name, study_program.title),
+                study_program_id=study_program.id,
+                content=content,
+                tool_name=tool_name,
+            )
+            self.session.add(markdown)
+        self.session.commit()
+        self.session.refresh(markdown)
+        return markdown

@@ -14,6 +14,12 @@ from sqlmodel import Session
 from application.usecase.ingest_curriculum_usecase import (
     IngestCurriculumUseCaseImpl,
 )
+from application.usecase.convert_pdf_to_markdown_usecase import (
+    ConvertPDFToMarkdownUseCaseImpl,
+)
+from infrastructure.adapter.external.pdf_converter.pdf_converter_provider import (
+    PDFConverterProvider,
+)
 from infrastructure.adapter.outbound.db import (
     SqlCurriculumHierarchyRepositoryProviderAdapter,
 )
@@ -21,6 +27,7 @@ from infrastructure.adapter.outbound.http.scrap_resource_parser_provider_adapter
     ScrapResourceParserProviderAdapter,
 )
 from infrastructure.mapper import CurriculumHierarchyMapperProviderAdapter
+from config import settings
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
@@ -59,12 +66,17 @@ def run_cli():
             CurriculumHierarchyMapperProviderAdapter()
         )
         downloader_provider = DownloaderProvider()
+        pdf_to_markdown_use_case = ConvertPDFToMarkdownUseCaseImpl(
+            PDFConverterProvider()
+        )
 
         use_case = IngestCurriculumUseCaseImpl(
             repository_provider_adapter=repository_provider_adapter,
             resource_parser_provider_adapter=node_parser_provider_adapter,
             curriculum_hierarchy_mapper_provider=curriculum_hierarchy_mapper_provider,
             downloader_provider=downloader_provider,
+            pdf_to_markdown_use_case=pdf_to_markdown_use_case,
+            markdown_tool_name=settings.pdf_converter,
         )
         import asyncio
 

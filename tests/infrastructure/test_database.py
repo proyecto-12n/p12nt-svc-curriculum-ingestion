@@ -28,3 +28,19 @@ class TestDatabase:
             database.init_db()
 
         create_all.assert_called_once_with(engine)
+
+    def test_given_postgresql_engine_when_init_db_then_ensures_schema(self):
+        engine = MagicMock()
+        engine.url = "postgresql://test"
+        connection = MagicMock()
+        engine.connect.return_value.__enter__.return_value = connection
+
+        with (
+            patch.object(database, "engine", engine),
+            patch("sqlmodel.SQLModel.metadata.create_all"),
+        ):
+            database.init_db()
+
+        executed_sql = [str(call.args[0]) for call in connection.execute.call_args_list]
+        assert any("CREATE SCHEMA" in statement for statement in executed_sql)
+        connection.commit.assert_called_once_with()
