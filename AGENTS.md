@@ -1,4 +1,4 @@
-# 🤖 Agent Instructions: p12nt-svc-curriculum
+# 🤖 Agent Instructions: p12nt-svc-curriculum-ingestion
 
 ## 🎯 Agent Role
 Act as a **Senior Backend Developer and Software Architect** expert in **Python, FastAPI**, Domain-Driven Design (DDD), Hexagonal Architecture, and Relational Databases (PostgreSQL). Your goal is to write Pythonic, asynchronous, maintainable code strictly aligned with the Business Rules of the **Proyecto-12NT**.
@@ -8,6 +8,7 @@ This microservice manages the **National Curriculum**.
 * **Core Business:** Knowledge structuring, curriculum grids, study programs (`StudyProgram`), axes, units, and learning objectives.
 * **Data Nature:** Highly interconnected (hierarchies and prerequisites), which is why a relational database (PostgreSQL) mapped properly is used.
 * **Ubiquitous Language:** All code (classes, variables, methods, modules) **MUST** be written in English.
+* **Current Service Scope:** Downloads, parses, and persists the curriculum hierarchy: `Curriculum`, `Modality`, `Subject`, `GradeLevel`, `StudyProgramRef`, and `StudyProgram`.
 
 ## 🏗️ Architecture and Module Structure (Python)
 The project follows a **Strict Hexagonal Architecture**. It is absolutely forbidden for the Domain layer to have dependencies on external frameworks (including FastAPI, Pydantic, or database drivers/ORMs) or the Infrastructure layer.
@@ -25,7 +26,8 @@ Base structure under the `app/` directory:
 ### 3. Infrastructure Layer (`infrastructure`)
 * **`infrastructure/adapter/inbound/web/`**: FastAPI routers (`APIRouter`), endpoints, dependency injection (`Depends()`), and Pydantic Schemas/DTOs.
 * **`infrastructure/adapter/outbound/db/`**: Outbound port implementations using database drivers/adapters (e.g., SQLModel). Here resides `SqlStudyProgramRepositoryAdapter`.
-* **`infrastructure/config/`**: Environment variables management and framework configuration.
+* **`config.py`**: Environment variables management through `pydantic-settings`.
+* **`infrastructure/cli/ingest_curriculum.py`**: CLI entrypoint for curriculum ingestion.
 
 ## 📜 Strict Naming Rules (Chapter 18 - P12NT)
 When generating or refactoring code, you must strictly respect the following Pythonic suffixes and conventions (PEP 8 for variables/files in `snake_case`, classes in `PascalCase`):
@@ -40,6 +42,8 @@ When generating or refactoring code, you must strictly respect the following Pyt
 ## 🗄️ Persistence Rules (SQLModel + PostgreSQL)
 1. **SQLModel Query Standard**: Always use the standard SQLModel query format `session.exec(select(Model))` instead of `session.query(Model)`.
 2. **Model Isolation**: SQLModel database models (`table=True`) **ONLY** can exist in the infrastructure layer. You must explicitly map these models to/from the pure domain model (`StudyProgram`) before they cross architecture boundaries.
+3. **Hierarchy Parent Field**: Infrastructure SQLModel hierarchy models use the generic `parent_id` field. Domain models keep explicit names like `curriculum_id`, `modality_id`, `subject_id`, `grade_level_id`, and `study_program_ref_id`.
+4. **PDF Conversion**: The active PDF converter is `pymupdf4llm` through `PDFConverterProvider`. Do not reintroduce a second converter unless the business explicitly needs it.
 
 ## 📐 SOLID Design Principles
 
@@ -74,3 +78,8 @@ This codebase strictly adheres to the SOLID principles to ensure maintainability
 * **Virtual Environment Executables**: If global command runners (such as `uv`) are not recognized or installed in the host's `%PATH%`, always run test commands, linters, or checkers directly using the local virtual environment executable:
   - **Windows (PowerShell/CMD)**: Use `.venv\Scripts\<tool>` (e.g., `.venv\Scripts\pytest`, `.venv\Scripts\ruff`).
   - **Unix/macOS (Bash/Zsh)**: Use `.venv/bin/<tool>` (e.g., `.venv/bin/pytest`, `.venv/bin/ruff`).
+* **Python Path**: `pytest.ini` sets `pythonpath = app`. Runtime commands should use module paths under that assumption, for example `python -m infrastructure.cli.ingest_curriculum`.
+* **API Command**: Run the API locally with `python app/main.py`.
+* **Ingestion Command**: Run ingestion with `python -m infrastructure.cli.ingest_curriculum`; add `--refresh` to force updates of existing records.
+* **Coverage Command**: Run coverage with `.venv\Scripts\pytest --cov=app --cov-report=term-missing`. The current suite has been verified at about **96% total coverage** with 181 tests.
+* **Pre-commit**: Use `.venv\Scripts\pre-commit.exe run --all-files` on Windows. If `pytest-coverage` fails with `[WinError 3] El sistema no puede encontrar la ruta especificada`, verify tests manually and follow the `git-commit` skill's `--no-verify` fallback.
