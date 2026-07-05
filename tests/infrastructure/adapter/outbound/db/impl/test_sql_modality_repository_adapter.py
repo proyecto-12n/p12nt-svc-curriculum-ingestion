@@ -13,7 +13,7 @@ class TestSqlModalityRepositoryAdapter:
         self, session
     ):
         expected = Modality(
-            id=1, curriculum_id=10, url="url", title="title", content="html"
+            id=1, parent_id=10, url="url", title="title", content="html"
         )
         configure_first_result(session, expected)
         repository = SqlModalityRepositoryAdapter(session)
@@ -27,7 +27,7 @@ class TestSqlModalityRepositoryAdapter:
         self, session
     ):
         expected = Modality(
-            id=1, curriculum_id=10, url="url", title="title", content="html"
+            id=1, parent_id=10, url="url", title="title", content="html"
         )
         configure_first_result(session, expected)
         repository = SqlModalityRepositoryAdapter(session)
@@ -41,7 +41,7 @@ class TestSqlModalityRepositoryAdapter:
         self, session
     ):
         expected = [
-            Modality(id=1, curriculum_id=10, url="url", title="title", content="html")
+            Modality(id=1, parent_id=10, url="url", title="title", content="html")
         ]
         configure_all_result(session, expected)
         repository = SqlModalityRepositoryAdapter(session)
@@ -56,9 +56,7 @@ class TestSqlModalityRepositoryAdapter:
     ):
         configure_first_result(session, None)
         repository = SqlModalityRepositoryAdapter(session)
-        model = Modality(
-            id=1, curriculum_id=10, url="url", title="title", content="html"
-        )
+        model = Modality(id=1, parent_id=10, url="url", title="title", content="html")
 
         result = await repository.save(model)
 
@@ -70,14 +68,10 @@ class TestSqlModalityRepositoryAdapter:
     async def test_given_existing_model_when_save_then_updates_without_add(
         self, session
     ):
-        existing = Modality(
-            id=1, curriculum_id=10, url="url", title="old", content="old"
-        )
+        existing = Modality(id=1, parent_id=10, url="url", title="old", content="old")
         configure_first_result(session, existing)
         repository = SqlModalityRepositoryAdapter(session)
-        model = Modality(
-            id=1, curriculum_id=11, url="url", title="updated", content="html"
-        )
+        model = Modality(id=1, parent_id=11, url="url", title="updated", content="html")
 
         result = await repository.save(model)
 

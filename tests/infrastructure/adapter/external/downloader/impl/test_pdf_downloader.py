@@ -1,6 +1,6 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
-import httpx
+import aiohttp
 
 from domain.model.resource_type import ResourceType
 from infrastructure.adapter.external.downloader.impl.pdf_downloader import PDFDownloader
@@ -11,13 +11,13 @@ class TestPDFDownloader:
         self,
     ):
         response = MagicMock()
-        response.content = b"pdf"
+        response.read = AsyncMock(return_value=b"pdf")
         response.raise_for_status = MagicMock()
-        client = AsyncMock(spec=httpx.AsyncClient)
-        client.get.return_value = response
+        client = AsyncMock(spec=aiohttp.ClientSession)
+        client.get = AsyncMock(return_value=response)
         client.__aenter__.return_value = client
 
-        with patch("httpx.AsyncClient", return_value=client):
+        with patch("aiohttp.ClientSession", return_value=client):
             resource = await PDFDownloader().download("https://example.test/file.pdf")
 
         assert resource.url == "https://example.test/file.pdf"

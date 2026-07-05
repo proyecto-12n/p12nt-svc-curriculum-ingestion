@@ -5,7 +5,6 @@ This file is part of the NP Collector Curriculum project.
 Unauthorized copying of this file, via any medium is strictly prohibited.
 """
 
-import inspect
 import aiohttp
 
 from domain.model.scrap_resource import ScrapResource
@@ -19,12 +18,8 @@ class HTMLDownloader(ContentDownloader[str]):
 
     async def download(self, url: str) -> ScrapResource[str]:
         async with aiohttp.ClientSession(timeout=self.timeout) as client:
-            response = client.get(url, allow_redirects=True)
-            if inspect.isawaitable(response):
-                response = await response
+            response = await client.get(url, allow_redirects=True)
             response.raise_for_status()
 
-            content = response.text()
-            if inspect.isawaitable(content):
-                content = await content
+            content = await response.text()
             return ScrapResource(url=url, type=ResourceType.HTML, content=content)

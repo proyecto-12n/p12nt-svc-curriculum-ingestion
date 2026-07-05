@@ -5,7 +5,6 @@ This file is part of the NP Collector Curriculum project.
 Unauthorized copying of this file, via any medium is strictly prohibited.
 """
 
-import httpx
 import aiohttp
 
 from domain.model.resource_type import ResourceType
@@ -18,9 +17,9 @@ class PDFDownloader(ContentDownloader[bytes]):
         self.timeout = aiohttp.ClientTimeout(total=None, connect=90, sock_read=90)
 
     async def download(self, url: str) -> ScrapResource[bytes]:
-        async with httpx.AsyncClient(timeout=None) as client:
+        async with aiohttp.ClientSession(timeout=self.timeout) as client:
             response = await client.get(url, allow_redirects=True)
             response.raise_for_status()
-            return ScrapResource(
-                url=url, type=ResourceType.PDF, content=response.content
-            )
+
+            content = await response.read()
+            return ScrapResource(url=url, type=ResourceType.PDF, content=content)

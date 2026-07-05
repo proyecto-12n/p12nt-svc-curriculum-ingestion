@@ -20,7 +20,7 @@ class SqlGradeLevelRepositoryAdapter(CurriculumHierarchyRepository[GradeLevel]):
         self.session = session
 
     async def save(self, grade_level: GradeLevel) -> GradeLevel:
-        parent_id = getattr(grade_level, "parent_id", grade_level.subject_id)
+        parent_id = grade_level.parent_id
         statement = select(GradeLevel).where(
             (GradeLevel.url == grade_level.url) | (GradeLevel.id == grade_level.id)
         )

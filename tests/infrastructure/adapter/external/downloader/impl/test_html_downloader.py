@@ -16,7 +16,7 @@ class TestHTMLDownloader:
         response.text = AsyncMock(return_value="<html>Hello</html>")
         response.raise_for_status = MagicMock()
         client = AsyncMock(spec=aiohttp.ClientSession)
-        client.get.return_value = response
+        client.get = AsyncMock(return_value=response)
         client.__aenter__.return_value = client
 
         with patch("aiohttp.ClientSession", return_value=client):

@@ -24,9 +24,7 @@ class SqlStudyProgramRepositoryAdapter(CurriculumHierarchyRepository[StudyProgra
         return self.session.exec(statement).first()
 
     async def save(self, study_program: StudyProgram) -> StudyProgram:
-        parent_id = getattr(
-            study_program, "parent_id", study_program.study_program_ref_id
-        )
+        parent_id = study_program.parent_id
         statement = select(StudyProgram).where(StudyProgram.url == study_program.url)
         sql_prog = self.session.exec(statement).first()
         if sql_prog:

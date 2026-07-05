@@ -43,7 +43,7 @@ class SqlSubjectRepositoryAdapter(CurriculumHierarchyRepository[Subject]):
         return [row for row in results]
 
     async def save(self, subject: Subject) -> Subject:
-        parent_id = getattr(subject, "parent_id", subject.modality_id)
+        parent_id = subject.parent_id
         statement = select(Subject).where(
             (Subject.url == subject.url) | (Subject.id == subject.id)
         )

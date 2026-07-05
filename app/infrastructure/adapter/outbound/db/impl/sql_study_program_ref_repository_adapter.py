@@ -26,9 +26,7 @@ class SqlStudyProgramRefRepositoryAdapter(
         return self.session.exec(statement).first()
 
     async def save(self, study_program_ref: StudyProgramRef) -> StudyProgramRef:
-        parent_id = getattr(
-            study_program_ref, "parent_id", study_program_ref.grade_level_id
-        )
+        parent_id = study_program_ref.parent_id
         statement = select(StudyProgramRef).where(
             StudyProgramRef.url == study_program_ref.url
         )

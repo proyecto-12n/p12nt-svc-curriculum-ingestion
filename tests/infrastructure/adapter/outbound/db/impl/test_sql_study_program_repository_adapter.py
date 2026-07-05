@@ -14,7 +14,7 @@ class TestSqlStudyProgramRepositoryAdapter:
     ):
         expected = StudyProgram(
             id=1,
-            study_program_ref_id=10,
+            parent_id=10,
             url="url",
             title="title",
             content=b"pdf",
@@ -33,7 +33,7 @@ class TestSqlStudyProgramRepositoryAdapter:
     ):
         expected = StudyProgram(
             id=1,
-            study_program_ref_id=10,
+            parent_id=10,
             url="url",
             title="title",
             content=b"pdf",
@@ -53,7 +53,7 @@ class TestSqlStudyProgramRepositoryAdapter:
         expected = [
             StudyProgram(
                 id=1,
-                study_program_ref_id=10,
+                parent_id=10,
                 url="url",
                 title="title",
                 content=b"pdf",
@@ -75,7 +75,7 @@ class TestSqlStudyProgramRepositoryAdapter:
         repository = SqlStudyProgramRepositoryAdapter(session)
         model = StudyProgram(
             id=1,
-            study_program_ref_id=10,
+            parent_id=10,
             url="url",
             title="title",
             content=b"pdf",
@@ -94,7 +94,7 @@ class TestSqlStudyProgramRepositoryAdapter:
     ):
         existing = StudyProgram(
             id=1,
-            study_program_ref_id=10,
+            parent_id=10,
             url="url",
             title="old",
             content=b"old",
@@ -104,7 +104,7 @@ class TestSqlStudyProgramRepositoryAdapter:
         repository = SqlStudyProgramRepositoryAdapter(session)
         model = StudyProgram(
             id=1,
-            study_program_ref_id=11,
+            parent_id=11,
             url="url",
             title="updated",
             content=b"pdf",

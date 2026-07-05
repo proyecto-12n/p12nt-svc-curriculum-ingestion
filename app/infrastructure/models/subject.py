@@ -22,16 +22,3 @@ class Subject(SQLModel, table=True):
     title: str
     content: str
     extracted_at: datetime = Field(default_factory=datetime.utcnow)
-
-    def __init__(self, **data):
-        if "modality_id" in data and "parent_id" not in data:
-            data["parent_id"] = data.pop("modality_id")
-        super().__init__(**data)
-
-    @property
-    def modality_id(self) -> int:
-        return self.parent_id
-
-    @modality_id.setter
-    def modality_id(self, value: int) -> None:
-        self.parent_id = value

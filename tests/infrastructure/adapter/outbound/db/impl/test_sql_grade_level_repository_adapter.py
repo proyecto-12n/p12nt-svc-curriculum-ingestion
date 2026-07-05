@@ -13,7 +13,7 @@ class TestSqlGradeLevelRepositoryAdapter:
         self, session
     ):
         expected = GradeLevel(
-            id=1, subject_id=10, url="url", title="title", content="html"
+            id=1, parent_id=10, url="url", title="title", content="html"
         )
         configure_first_result(session, expected)
         repository = SqlGradeLevelRepositoryAdapter(session)
@@ -27,7 +27,7 @@ class TestSqlGradeLevelRepositoryAdapter:
         self, session
     ):
         expected = GradeLevel(
-            id=1, subject_id=10, url="url", title="title", content="html"
+            id=1, parent_id=10, url="url", title="title", content="html"
         )
         configure_first_result(session, expected)
         repository = SqlGradeLevelRepositoryAdapter(session)
@@ -41,7 +41,7 @@ class TestSqlGradeLevelRepositoryAdapter:
         self, session
     ):
         expected = [
-            GradeLevel(id=1, subject_id=10, url="url", title="title", content="html")
+            GradeLevel(id=1, parent_id=10, url="url", title="title", content="html")
         ]
         configure_all_result(session, expected)
         repository = SqlGradeLevelRepositoryAdapter(session)
@@ -56,9 +56,7 @@ class TestSqlGradeLevelRepositoryAdapter:
     ):
         configure_first_result(session, None)
         repository = SqlGradeLevelRepositoryAdapter(session)
-        model = GradeLevel(
-            id=1, subject_id=10, url="url", title="title", content="html"
-        )
+        model = GradeLevel(id=1, parent_id=10, url="url", title="title", content="html")
 
         result = await repository.save(model)
 
@@ -70,13 +68,11 @@ class TestSqlGradeLevelRepositoryAdapter:
     async def test_given_existing_model_when_save_then_updates_without_add(
         self, session
     ):
-        existing = GradeLevel(
-            id=1, subject_id=10, url="url", title="old", content="old"
-        )
+        existing = GradeLevel(id=1, parent_id=10, url="url", title="old", content="old")
         configure_first_result(session, existing)
         repository = SqlGradeLevelRepositoryAdapter(session)
         model = GradeLevel(
-            id=1, subject_id=11, url="updated-url", title="updated", content="html"
+            id=1, parent_id=11, url="updated-url", title="updated", content="html"
         )
 
         result = await repository.save(model)

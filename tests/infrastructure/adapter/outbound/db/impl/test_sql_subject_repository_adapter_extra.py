@@ -9,7 +9,7 @@ class TestSqlSubjectRepositoryAdapterFindSubjectByTitleAndModality:
     async def test_given_matching_title_and_modality_when_find_then_returns_subject(
         self, session
     ):
-        expected = Subject(id=1, modality_id=2, url="url", title="Math", content="html")
+        expected = Subject(id=1, parent_id=2, url="url", title="Math", content="html")
         configure_first_result(session, expected)
         repository = SqlSubjectRepositoryAdapter(session)
 

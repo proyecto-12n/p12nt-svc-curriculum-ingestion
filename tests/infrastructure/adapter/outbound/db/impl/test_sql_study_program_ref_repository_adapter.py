@@ -13,7 +13,7 @@ class TestSqlStudyProgramRefRepositoryAdapter:
         self, session
     ):
         expected = StudyProgramRef(
-            id=1, grade_level_id=10, url="url", title="title", content="html"
+            id=1, parent_id=10, url="url", title="title", content="html"
         )
         configure_first_result(session, expected)
         repository = SqlStudyProgramRefRepositoryAdapter(session)
@@ -27,7 +27,7 @@ class TestSqlStudyProgramRefRepositoryAdapter:
         self, session
     ):
         expected = StudyProgramRef(
-            id=1, grade_level_id=10, url="url", title="title", content="html"
+            id=1, parent_id=10, url="url", title="title", content="html"
         )
         configure_first_result(session, expected)
         repository = SqlStudyProgramRefRepositoryAdapter(session)
@@ -42,7 +42,7 @@ class TestSqlStudyProgramRefRepositoryAdapter:
     ):
         expected = [
             StudyProgramRef(
-                id=1, grade_level_id=10, url="url", title="title", content="html"
+                id=1, parent_id=10, url="url", title="title", content="html"
             )
         ]
         configure_all_result(session, expected)
@@ -59,7 +59,7 @@ class TestSqlStudyProgramRefRepositoryAdapter:
         configure_first_result(session, None)
         repository = SqlStudyProgramRefRepositoryAdapter(session)
         model = StudyProgramRef(
-            id=1, grade_level_id=10, url="url", title="title", content="html"
+            id=1, parent_id=10, url="url", title="title", content="html"
         )
 
         result = await repository.save(model)
@@ -73,12 +73,12 @@ class TestSqlStudyProgramRefRepositoryAdapter:
         self, session
     ):
         existing = StudyProgramRef(
-            id=1, grade_level_id=10, url="url", title="old", content="old"
+            id=1, parent_id=10, url="url", title="old", content="old"
         )
         configure_first_result(session, existing)
         repository = SqlStudyProgramRefRepositoryAdapter(session)
         model = StudyProgramRef(
-            id=1, grade_level_id=11, url="url", title="updated", content="html"
+            id=1, parent_id=11, url="url", title="updated", content="html"
         )
 
         result = await repository.save(model)

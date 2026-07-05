@@ -20,9 +20,6 @@ class PDFConverterProvider(PDFConverterProviderPort):
     Provider implementation that registers and provides PDF converters.
     """
 
-    def __init__(self):
-        pass
-
     def get_converter(self, provider_name: str | None = None) -> PDFConverter:
         if provider_name is None:
             from app.config import settings
@@ -30,24 +27,14 @@ class PDFConverterProvider(PDFConverterProviderPort):
             provider_name = settings.pdf_converter
 
         name = provider_name.lower()
-        if name == "markitdown":
-            from infrastructure.adapter.external.pdf_converter.impl.markitdown_pdf_converter import (
-                MarkItDownPDFConverter,
-            )
-
-            converter_class = MarkItDownPDFConverter
-        elif name == "pymupdf4llm":
+        if name == "pymupdf4llm":
             from infrastructure.adapter.external.pdf_converter.impl.pymupdf_pdf_converter import (
                 PyMuPDFPDFConverter,
             )
 
             converter_class = PyMuPDFPDFConverter
         else:
-            self.error = ValueError(
-                f"No PDF converter found with name: {provider_name}"
-            )
-            self.self_error = self.error
-            raise self.self_error
+            raise ValueError(f"No PDF converter found with name: {provider_name}")
 
         logger.info(
             f"Using PDF converter: {converter_class.__name__} "
