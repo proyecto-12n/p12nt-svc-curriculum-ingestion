@@ -22,3 +22,14 @@ class TestMain:
         paths = {route.path for route in main.app.routes if hasattr(route, "path")}
 
         assert "/health" in paths
+
+    def test_given_api_routes_when_created_then_expose_read_only_endpoints(self):
+        mutating_methods = {"POST", "PUT", "PATCH", "DELETE"}
+        api_routes = [
+            route
+            for route in main.app.routes
+            if getattr(route, "path", "").startswith(main.settings.API_V1_STR)
+        ]
+
+        assert api_routes
+        assert all(route.methods.isdisjoint(mutating_methods) for route in api_routes)

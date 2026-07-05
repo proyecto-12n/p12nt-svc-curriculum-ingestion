@@ -2,7 +2,7 @@ import uvicorn
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.config import settings
+from config import settings
 from infrastructure.database import init_db
 from infrastructure.adapter.inbound.web.routers.curriculum_router import (
     router as curriculum_router,

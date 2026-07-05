@@ -25,7 +25,7 @@ def init_db() -> None:
     from sqlmodel import SQLModel
 
     # Import all models to ensure they register in SQLModel.metadata
-    import app.infrastructure.models  # noqa: F401
+    import infrastructure.models  # noqa: F401
 
     logger = logging.getLogger(__name__)
     db_url_str = str(engine.url)
