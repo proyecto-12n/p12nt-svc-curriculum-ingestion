@@ -1,12 +1,16 @@
+from unittest.mock import MagicMock
+
 import pytest
-from sqlmodel import SQLModel, Session, create_engine
 
 
 @pytest.fixture(name="session")
 def session_fixture():
-    engine = create_engine("sqlite:///:memory:")
-    for table in SQLModel.metadata.tables.values():
-        table.schema = None
-    SQLModel.metadata.create_all(engine)
-    with Session(engine) as session:
-        yield session
+    return MagicMock()
+
+
+def configure_first_result(session, value):
+    session.exec.return_value.first.return_value = value
+
+
+def configure_all_result(session, values):
+    session.exec.return_value.all.return_value = values

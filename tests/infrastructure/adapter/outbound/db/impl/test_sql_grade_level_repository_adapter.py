@@ -2,47 +2,90 @@ from infrastructure.adapter.outbound.db.impl.sql_grade_level_repository_adapter 
     SqlGradeLevelRepositoryAdapter,
 )
 from infrastructure.models import GradeLevel
+from tests.infrastructure.adapter.outbound.db.conftest import (
+    configure_all_result,
+    configure_first_result,
+)
 
 
 class TestSqlGradeLevelRepositoryAdapter:
-    async def test_given_new_model_when_save_then_can_find_by_id_and_url(self, session):
-        repository = SqlGradeLevelRepositoryAdapter(session)
-        model = GradeLevel(
-            id=1, subject_id=10, url="url", title="title", content="html"
-        )
-
-        saved = await repository.save(model)
-        by_id = await repository.find_by_id(saved.id)
-        by_url = await repository.find_by_url("url")
-
-        assert by_id is not None
-        assert by_url is not None
-        assert by_url.title == "title"
-
-    async def test_given_existing_model_when_save_then_updates_existing_record(
+    async def test_given_id_when_find_by_id_then_returns_first_exec_result(
         self, session
     ):
-        repository = SqlGradeLevelRepositoryAdapter(session)
-        model = GradeLevel(
+        expected = GradeLevel(
             id=1, subject_id=10, url="url", title="title", content="html"
         )
-        await repository.save(model)
-        model.title = "updated"
+        configure_first_result(session, expected)
+        repository = SqlGradeLevelRepositoryAdapter(session)
 
-        await repository.save(model)
-        found = await repository.find_by_url("url")
+        result = await repository.find_by_id(1)
 
-        assert found.title == "updated"
+        assert result == expected
+        session.exec.assert_called_once()
+
+    async def test_given_url_when_find_by_url_then_returns_first_exec_result(
+        self, session
+    ):
+        expected = GradeLevel(
+            id=1, subject_id=10, url="url", title="title", content="html"
+        )
+        configure_first_result(session, expected)
+        repository = SqlGradeLevelRepositoryAdapter(session)
+
+        result = await repository.find_by_url("url")
+
+        assert result == expected
+        session.exec.assert_called_once()
 
     async def test_given_parent_filter_when_list_then_returns_matching_records(
         self, session
     ):
-        repository = SqlGradeLevelRepositoryAdapter(session)
-        await repository.save(
+        expected = [
             GradeLevel(id=1, subject_id=10, url="url", title="title", content="html")
+        ]
+        configure_all_result(session, expected)
+        repository = SqlGradeLevelRepositoryAdapter(session)
+
+        result = await repository.list(10)
+
+        assert result == expected
+        session.exec.assert_called_once()
+
+    async def test_given_new_model_when_save_then_adds_commits_and_refreshes_model(
+        self, session
+    ):
+        configure_first_result(session, None)
+        repository = SqlGradeLevelRepositoryAdapter(session)
+        model = GradeLevel(
+            id=1, subject_id=10, url="url", title="title", content="html"
         )
 
-        listed = await repository.list(10)
+        result = await repository.save(model)
 
-        assert len(listed) == 1
-        assert listed[0].parent_id == 10
+        assert result == model
+        session.add.assert_called_once()
+        session.commit.assert_called_once()
+        session.refresh.assert_called_once()
+
+    async def test_given_existing_model_when_save_then_updates_without_add(
+        self, session
+    ):
+        existing = GradeLevel(
+            id=1, subject_id=10, url="url", title="old", content="old"
+        )
+        configure_first_result(session, existing)
+        repository = SqlGradeLevelRepositoryAdapter(session)
+        model = GradeLevel(
+            id=1, subject_id=11, url="updated-url", title="updated", content="html"
+        )
+
+        result = await repository.save(model)
+
+        assert result == model
+        assert existing.url == "updated-url"
+        assert existing.parent_id == 11
+        assert existing.title == "updated"
+        assert existing.content == "html"
+        session.add.assert_not_called()
+        session.commit.assert_called_once()
+        session.refresh.assert_called_once_with(existing)
