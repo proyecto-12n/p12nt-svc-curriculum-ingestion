@@ -14,7 +14,7 @@ from domain.model.study_program import StudyProgram
 from domain.model.study_program_ref import StudyProgramRef
 from domain.model.resource_type import ResourceType
 from domain.model.pdf_resource import PDFResource
-from domain.model.node import Node
+from domain.model.edge import Edge
 from domain.model.curriculum import Curriculum
 from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
 
@@ -26,7 +26,7 @@ __all__ = [
     "StudyProgramRef",
     "ResourceType",
     "PDFResource",
-    "Node",
+    "Edge",
     "Curriculum",
     "CurriculumHierarchyType",
 ]

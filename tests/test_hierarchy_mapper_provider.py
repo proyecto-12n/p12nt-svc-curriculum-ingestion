@@ -47,7 +47,7 @@ def test_provider_raises_error_for_invalid_type():
 
     with pytest.raises(ValueError) as excinfo:
         provider.get_mapper("invalid_type")
-    assert "No mapper configured for node type" in str(excinfo.value)
+    assert "No mapper configured for edge type" in str(excinfo.value)
 
 
 def test_modality_mapping():
@@ -62,12 +62,12 @@ def test_modality_mapping():
         extracted_at=now,
     )
 
-    node = mapper.to_domain_node(model)
-    assert node.url == "https://test.url/modality"
-    assert node.type == ResourceType.HTML
-    assert node.hierarchy == CurriculumHierarchyType.MODALITY
-    assert node.title == "Modality Title"
-    assert node.content == "Modality Content"
+    edge = mapper.to_edge(model)
+    assert edge.url == "https://test.url/modality"
+    assert edge.type == ResourceType.HTML
+    assert edge.hierarchy == CurriculumHierarchyType.MODALITY
+    assert edge.title == "Modality Title"
+    assert edge.content == "Modality Content"
 
 
 def test_study_program_mapping():
@@ -83,9 +83,9 @@ def test_study_program_mapping():
         extracted_at=now,
     )
 
-    node = mapper.to_domain_node(model)
-    assert node.url == "https://test.url/program.pdf"
-    assert node.type == ResourceType.PDF
-    assert node.hierarchy == CurriculumHierarchyType.STUDY_PROGRAM
-    assert node.title == "Program Title"
-    assert node.content == b"PDF BINARY CONTENT"
+    edge = mapper.to_edge(model)
+    assert edge.url == "https://test.url/program.pdf"
+    assert edge.type == ResourceType.PDF
+    assert edge.hierarchy == CurriculumHierarchyType.STUDY_PROGRAM
+    assert edge.title == "Program Title"
+    assert edge.content == b"PDF BINARY CONTENT"

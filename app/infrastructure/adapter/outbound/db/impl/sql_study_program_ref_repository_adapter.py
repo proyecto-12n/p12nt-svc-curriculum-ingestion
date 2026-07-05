@@ -31,15 +31,16 @@ class SqlStudyProgramRefRepositoryAdapter(
         )
         sql_ref = self.session.exec(statement).first()
         if sql_ref:
-            sql_ref.grade_level_id = study_program_ref.parent_id
+            sql_ref.parent_id = study_program_ref.parent_id
             sql_ref.title = study_program_ref.title
             sql_ref.content = study_program_ref.content
             sql_ref.extracted_at = study_program_ref.extracted_at
         else:
             sql_ref = StudyProgramRef(
-                grade_level_id=study_program_ref.parent_id,
-                title=study_program_ref.title,
+                id=study_program_ref.id,
                 url=study_program_ref.url,
+                parent_id=study_program_ref.parent_id,
+                title=study_program_ref.title,
                 content=study_program_ref.content,
                 extracted_at=study_program_ref.extracted_at,
             )

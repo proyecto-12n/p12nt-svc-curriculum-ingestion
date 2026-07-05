@@ -38,14 +38,16 @@ class SqlSubjectRepositoryAdapter(CurriculumHierarchyRepository[Subject]):
         statement = select(Subject).where(Subject.url == subject.url)
         sql_sub = self.session.exec(statement).first()
         if sql_sub:
-            sql_sub.url = subject.url
+            sql_sub.parent_id = subject.parent_id
+            sql_sub.title = subject.title
             sql_sub.content = subject.content
             sql_sub.extracted_at = subject.extracted_at
         else:
             sql_sub = Subject(
-                title=subject.title,
-                modality_id=subject.parent_id,
+                id=subject.id,
                 url=subject.url,
+                parent_id=subject.parent_id,
+                title=subject.title,
                 content=subject.content,
                 extracted_at=subject.extracted_at,
             )

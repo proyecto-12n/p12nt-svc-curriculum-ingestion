@@ -17,10 +17,10 @@ def test_to_domain_node_mapping():
     )
 
     mapper = CurriculumMapper()
-    node = mapper.to_domain_node(sql_curr)
+    edge = mapper.to_edge(sql_curr)
 
-    assert node.url == "https://www.curriculumnacional.cl/curriculum"
-    assert node.type == ResourceType.HTML
-    assert node.hierarchy == CurriculumHierarchyType.CURRICULUM
-    assert node.title == "Test Title"
-    assert node.content == "Test Content HTML"
+    assert edge.url == "https://www.curriculumnacional.cl/curriculum"
+    assert edge.type == ResourceType.HTML
+    assert edge.hierarchy == CurriculumHierarchyType.CURRICULUM
+    assert edge.title == "Test Title"
+    assert edge.content == "Test Content HTML"

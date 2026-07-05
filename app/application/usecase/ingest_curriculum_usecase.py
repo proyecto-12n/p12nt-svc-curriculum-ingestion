@@ -8,10 +8,12 @@ All rights reserved.
 """
 
 import logging
-from typing import Any, AsyncGenerator, Tuple, Optional
+from dataclasses import replace
+from typing import Any, Tuple
+from urllib.parse import urljoin
 
 from domain.model import (
-    Node,
+    Edge,
     CurriculumHierarchyType,
 )
 from domain.model.resource_type import ResourceType
@@ -26,10 +28,11 @@ from domain.port.outbound import (
 
 logger = logging.getLogger(__name__)
 
-_ROOT_URL = "https://www.curriculumnacional.cl/curriculum"
-
 
 class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
+    BASE_URL = "https://www.curriculumnacional.cl"
+    ROOT_URL = "/curriculum"
+
     def __init__(
         self,
         repository_provider_adapter: CurriculumHierarchyRepositoryProvider,
@@ -45,38 +48,58 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
     async def execute(self, refresh: bool = False) -> None:
         logger.info("Starting ingestion of curriculum data...")
 
-        root_node = Node(
-            url=_ROOT_URL,
+        root_node = Edge(
+            url=urljoin(
+                IngestCurriculumUseCaseImpl.BASE_URL,
+                IngestCurriculumUseCaseImpl.ROOT_URL,
+            ),
             type=ResourceType.HTML,
             hierarchy=CurriculumHierarchyType.CURRICULUM,
         )
 
-        async for node in self._navigator(root_node):
-            logger.info(f"Ingesting curriculum data for {node.url}")
+        await self.__navigator(refresh, root_node)
 
-    async def _navigator(
-        self, node: Node, refresh: bool = False, parent_id: Optional[int] = None
-    ) -> AsyncGenerator[Node, Any]:
-        # repository = self.repository_provider_adapter.get_repository(node.level)
-        cache, resource = await self.__get_resource(node, refresh)
-        # parser = self.resource_parser_provider_adapter.get_parser(node.hierarchy)
+    async def __navigator(self, refresh: bool, edge: Edge) -> None:
+        assert isinstance(edge, Edge)
 
-        logger.info(f"Ingesting curriculum data for {resource}")
+        cache, resource = await self.__get_resource(refresh, edge)
+        parser = self.resource_parser_provider_adapter.get_parser(edge.hierarchy)
 
-        yield node
+        if not cache:
+            logger.info("Ingesting %s data for %s", edge.hierarchy.value, resource.url)
 
-        # async for child in parser.get_children(resource):
-        #    yield child
+            repository = self.repository_provider_adapter.get_repository(edge.hierarchy)
+            mapper = self.curriculum_hierarchy_mapper_provider.get_mapper(
+                edge.hierarchy
+            )
+
+            aux_edge = replace(
+                edge, title=await parser.get_title(resource), content=resource.content
+            )
+
+            await repository.save(mapper.to_model(aux_edge))
+
+            logger.info("Save %s data for %s", edge.hierarchy.value, resource.url)
+
+        async for child_raw in parser.get_children(resource):
+            child = replace(
+                child_raw,
+                url=urljoin(IngestCurriculumUseCaseImpl.BASE_URL, child_raw.url),
+                parent_url=edge.url,
+            )
+
+            await self.__navigator(refresh, child)
 
     async def __get_resource(
-        self, node: Node, refresh: bool = False
+        self, refresh: bool, edge: Edge
     ) -> Tuple[bool, ScrapResource[Any]]:
-        repository = self.repository_provider_adapter.get_repository(node.hierarchy)
-        cache_node = await repository.find_by_url(node.url) if not refresh else None
-        if cache_node is None:
-            downloader = self.downloader_provider.get_downloader(node.type)
-            return False, await downloader.download(node.url)
 
-        mapper = self.curriculum_hierarchy_mapper_provider.get_mapper(node.hierarchy)
-        node = mapper.to_domain_node(cache_node)
-        return True, ScrapResource(url=node.url, type=node.type, content=node.content)
+        repository = self.repository_provider_adapter.get_repository(edge.hierarchy)
+        cache_node = await repository.find_by_url(edge.url) if not refresh else None
+        if cache_node is None:
+            downloader = self.downloader_provider.get_downloader(edge.type)
+            return False, await downloader.download(edge.url)
+
+        mapper = self.curriculum_hierarchy_mapper_provider.get_mapper(edge.hierarchy)
+        edge = mapper.to_edge(cache_node)
+        return True, ScrapResource(url=edge.url, type=edge.type, content=edge.content)

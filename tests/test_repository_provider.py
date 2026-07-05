@@ -60,4 +60,4 @@ def test_provider_raises_error_for_invalid_type(session):
 
     with pytest.raises(ValueError) as excinfo:
         provider.get_repository("invalid_type")
-    assert "No repository configured for node type" in str(excinfo.value)
+    assert "No repository configured for edge type" in str(excinfo.value)

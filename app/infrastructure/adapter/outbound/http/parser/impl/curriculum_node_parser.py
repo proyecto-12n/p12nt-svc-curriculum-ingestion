@@ -12,7 +12,7 @@ from typing import Optional, Any, AsyncGenerator
 from bs4 import BeautifulSoup
 
 from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
-from domain.model.node import Node
+from domain.model.edge import Edge
 from domain.model.resource_type import ResourceType
 from domain.model.scrap_resource import ScrapResource
 from infrastructure.adapter.outbound.http.parser.scrap_resource_parser import (
@@ -22,12 +22,19 @@ from infrastructure.util import BeautifulSoupBuilder
 
 
 class CurriculumScrapResourceParser(ScrapResourceParser[str]):
-    async def get_node(self, resource: ScrapResource[str]) -> Node[str]:
+    async def get_children(
+        self, resource: ScrapResource[str]
+    ) -> AsyncGenerator[Edge[str], Any]:
+        soup = BeautifulSoupBuilder.build(resource)
+        async for x in self.__extract_nodes(soup):
+            yield x
+
+    async def get_edge(self, resource: ScrapResource[str]) -> Edge[str]:
 
         soup = BeautifulSoupBuilder.build(resource)
         title = await self.__extract_title(soup)
 
-        return Node(
+        return Edge(
             url=resource.url,
             type=ResourceType.HTML,
             hierarchy=CurriculumHierarchyType.CURRICULUM,
@@ -35,12 +42,9 @@ class CurriculumScrapResourceParser(ScrapResourceParser[str]):
             content=resource.content,
         )
 
-    async def get_children(
-        self, resource: ScrapResource[str]
-    ) -> AsyncGenerator[Node[str], Any]:
+    async def get_title(self, resource: ScrapResource[str]) -> Optional[str]:
         soup = BeautifulSoupBuilder.build(resource)
-        async for x in self.__extract_nodes(soup):
-            yield x
+        return await self.__extract_title(soup)
 
     @staticmethod
     async def __extract_title(soup: BeautifulSoup) -> Optional[str]:
@@ -49,14 +53,14 @@ class CurriculumScrapResourceParser(ScrapResourceParser[str]):
         return title
 
     @staticmethod
-    async def __extract_nodes(soup: BeautifulSoup) -> AsyncGenerator[Node, Any]:
+    async def __extract_nodes(soup: BeautifulSoup) -> AsyncGenerator[Edge, Any]:
         for div in soup.find_all("div", class_="menu"):
             for a in div.find_all("a", href=True):
                 h3 = a.find("h3")
                 if h3 is None:
                     continue
 
-                yield Node(
+                yield Edge(
                     url=a.get("href"),
                     type=ResourceType.HTML,
                     hierarchy=CurriculumHierarchyType.MODALITY,

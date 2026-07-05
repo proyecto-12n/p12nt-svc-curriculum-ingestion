@@ -9,13 +9,13 @@ All rights reserved.
 
 from typing import Protocol, TypeVar
 
-from domain.model.node import Node
+from domain.model.edge import Edge
 
 M = TypeVar("M")
 T = TypeVar("T")
 
 
 class CurriculumHierarchyMapper(Protocol[M, T]):
-    def to_domain_node(self, model: M) -> Node[T]:
-        """Maps a SQLModel instance to a domain Node dataclass."""
-        ...
+    def to_edge(self, model: M) -> Edge[T]: ...
+
+    def to_model(self, edge: Edge[T]) -> M: ...

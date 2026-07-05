@@ -15,11 +15,12 @@ from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
 T = TypeVar("T")
 
 
-@dataclass
-class Node(Generic[T]):
+@dataclass(frozen=True)
+class Edge(Generic[T]):
     url: str
     type: ResourceType
     hierarchy: CurriculumHierarchyType
 
+    parent_url: Optional[str] = None
     title: Optional[str] = None
     content: Optional[T] = None

@@ -8,18 +8,32 @@ All rights reserved.
 """
 
 from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
-from domain.model.node import Node
+from domain.model.edge import Edge
 from domain.model.resource_type import ResourceType
 from domain.port.outbound.curriculum_hierarchy_mapper import CurriculumHierarchyMapper
 from infrastructure.models import Modality
+from infrastructure.util import generate_id
 
 
 class ModalityMapper(CurriculumHierarchyMapper[Modality, str]):
-    def to_domain_node(self, model: Modality) -> Node[str]:
-        return Node(
+    def to_edge(self, model: Modality) -> Edge[str]:
+        return Edge(
             url=model.url,
             type=ResourceType.HTML,
             hierarchy=CurriculumHierarchyType.MODALITY,
             title=model.title,
             content=model.content,
+        )
+
+    def to_model(self, edge: Edge[str]) -> Modality:
+        assert edge.hierarchy == CurriculumHierarchyType.MODALITY
+        assert edge.parent_url
+        assert edge.content
+
+        return Modality(
+            id=generate_id(edge.url),
+            url=edge.url,
+            parent_id=generate_id(edge.parent_url),
+            title=edge.title,
+            content=edge.content,
         )

@@ -13,10 +13,13 @@ from domain.port.outbound.content_downloader import ContentDownloader
 
 
 class PDFDownloader(ContentDownloader[bytes]):
-    async def download(self, url: str, timeout: float = 120.0) -> ScrapResource[bytes]:
-        async with ClientSession(timeout=ClientTimeout(timeout)) as client:
+    def __init__(self) -> None:
+        self.timeout = ClientTimeout(total=None, connect=90, sock_read=90)
+
+    async def download(self, url: str) -> ScrapResource[bytes]:
+        async with ClientSession(timeout=self.timeout) as client:
             response = await client.get(url, allow_redirects=True)
             response.raise_for_status()
             return ScrapResource(
-                url=url, type=ResourceType.PDF, content=response.content
+                url=url, type=ResourceType.PDF, content=await response.read()
             )

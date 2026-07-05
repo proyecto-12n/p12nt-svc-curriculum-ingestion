@@ -31,15 +31,16 @@ class SqlModalityRepositoryAdapter(CurriculumHierarchyRepository[Modality]):
         statement = select(Modality).where(Modality.url == modality.url)
         sql_mod = self.session.exec(statement).first()
         if sql_mod:
-            sql_mod.curriculum_id = modality.parent_id
+            sql_mod.parent_id = modality.parent_id
             sql_mod.title = modality.title
             sql_mod.content = modality.content
             sql_mod.extracted_at = modality.extracted_at
         else:
             sql_mod = Modality(
-                curriculum_id=modality.parent_id,
-                title=modality.title,
+                id=modality.id,
                 url=modality.url,
+                parent_id=modality.parent_id,
+                title=modality.title,
                 content=modality.content,
                 extracted_at=modality.extracted_at,
             )

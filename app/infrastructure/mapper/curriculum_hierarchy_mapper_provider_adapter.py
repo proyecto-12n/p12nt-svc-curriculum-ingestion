@@ -44,5 +44,5 @@ class CurriculumHierarchyMapperProviderAdapter(CurriculumHierarchyMapperProvider
     ) -> CurriculumHierarchyMapper[Any, Any]:
         mapper = self._mappers.get(node_type)
         if not mapper:
-            raise ValueError(f"No mapper configured for node type: {node_type}")
+            raise ValueError(f"No mapper configured for edge type: {node_type}")
         return mapper

@@ -58,10 +58,10 @@ async def test_html_downloader():
 
     with patch("aiohttp.ClientSession", return_value=mock_client):
         downloader = HTMLDownloader()
-        node = await downloader.download("https://example.com/html")
-        assert node.url == "https://example.com/html"
-        assert node.type == ResourceType.HTML
-        assert "Hello" in node.content
+        edge = await downloader.download("https://example.com/html")
+        assert edge.url == "https://example.com/html"
+        assert edge.type == ResourceType.HTML
+        assert "Hello" in edge.content
 
 
 @pytest.mark.skip
@@ -77,10 +77,10 @@ async def test_pdf_downloader():
 
     with patch("httpx.AsyncClient", return_value=mock_client):
         downloader = PDFDownloader()
-        node = await downloader.download("https://example.com/pdf")
-        assert node.url == "https://example.com/pdf"
-        assert node.type == ResourceType.PDF
-        assert node.content == b"pdf-bytes"
+        edge = await downloader.download("https://example.com/pdf")
+        assert edge.url == "https://example.com/pdf"
+        assert edge.type == ResourceType.PDF
+        assert edge.content == b"pdf-bytes"
 
 
 def test_downloader_provider():

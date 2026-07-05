@@ -14,7 +14,7 @@ from domain.model.resource_type import ResourceType
 T = TypeVar("T")
 
 
-@dataclass
+@dataclass(frozen=True)
 class ScrapResource(Generic[T]):
     url: str
     type: ResourceType

@@ -13,8 +13,11 @@ from domain.model.resource_type import ResourceType
 
 
 class HTMLDownloader(ContentDownloader[str]):
-    async def download(self, url: str, timeout: float = 60.0) -> ScrapResource[str]:
-        async with ClientSession(timeout=ClientTimeout(timeout)) as client:
+    def __init__(self) -> None:
+        self.timeout = ClientTimeout(60)
+
+    async def download(self, url: str) -> ScrapResource[str]:
+        async with ClientSession(timeout=self.timeout) as client:
             response = await client.get(url, allow_redirects=True)
             response.raise_for_status()
 

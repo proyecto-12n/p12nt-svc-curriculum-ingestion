@@ -42,14 +42,14 @@ async def test_curriculum_node_parser():
         url="https://test.url/curr", type=ResourceType.HTML, content=html_content
     )
 
-    node = await parser.get_node(resource)
+    edge = await parser.get_edge(resource)
 
-    assert node.url == "https://test.url/curr"
-    assert node.type == ResourceType.HTML
-    assert node.hierarchy == CurriculumHierarchyType.CURRICULUM
+    assert edge.url == "https://test.url/curr"
+    assert edge.type == ResourceType.HTML
+    assert edge.hierarchy == CurriculumHierarchyType.CURRICULUM
 
-    assert node.title == "Bases Curriculares"
-    assert node.content == html_content
+    assert edge.title == "Bases Curriculares"
+    assert edge.content == html_content
 
     children = [x async for x in parser.get_children(resource)]
     assert len(children) == 1
@@ -76,14 +76,14 @@ async def test_modality_node_parser():
     resource = ScrapResource(
         url="https://test.url/mod", type=ResourceType.HTML, content=html_content
     )
-    node = await parser.get_node(resource)
+    edge = await parser.get_edge(resource)
 
-    assert node.url == "https://test.url/mod"
-    assert node.type == ResourceType.HTML
-    assert node.hierarchy == CurriculumHierarchyType.MODALITY
+    assert edge.url == "https://test.url/mod"
+    assert edge.type == ResourceType.HTML
+    assert edge.hierarchy == CurriculumHierarchyType.MODALITY
 
-    assert node.title == "Educacion Parvularia"
-    assert node.content == html_content
+    assert edge.title == "Educacion Parvularia"
+    assert edge.content == html_content
 
     children = [x async for x in parser.get_children(resource)]
     assert len(children) == 1
@@ -112,14 +112,14 @@ async def test_subject_node_parser():
     resource = ScrapResource(
         url="https://test.url/sub", type=ResourceType.HTML, content=html_content
     )
-    node = await parser.get_node(resource)
+    edge = await parser.get_edge(resource)
 
-    assert node.url == "https://test.url/sub"
-    assert node.type == ResourceType.HTML
-    assert node.hierarchy == CurriculumHierarchyType.SUBJECT
+    assert edge.url == "https://test.url/sub"
+    assert edge.type == ResourceType.HTML
+    assert edge.hierarchy == CurriculumHierarchyType.SUBJECT
 
-    assert node.title == "Matemáticas"
-    assert node.content == html_content
+    assert edge.title == "Matemáticas"
+    assert edge.content == html_content
 
     children = [x async for x in parser.get_children(resource)]
     assert len(children) == 1
@@ -148,14 +148,14 @@ async def test_grade_level_node_parser():
         url="https://test.url/grade", type=ResourceType.HTML, content=html_content
     )
 
-    node = await parser.get_node(resource)
+    edge = await parser.get_edge(resource)
 
-    assert node.url == "https://test.url/grade"
-    assert node.type == ResourceType.HTML
-    assert node.hierarchy == CurriculumHierarchyType.GRADE_LEVEL
+    assert edge.url == "https://test.url/grade"
+    assert edge.type == ResourceType.HTML
+    assert edge.hierarchy == CurriculumHierarchyType.GRADE_LEVEL
 
-    assert node.title == "1 Básico"
-    assert node.content == html_content
+    assert edge.title == "1 Básico"
+    assert edge.content == html_content
 
     children = [x async for x in parser.get_children(resource)]
     assert len(children) == 1
@@ -178,14 +178,14 @@ async def test_study_program_ref_node_parser():
     resource = ScrapResource(
         url="https://test.url/ref", type=ResourceType.HTML, content=html_content
     )
-    node = await parser.get_node(resource)
+    edge = await parser.get_edge(resource)
 
-    assert node.url == "https://test.url/ref"
-    assert node.type == ResourceType.HTML
-    assert node.hierarchy == CurriculumHierarchyType.STUDY_PROGRAM_REF
+    assert edge.url == "https://test.url/ref"
+    assert edge.type == ResourceType.HTML
+    assert edge.hierarchy == CurriculumHierarchyType.STUDY_PROGRAM_REF
 
-    assert node.title == "Programa Matematica"
-    assert node.content == html_content
+    assert edge.title == "Programa Matematica"
+    assert edge.content == html_content
 
     children = [x async for x in parser.get_children(resource)]
     assert len(children) == 1
@@ -201,10 +201,10 @@ async def test_study_program_node_parser():
     resource = ScrapResource(
         url="https://test.url/prog.pdf", type=ResourceType.PDF, content=pdf_content
     )
-    node = await parser.get_node(resource)
+    edge = await parser.get_edge(resource)
 
-    assert node.title == "prog"
-    assert node.content == pdf_content
+    assert edge.title == "prog"
+    assert edge.content == pdf_content
 
     children = []
     async for child in parser.get_children(resource):
@@ -222,8 +222,8 @@ async def test_study_program_node_parser():
         "pymupdf.Document",
         return_value=mock_doc,
     ):
-        node = await parser.get_node(resource)
-        assert node.title == "My Extracted PDF Title"
+        edge = await parser.get_edge(resource)
+        assert edge.title == "My Extracted PDF Title"
 
     # Test URL-encoded filename fallback (%20 → space)
     encoded_resource = ScrapResource(
@@ -231,5 +231,5 @@ async def test_study_program_node_parser():
         type=ResourceType.PDF,
         content=pdf_content,
     )
-    node = await parser.get_node(encoded_resource)
-    assert node.title == "Programa de Estudio 1º"
+    edge = await parser.get_edge(encoded_resource)
+    assert edge.title == "Programa de Estudio 1º"

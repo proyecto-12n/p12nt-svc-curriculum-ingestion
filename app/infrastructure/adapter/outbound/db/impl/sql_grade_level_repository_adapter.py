@@ -23,14 +23,16 @@ class SqlGradeLevelRepositoryAdapter(CurriculumHierarchyRepository[GradeLevel]):
         statement = select(GradeLevel).where(GradeLevel.url == grade_level.url)
         sql_grade = self.session.exec(statement).first()
         if sql_grade:
-            sql_grade.url = grade_level.url
+            sql_grade.parent_id = grade_level.parent_id
+            sql_grade.title = grade_level.title
             sql_grade.content = grade_level.content
             sql_grade.extracted_at = grade_level.extracted_at
         else:
             sql_grade = GradeLevel(
-                title=grade_level.title,
-                subject_id=grade_level.parent_id,
+                id=grade_level.id,
                 url=grade_level.url,
+                parent_id=grade_level.parent_id,
+                title=grade_level.title,
                 content=grade_level.content,
                 extracted_at=grade_level.extracted_at,
             )

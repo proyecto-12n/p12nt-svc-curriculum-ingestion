@@ -8,11 +8,11 @@ All rights reserved.
 """
 
 from os import path
-from typing import AsyncGenerator, Any
+from typing import AsyncGenerator, Any, Optional
 from urllib.parse import unquote, urlparse
 
 from domain.model import ResourceType, CurriculumHierarchyType
-from domain.model.node import Node
+from domain.model.edge import Edge
 from domain.model.scrap_resource import ScrapResource
 from infrastructure.adapter.outbound.http.parser.scrap_resource_parser import (
     ScrapResourceParser,
@@ -20,11 +20,17 @@ from infrastructure.adapter.outbound.http.parser.scrap_resource_parser import (
 
 
 class StudyProgramScrapResourceParser(ScrapResourceParser[bytes]):
-    async def get_node(self, resource: ScrapResource[bytes]) -> Node[bytes]:
+    async def get_children(
+        self, resource: ScrapResource[bytes]
+    ) -> AsyncGenerator[Edge[bytes], Any]:
+        if False:
+            yield
 
-        title = self.__extract_title(resource)
+    async def get_edge(self, resource: ScrapResource[bytes]) -> Edge[bytes]:
 
-        return Node(
+        title = await self.__extract_title(resource)
+
+        return Edge(
             url=resource.url,
             type=ResourceType.PDF,
             hierarchy=CurriculumHierarchyType.STUDY_PROGRAM,
@@ -32,14 +38,11 @@ class StudyProgramScrapResourceParser(ScrapResourceParser[bytes]):
             content=resource.content,
         )
 
-    async def get_children(
-        self, resource: ScrapResource[bytes]
-    ) -> AsyncGenerator[Node[bytes], Any]:
-        if False:
-            yield
+    async def get_title(self, resource: ScrapResource[bytes]) -> Optional[str]:
+        return await self.__extract_title(resource)
 
     @staticmethod
-    def __extract_title(resource: ScrapResource[bytes]) -> str:
+    async def __extract_title(resource: ScrapResource[bytes]) -> Optional[str]:
         try:
             from io import BytesIO
             import pymupdf

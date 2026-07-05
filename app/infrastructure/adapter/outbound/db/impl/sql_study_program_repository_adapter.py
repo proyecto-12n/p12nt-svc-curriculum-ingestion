@@ -27,18 +27,19 @@ class SqlStudyProgramRepositoryAdapter(CurriculumHierarchyRepository[StudyProgra
         statement = select(StudyProgram).where(StudyProgram.url == study_program.url)
         sql_prog = self.session.exec(statement).first()
         if sql_prog:
-            sql_prog.study_program_ref_id = study_program.parent_id
+            sql_prog.parent_id = study_program.parent_id
             sql_prog.title = study_program.title
-            sql_prog.checksum = study_program.checksum
             sql_prog.content = study_program.content
+            sql_prog.checksum = study_program.checksum
             sql_prog.extracted_at = study_program.extracted_at
         else:
             sql_prog = StudyProgram(
+                id=study_program.id,
                 url=study_program.url,
-                study_program_ref_id=study_program.parent_id,
+                parent_id=study_program.parent_id,
                 title=study_program.title,
-                checksum=study_program.checksum,
                 content=study_program.content,
+                checksum=study_program.checksum,
                 extracted_at=study_program.extracted_at,
             )
             self.session.add(sql_prog)

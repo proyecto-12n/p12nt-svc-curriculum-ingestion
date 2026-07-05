@@ -11,7 +11,7 @@ from sqlmodel import SQLModel, create_engine, Session
 from application.usecase.ingest_curriculum_usecase import (
     IngestCurriculumUseCaseImpl,
 )
-from domain.model.node import Node
+from domain.model.edge import Edge
 from domain.model.resource_type import ResourceType
 from infrastructure.adapter.outbound.db import (
     SqlCurriculumRepositoryAdapter,
@@ -113,7 +113,7 @@ async def test_ingest_curriculum_usecase_with_force_mock():
                 if (url.endswith(".pdf") or "programa" in url)
                 else ResourceType.HTML
             )
-            return Node(url=url, type=res_type, content=content)
+            return Edge(url=url, type=res_type, content=content)
 
         mock_downloader = MagicMock()
         mock_downloader.download = mock_download
@@ -172,7 +172,7 @@ async def test_ingest_curriculum_usecase_downloader_failure_fallback():
             if url.endswith(".pdf") or "programa" in url:
                 raise Exception("Connection reset by peer")
             content = mock_get_mock_content(url)
-            return Node(url=url, type=ResourceType.HTML, content=content)
+            return Edge(url=url, type=ResourceType.HTML, content=content)
 
         mock_downloader = MagicMock()
         mock_downloader.download = mock_download

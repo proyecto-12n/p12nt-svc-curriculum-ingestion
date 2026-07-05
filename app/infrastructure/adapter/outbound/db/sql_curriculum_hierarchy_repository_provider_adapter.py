@@ -64,5 +64,5 @@ class SqlCurriculumHierarchyRepositoryProviderAdapter(
     ) -> CurriculumHierarchyRepository[Any]:
         repo = self._repositories.get(node_type)
         if not repo:
-            raise ValueError(f"No repository configured for node type: {node_type}")
+            raise ValueError(f"No repository configured for edge type: {node_type}")
         return repo

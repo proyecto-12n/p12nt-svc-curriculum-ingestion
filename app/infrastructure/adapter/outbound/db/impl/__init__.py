@@ -16,7 +16,7 @@ from infrastructure.adapter.outbound.db.impl.sql_study_program_ref_repository_ad
 from infrastructure.adapter.outbound.db.impl.sql_study_program_repository_adapter import (
     SqlStudyProgramRepositoryAdapter,
 )
-from infrastructure.adapter.outbound.db.impl.sql_curriculum_hierarchy_repository_provider_adapter import (
+from infrastructure.adapter.outbound.db.sql_curriculum_hierarchy_repository_provider_adapter import (
     SqlCurriculumHierarchyRepositoryProviderAdapter,
 )
 
