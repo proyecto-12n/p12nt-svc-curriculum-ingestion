@@ -20,6 +20,13 @@ from infrastructure.adapter.external.study_program_agent_parser_provider import 
 )
 
 try:
+    from infrastructure.adapter.external.pdf_converter.impl.markitdown_pdf_converter import (
+        MarkItDownPDFConverter,
+    )
+except ImportError:
+    MarkItDownPDFConverter = None
+
+try:
     from infrastructure.adapter.external.pdf_converter.impl.pymupdf_pdf_converter import (
         PyMuPDFPDFConverter,
     )
@@ -36,6 +43,7 @@ except ImportError:
 __all__ = [
     "DownloaderProvider",
     "HTMLDownloader",
+    "MarkItDownPDFConverter",
     "PDFConverterProvider",
     "PDFDownloader",
     "PyMuPDFPDFConverter",

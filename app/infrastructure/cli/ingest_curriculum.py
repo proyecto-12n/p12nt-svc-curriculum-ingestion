@@ -46,6 +46,12 @@ def run_cli():
         action="store_true",
         help="Force the update of elements even if they already exist in the database.",
     )
+    parser.add_argument(
+        "--pdf-converter",
+        choices=("pymupdf4llm", "markitdown"),
+        default=settings.pdf_converter,
+        help="PDF converter used to generate stored Markdown.",
+    )
     args = parser.parse_args()
 
     # Database setup
@@ -76,7 +82,7 @@ def run_cli():
             curriculum_hierarchy_mapper_provider=curriculum_hierarchy_mapper_provider,
             downloader_provider=downloader_provider,
             pdf_to_markdown_use_case=pdf_to_markdown_use_case,
-            markdown_tool_name=settings.pdf_converter,
+            markdown_tool_name=args.pdf_converter,
         )
         import asyncio
 
