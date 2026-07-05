@@ -7,7 +7,7 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from typing import List, Optional
+from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session
@@ -50,14 +50,18 @@ def get_get_modality_use_case(
     return GetCurriculumHierarchyItemUseCaseImpl(repo)
 
 
-@router.get("", response_model=List[ModalityResponse])
+@router.get(
+    "",
+    response_model=List[ModalityResponse],
+    response_model_exclude={"__all__": {"content"}},
+)
 async def list_modalities(
-    curriculum_id: Optional[int] = Query(None, description="Filter by curriculum ID"),
+    parent_id: int = Query(..., description="Filter by parent ID"),
     use_case: ListCurriculumHierarchyItemUseCase[Modality] = Depends(
         get_list_modalities_use_case
     ),
 ):
-    results = await use_case.execute(curriculum_id)
+    results = await use_case.execute(parent_id)
     return [ModalityResponse.from_domain(m) for m in results]
 
 

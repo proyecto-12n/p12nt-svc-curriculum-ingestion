@@ -50,7 +50,11 @@ def get_get_curriculum_use_case(
     return GetCurriculumHierarchyItemUseCaseImpl(repo)
 
 
-@router.get("", response_model=List[CurriculumResponse])
+@router.get(
+    "",
+    response_model=List[CurriculumResponse],
+    response_model_exclude={"__all__": {"content"}},
+)
 async def list_curriculums(
     use_case: ListCurriculumHierarchyItemUseCase[Curriculum] = Depends(
         get_list_curriculums_use_case

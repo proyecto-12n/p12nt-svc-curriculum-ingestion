@@ -7,7 +7,7 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from typing import List, Optional
+from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session
@@ -50,14 +50,18 @@ def get_get_grade_level_use_case(
     return GetCurriculumHierarchyItemUseCaseImpl(repo)
 
 
-@router.get("", response_model=List[GradeLevelResponse])
+@router.get(
+    "",
+    response_model=List[GradeLevelResponse],
+    response_model_exclude={"__all__": {"content"}},
+)
 async def list_grade_levels(
-    subject_id: Optional[int] = Query(None, description="Filter by subject ID"),
+    parent_id: int = Query(..., description="Filter by parent ID"),
     use_case: ListCurriculumHierarchyItemUseCase[GradeLevel] = Depends(
         get_list_grade_levels_use_case
     ),
 ):
-    results = await use_case.execute(subject_id)
+    results = await use_case.execute(parent_id)
     return [GradeLevelResponse.from_domain(g) for g in results]
 
 

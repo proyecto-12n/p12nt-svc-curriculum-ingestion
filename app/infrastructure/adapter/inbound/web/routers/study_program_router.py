@@ -7,7 +7,7 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from typing import List, Optional
+from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session
@@ -50,16 +50,18 @@ def get_get_study_program_use_case(
     return GetCurriculumHierarchyItemUseCaseImpl(repo)
 
 
-@router.get("", response_model=List[StudyProgramResponse])
+@router.get(
+    "",
+    response_model=List[StudyProgramResponse],
+    response_model_exclude={"__all__": {"content"}},
+)
 async def list_study_programs(
-    study_program_ref_id: Optional[int] = Query(
-        None, description="Filter by study program ref ID"
-    ),
+    parent_id: int = Query(..., description="Filter by parent ID"),
     use_case: ListCurriculumHierarchyItemUseCase[StudyProgram] = Depends(
         get_list_study_programs_use_case
     ),
 ):
-    results = await use_case.execute(study_program_ref_id)
+    results = await use_case.execute(parent_id)
     return [StudyProgramResponse.from_domain(p) for p in results]
 
 

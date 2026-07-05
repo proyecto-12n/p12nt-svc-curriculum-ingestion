@@ -24,7 +24,9 @@ class StudyProgramRefResponse(BaseModel):
     def from_domain(cls, ref: StudyProgramRef) -> "StudyProgramRefResponse":
         return cls(
             id=ref.id,
-            grade_level_id=ref.grade_level_id,
+            grade_level_id=(
+                ref.grade_level_id if hasattr(ref, "grade_level_id") else ref.parent_id
+            ),
             url=ref.url,
             title=ref.title,
             content=ref.content,

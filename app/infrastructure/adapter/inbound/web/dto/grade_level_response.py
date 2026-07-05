@@ -24,7 +24,11 @@ class GradeLevelResponse(BaseModel):
     def from_domain(cls, grade_level: GradeLevel) -> "GradeLevelResponse":
         return cls(
             id=grade_level.id,
-            subject_id=grade_level.subject_id,
+            subject_id=(
+                grade_level.subject_id
+                if hasattr(grade_level, "subject_id")
+                else grade_level.parent_id
+            ),
             url=grade_level.url,
             title=grade_level.title,
             content=grade_level.content,

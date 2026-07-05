@@ -141,6 +141,24 @@ FACTORY_CASES = [
     study_program_router.get_get_study_program_use_case,
 ]
 
+PARENT_FILTER_ROUTERS = [
+    modality_router.router,
+    subject_router.router,
+    grade_level_router.router,
+    study_program_ref_router.router,
+    study_program_router.router,
+]
+
+LIST_ROUTERS = [curriculum_router.router, *PARENT_FILTER_ROUTERS]
+
+
+def get_list_route(router):
+    return next(route for route in router.routes if "{id}" not in route.path)
+
+
+def get_detail_route(router):
+    return next(route for route in router.routes if "{id}" in route.path)
+
 
 class TestCurriculumHierarchyRouters:
     @pytest.mark.parametrize("handler,parent_id,model", LIST_CASES)
@@ -153,7 +171,7 @@ class TestCurriculumHierarchyRouters:
             result = await handler(use_case=use_case)
             use_case.execute.assert_awaited_once_with()
         else:
-            result = await handler(parent_id, use_case=use_case)
+            result = await handler(parent_id=parent_id, use_case=use_case)
             use_case.execute.assert_awaited_once_with(parent_id)
 
         assert result[0].id == model.id
@@ -186,3 +204,31 @@ class TestCurriculumHierarchyRouters:
         use_case = factory(MagicMock())
 
         assert hasattr(use_case, "execute")
+
+    @pytest.mark.parametrize("router", PARENT_FILTER_ROUTERS)
+    def test_given_child_list_route_when_inspected_then_requires_parent_id(
+        self, router
+    ):
+        route = get_list_route(router)
+        query_params = {param.name: param for param in route.dependant.query_params}
+
+        assert query_params["parent_id"].field_info.is_required()
+
+    def test_given_curriculum_list_route_when_inspected_then_has_no_parent_filter(
+        self,
+    ):
+        route = get_list_route(curriculum_router.router)
+
+        assert route.dependant.query_params == []
+
+    @pytest.mark.parametrize("router", LIST_ROUTERS)
+    def test_given_list_route_when_inspected_then_excludes_content(self, router):
+        route = get_list_route(router)
+
+        assert route.response_model_exclude == {"__all__": {"content"}}
+
+    @pytest.mark.parametrize("router", LIST_ROUTERS)
+    def test_given_detail_route_when_inspected_then_includes_content(self, router):
+        route = get_detail_route(router)
+
+        assert route.response_model_exclude is None

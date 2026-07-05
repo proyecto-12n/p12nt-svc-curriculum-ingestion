@@ -27,7 +27,11 @@ class StudyProgramResponse(BaseModel):
         content_b64 = base64.b64encode(program.content).decode("utf-8")
         return cls(
             id=program.id,
-            study_program_ref_id=program.study_program_ref_id,
+            study_program_ref_id=(
+                program.study_program_ref_id
+                if hasattr(program, "study_program_ref_id")
+                else program.parent_id
+            ),
             url=program.url,
             title=program.title,
             content=content_b64,

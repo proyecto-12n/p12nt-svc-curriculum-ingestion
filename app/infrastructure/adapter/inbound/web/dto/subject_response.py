@@ -24,7 +24,11 @@ class SubjectResponse(BaseModel):
     def from_domain(cls, subject: Subject) -> "SubjectResponse":
         return cls(
             id=subject.id,
-            modality_id=subject.modality_id,
+            modality_id=(
+                subject.modality_id
+                if hasattr(subject, "modality_id")
+                else subject.parent_id
+            ),
             url=subject.url,
             title=subject.title,
             content=subject.content,

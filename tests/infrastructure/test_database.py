@@ -1,9 +1,20 @@
 from unittest.mock import MagicMock, patch
 
+from sqlmodel import Session
+
 from infrastructure import database
 
 
 class TestDatabase:
+    def test_given_session_factory_when_configured_then_uses_sqlmodel_session(self):
+        session = database.SessionLocal()
+
+        try:
+            assert isinstance(session, Session)
+            assert hasattr(session, "exec")
+        finally:
+            session.close()
+
     def test_given_session_when_get_db_then_closes_after_use(self):
         session = MagicMock()
 
