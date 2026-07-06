@@ -15,6 +15,9 @@ from sqlmodel import Session
 from application.usecase.get_curriculum_hierarchy_item_usecase import (
     GetCurriculumHierarchyItemUseCaseImpl,
 )
+from application.usecase.list_grade_level_report_usecase import (
+    ListGradeLevelReportUseCaseImpl,
+)
 from application.usecase.list_curriculum_hierarchy_item_usecase import (
     ListCurriculumHierarchyItemUseCaseImpl,
 )
@@ -24,6 +27,12 @@ from domain.port.inbound.get_curriculum_hierarchy_item_use_case import (
 )
 from domain.port.inbound.list_curriculum_hierarchy_item_use_case import (
     ListCurriculumHierarchyItemUseCase,
+)
+from domain.port.inbound.list_grade_level_report_use_case import (
+    ListGradeLevelReportUseCase,
+)
+from infrastructure.adapter.inbound.web.dto.grade_level_report_response import (
+    GradeLevelReportResponse,
 )
 from infrastructure.adapter.inbound.web.dto.grade_level_response import (
     GradeLevelResponse,
@@ -50,6 +59,13 @@ def get_get_grade_level_use_case(
     return GetCurriculumHierarchyItemUseCaseImpl(repo)
 
 
+def get_list_grade_level_report_use_case(
+    session: Session = Depends(get_db),
+) -> ListGradeLevelReportUseCase:
+    repo = SqlGradeLevelRepositoryAdapter(session)
+    return ListGradeLevelReportUseCaseImpl(repo)
+
+
 @router.get(
     "",
     response_model=List[GradeLevelResponse],
@@ -63,6 +79,19 @@ async def list_grade_levels(
 ):
     results = await use_case.execute(parent_id)
     return [GradeLevelResponse.from_domain(g) for g in results]
+
+
+@router.get(
+    "/report",
+    response_model=list[GradeLevelReportResponse],
+)
+async def list_grade_level_report(
+    use_case: ListGradeLevelReportUseCase = Depends(
+        get_list_grade_level_report_use_case
+    ),
+) -> list[GradeLevelReportResponse]:
+    results = await use_case.execute()
+    return [GradeLevelReportResponse.from_domain(result) for result in results]
 
 
 @router.get("/{id}", response_model=GradeLevelResponse)

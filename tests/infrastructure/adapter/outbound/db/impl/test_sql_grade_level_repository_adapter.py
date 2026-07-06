@@ -1,3 +1,6 @@
+from types import SimpleNamespace
+
+from domain.model.grade_level_report import GradeLevelReport
 from infrastructure.adapter.outbound.db.impl.sql_grade_level_repository_adapter import (
     SqlGradeLevelRepositoryAdapter,
 )
@@ -49,6 +52,38 @@ class TestSqlGradeLevelRepositoryAdapter:
         result = await repository.list(10)
 
         assert result == expected
+        session.exec.assert_called_once()
+
+    async def test_given_report_rows_when_list_report_then_maps_domain_results(
+        self, session
+    ):
+        row = SimpleNamespace(
+            _mapping={
+                "id": 1,
+                "title": "Grade",
+                "url": "grade-url",
+                "study_program_ref_id": 2,
+                "study_program_id": 3,
+                "by_markitdown": 4,
+                "by_pymupdf4llm": None,
+            }
+        )
+        configure_all_result(session, [row])
+        repository = SqlGradeLevelRepositoryAdapter(session)
+
+        result = await repository.list_report()
+
+        assert result == [
+            GradeLevelReport(
+                id=1,
+                title="Grade",
+                url="grade-url",
+                study_program_ref_id=2,
+                study_program_id=3,
+                by_markitdown=4,
+                by_pymupdf4llm=None,
+            )
+        ]
         session.exec.assert_called_once()
 
     async def test_given_new_model_when_save_then_adds_commits_and_refreshes_model(

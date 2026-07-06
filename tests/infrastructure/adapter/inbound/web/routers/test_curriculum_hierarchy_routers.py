@@ -7,6 +7,7 @@ from fastapi import HTTPException
 from domain.model import (
     Curriculum,
     GradeLevel,
+    GradeLevelReport,
     Modality,
     StudyProgram,
     StudyProgramRef,
@@ -135,6 +136,7 @@ FACTORY_CASES = [
     subject_router.get_get_subject_use_case,
     grade_level_router.get_list_grade_levels_use_case,
     grade_level_router.get_get_grade_level_use_case,
+    grade_level_router.get_list_grade_level_report_use_case,
     study_program_ref_router.get_list_study_program_refs_use_case,
     study_program_ref_router.get_get_study_program_ref_use_case,
     study_program_router.get_list_study_programs_use_case,
@@ -220,6 +222,34 @@ class TestCurriculumHierarchyRouters:
         route = get_list_route(curriculum_router.router)
 
         assert route.dependant.query_params == []
+
+    async def test_given_report_rows_when_list_grade_level_report_then_returns_response(
+        self,
+    ):
+        use_case = SimpleNamespace(
+            execute=AsyncMock(
+                return_value=[
+                    GradeLevelReport(
+                        id=1,
+                        title="Grade",
+                        url="grade-url",
+                        study_program_ref_id=2,
+                        study_program_id=3,
+                        by_markitdown=4,
+                        by_pymupdf4llm=None,
+                    )
+                ]
+            )
+        )
+
+        result = await grade_level_router.list_grade_level_report(use_case)
+
+        assert result[0].id == 1
+        assert result[0].study_program_ref_id == 2
+        assert result[0].study_program_id == 3
+        assert result[0].by_markitdown == 4
+        assert result[0].by_pymupdf4llm is None
+        use_case.execute.assert_awaited_once_with()
 
     @pytest.mark.parametrize("router", LIST_ROUTERS)
     def test_given_list_route_when_inspected_then_excludes_content(self, router):
