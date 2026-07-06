@@ -247,8 +247,8 @@ class TestCurriculumHierarchyRouters:
         result = await grade_level_router.list_grade_level_detail_report(use_case)
 
         assert result[0].id == 1
-        assert result[0].ref_id == 2
-        assert result[0].program_id == 3
+        assert result[0].reference_id == 2
+        assert result[0].book_id == 3
         assert result[0].markitdown_id == 4
         assert result[0].pymupdf4llm_id is None
         use_case.execute.assert_awaited_once_with()
@@ -270,8 +270,8 @@ class TestCurriculumHierarchyRouters:
 
         result = await grade_level_router.get_grade_level_summary_report(use_case)
 
-        assert result.ref_sum == 1
-        assert result.program_sum == 2
+        assert result.reference_sum == 1
+        assert result.book_sum == 2
         assert result.markitdown_sum == 1
         assert result.pymupdf4llm_sum == 1
         assert result.total == 3
