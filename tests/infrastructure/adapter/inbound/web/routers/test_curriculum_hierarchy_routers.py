@@ -8,6 +8,7 @@ from domain.model import (
     Curriculum,
     GradeLevel,
     GradeLevelDetailReport,
+    GradeLevelSummaryReport,
     Modality,
     StudyProgram,
     StudyProgramRef,
@@ -137,6 +138,7 @@ FACTORY_CASES = [
     grade_level_router.get_list_grade_levels_use_case,
     grade_level_router.get_get_grade_level_use_case,
     grade_level_router.get_list_grade_level_detail_report_use_case,
+    grade_level_router.get_grade_level_summary_report_use_case,
     study_program_ref_router.get_list_study_program_refs_use_case,
     study_program_ref_router.get_get_study_program_ref_use_case,
     study_program_router.get_list_study_programs_use_case,
@@ -245,10 +247,34 @@ class TestCurriculumHierarchyRouters:
         result = await grade_level_router.list_grade_level_detail_report(use_case)
 
         assert result[0].id == 1
-        assert result[0].study_program_ref_id == 2
-        assert result[0].study_program_id == 3
-        assert result[0].study_program_markitdown_id == 4
-        assert result[0].study_program_pymupdf4llm_id is None
+        assert result[0].ref_id == 2
+        assert result[0].program_id == 3
+        assert result[0].markitdown_id == 4
+        assert result[0].pymupdf4llm_id is None
+        use_case.execute.assert_awaited_once_with()
+
+    async def test_given_summary_when_get_grade_level_summary_report_then_returns_response(
+        self,
+    ):
+        use_case = SimpleNamespace(
+            execute=AsyncMock(
+                return_value=GradeLevelSummaryReport(
+                    study_program_ref_sum=1,
+                    study_program_sum=2,
+                    study_program_markitdown_sum=1,
+                    study_program_pymupdf4llm_sum=1,
+                    total=3,
+                )
+            )
+        )
+
+        result = await grade_level_router.get_grade_level_summary_report(use_case)
+
+        assert result.ref_sum == 1
+        assert result.program_sum == 2
+        assert result.markitdown_sum == 1
+        assert result.pymupdf4llm_sum == 1
+        assert result.total == 3
         use_case.execute.assert_awaited_once_with()
 
     @pytest.mark.parametrize("router", LIST_ROUTERS)

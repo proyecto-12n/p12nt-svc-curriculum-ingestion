@@ -11,6 +11,7 @@ from domain.model.modality import Modality
 from domain.model.subject import Subject
 from domain.model.grade_level import GradeLevel
 from domain.model.grade_level_detail_report import GradeLevelDetailReport
+from domain.model.grade_level_summary_report import GradeLevelSummaryReport
 from domain.model.study_program import StudyProgram
 from domain.model.study_program_ref import StudyProgramRef
 from domain.model.resource_type import ResourceType
@@ -24,6 +25,7 @@ __all__ = [
     "Subject",
     "GradeLevel",
     "GradeLevelDetailReport",
+    "GradeLevelSummaryReport",
     "StudyProgram",
     "StudyProgramRef",
     "ResourceType",
