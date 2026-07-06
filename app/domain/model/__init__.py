@@ -10,7 +10,7 @@ All rights reserved.
 from domain.model.modality import Modality
 from domain.model.subject import Subject
 from domain.model.grade_level import GradeLevel
-from domain.model.grade_level_report import GradeLevelReport
+from domain.model.grade_level_detail_report import GradeLevelDetailReport
 from domain.model.study_program import StudyProgram
 from domain.model.study_program_ref import StudyProgramRef
 from domain.model.resource_type import ResourceType
@@ -23,7 +23,7 @@ __all__ = [
     "Modality",
     "Subject",
     "GradeLevel",
-    "GradeLevelReport",
+    "GradeLevelDetailReport",
     "StudyProgram",
     "StudyProgramRef",
     "ResourceType",

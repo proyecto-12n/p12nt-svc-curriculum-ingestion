@@ -7,7 +7,7 @@ from fastapi import HTTPException
 from domain.model import (
     Curriculum,
     GradeLevel,
-    GradeLevelReport,
+    GradeLevelDetailReport,
     Modality,
     StudyProgram,
     StudyProgramRef,
@@ -136,7 +136,7 @@ FACTORY_CASES = [
     subject_router.get_get_subject_use_case,
     grade_level_router.get_list_grade_levels_use_case,
     grade_level_router.get_get_grade_level_use_case,
-    grade_level_router.get_list_grade_level_report_use_case,
+    grade_level_router.get_list_grade_level_detail_report_use_case,
     study_program_ref_router.get_list_study_program_refs_use_case,
     study_program_ref_router.get_get_study_program_ref_use_case,
     study_program_router.get_list_study_programs_use_case,
@@ -223,32 +223,32 @@ class TestCurriculumHierarchyRouters:
 
         assert route.dependant.query_params == []
 
-    async def test_given_report_rows_when_list_grade_level_report_then_returns_response(
+    async def test_given_report_rows_when_list_grade_level_detail_report_then_returns_response(
         self,
     ):
         use_case = SimpleNamespace(
             execute=AsyncMock(
                 return_value=[
-                    GradeLevelReport(
+                    GradeLevelDetailReport(
                         id=1,
                         title="Grade",
                         url="grade-url",
                         study_program_ref_id=2,
                         study_program_id=3,
-                        by_markitdown=4,
-                        by_pymupdf4llm=None,
+                        study_program_markitdown_id=4,
+                        study_program_pymupdf4llm_id=None,
                     )
                 ]
             )
         )
 
-        result = await grade_level_router.list_grade_level_report(use_case)
+        result = await grade_level_router.list_grade_level_detail_report(use_case)
 
         assert result[0].id == 1
         assert result[0].study_program_ref_id == 2
         assert result[0].study_program_id == 3
-        assert result[0].by_markitdown == 4
-        assert result[0].by_pymupdf4llm is None
+        assert result[0].study_program_markitdown_id == 4
+        assert result[0].study_program_pymupdf4llm_id is None
         use_case.execute.assert_awaited_once_with()
 
     @pytest.mark.parametrize("router", LIST_ROUTERS)

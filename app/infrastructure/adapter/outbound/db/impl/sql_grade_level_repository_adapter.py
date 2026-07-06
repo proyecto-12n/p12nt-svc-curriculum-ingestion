@@ -12,7 +12,7 @@ from typing import Optional, List
 from sqlalchemy import case, func
 from sqlmodel import Session, select
 
-from domain.model.grade_level_report import GradeLevelReport
+from domain.model.grade_level_detail_report import GradeLevelDetailReport
 from infrastructure.adapter.outbound.db import CurriculumHierarchyRepository
 from infrastructure.models.grade_level import GradeLevel
 from infrastructure.models.study_program import StudyProgram
@@ -74,7 +74,7 @@ class SqlGradeLevelRepositoryAdapter(CurriculumHierarchyRepository[GradeLevel]):
         results = self.session.exec(statement).all()
         return [row for row in results]
 
-    async def list_report(self) -> list[GradeLevelReport]:
+    async def list_detail_report(self) -> list[GradeLevelDetailReport]:
         markdowns = (
             select(
                 StudyProgramMarkdown.study_program_id,
@@ -85,7 +85,7 @@ class SqlGradeLevelRepositoryAdapter(CurriculumHierarchyRepository[GradeLevel]):
                             StudyProgramMarkdown.id,
                         )
                     )
-                ).label("by_markitdown"),
+                ).label("study_program_markitdown_id"),
                 func.max(
                     case(
                         (
@@ -93,7 +93,7 @@ class SqlGradeLevelRepositoryAdapter(CurriculumHierarchyRepository[GradeLevel]):
                             StudyProgramMarkdown.id,
                         )
                     )
-                ).label("by_pymupdf4llm"),
+                ).label("study_program_pymupdf4llm_id"),
             )
             .group_by(StudyProgramMarkdown.study_program_id)
             .subquery()
@@ -105,8 +105,8 @@ class SqlGradeLevelRepositoryAdapter(CurriculumHierarchyRepository[GradeLevel]):
                 GradeLevel.url.label("url"),
                 StudyProgramRef.id.label("study_program_ref_id"),
                 StudyProgram.id.label("study_program_id"),
-                markdowns.c.by_markitdown,
-                markdowns.c.by_pymupdf4llm,
+                markdowns.c.study_program_markitdown_id,
+                markdowns.c.study_program_pymupdf4llm_id,
             )
             .outerjoin(
                 StudyProgramRef,
@@ -119,4 +119,4 @@ class SqlGradeLevelRepositoryAdapter(CurriculumHierarchyRepository[GradeLevel]):
             .outerjoin(markdowns, markdowns.c.study_program_id == StudyProgram.id)
         ).all()
 
-        return [GradeLevelReport(**row._mapping) for row in rows]
+        return [GradeLevelDetailReport(**row._mapping) for row in rows]
