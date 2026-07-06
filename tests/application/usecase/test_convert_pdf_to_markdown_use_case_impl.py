@@ -7,49 +7,37 @@ from domain.model.pdf_resource import PDFResource
 
 
 class TestConvertPDFToMarkdownUseCaseImpl:
+    def setup_method(self):
+        self.converter = MagicMock()
+        self.converter.convert.return_value = "# Markdown"
+        self.provider = MagicMock()
+        self.provider.get_converter.return_value = self.converter
+        self.use_case = ConvertPDFToMarkdownUseCaseImpl(self.provider)
+        self.resource = PDFResource(content=b"pdf")
+
     async def test_given_uncached_pdf_when_execute_then_uses_provider_converter_and_returns_markdown(
         self,
     ):
-        converter = MagicMock()
-        converter.convert.return_value = "# Markdown"
-        provider = MagicMock()
-        provider.get_converter.return_value = converter
-        use_case = ConvertPDFToMarkdownUseCaseImpl(provider)
-        resource = PDFResource(content=b"pdf")
-
-        result = await use_case.execute(resource)
+        result = await self.use_case.execute(self.resource)
 
         assert result == "# Markdown"
-        provider.get_converter.assert_called_once_with(None)
-        converter.convert.assert_called_once_with(resource)
+        self.provider.get_converter.assert_called_once_with(None)
+        self.converter.convert.assert_called_once_with(self.resource)
 
     async def test_given_same_pdf_when_execute_twice_then_second_call_uses_cache(self):
-        converter = MagicMock()
-        converter.convert.return_value = "# Markdown"
-        provider = MagicMock()
-        provider.get_converter.return_value = converter
-        use_case = ConvertPDFToMarkdownUseCaseImpl(provider)
-        resource = PDFResource(content=b"pdf")
-
-        await use_case.execute(resource)
-        provider.get_converter.reset_mock()
-        converter.convert.reset_mock()
-        result = await use_case.execute(resource)
+        await self.use_case.execute(self.resource)
+        self.provider.get_converter.reset_mock()
+        self.converter.convert.reset_mock()
+        result = await self.use_case.execute(self.resource)
 
         assert result == "# Markdown"
-        provider.get_converter.assert_not_called()
-        converter.convert.assert_not_called()
+        self.provider.get_converter.assert_not_called()
+        self.converter.convert.assert_not_called()
 
     async def test_given_provider_name_when_execute_then_requests_named_converter(self):
-        converter = MagicMock()
-        converter.convert.return_value = "# Markdown"
-        provider = MagicMock()
-        provider.get_converter.return_value = converter
-        use_case = ConvertPDFToMarkdownUseCaseImpl(provider)
-
-        result = await use_case.execute(
+        result = await self.use_case.execute(
             PDFResource(content=b"other"), provider_name="pymupdf"
         )
 
         assert result == "# Markdown"
-        provider.get_converter.assert_called_once_with("pymupdf")
+        self.provider.get_converter.assert_called_once_with("pymupdf")

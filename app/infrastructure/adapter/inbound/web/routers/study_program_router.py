@@ -18,18 +18,29 @@ from application.usecase.get_curriculum_hierarchy_item_usecase import (
 from application.usecase.list_curriculum_hierarchy_item_usecase import (
     ListCurriculumHierarchyItemUseCaseImpl,
 )
+from application.usecase.parse_scrap_resource_usecase import (
+    ParseScrapResourceUseCaseImpl,
+)
 from domain.model import StudyProgram
+from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
 from domain.port.inbound.get_curriculum_hierarchy_item_use_case import (
     GetCurriculumHierarchyItemUseCase,
 )
 from domain.port.inbound.list_curriculum_hierarchy_item_use_case import (
     ListCurriculumHierarchyItemUseCase,
 )
+from domain.port.inbound.parse_scrap_resource_use_case import ParseScrapResourceUseCase
+from infrastructure.adapter.inbound.web.dto.scrap_resource_parser_result_response import (
+    ScrapResourceParserResultResponse,
+)
 from infrastructure.adapter.inbound.web.dto.study_program_response import (
     StudyProgramResponse,
 )
 from infrastructure.adapter.outbound.db.impl.sql_study_program_repository_adapter import (
     SqlStudyProgramRepositoryAdapter,
+)
+from infrastructure.adapter.outbound.http.scrap_resource_parser_provider_adapter import (
+    ScrapResourceParserProviderAdapter,
 )
 from infrastructure.database import get_db
 
@@ -48,6 +59,17 @@ def get_get_study_program_use_case(
 ) -> GetCurriculumHierarchyItemUseCase[StudyProgram]:
     repo = SqlStudyProgramRepositoryAdapter(session)
     return GetCurriculumHierarchyItemUseCaseImpl(repo)
+
+
+def get_parse_study_program_use_case(
+    session: Session = Depends(get_db),
+) -> ParseScrapResourceUseCase:
+    repo = SqlStudyProgramRepositoryAdapter(session)
+    return ParseScrapResourceUseCaseImpl(
+        repo,
+        ScrapResourceParserProviderAdapter(),
+        CurriculumHierarchyType.STUDY_PROGRAM,
+    )
 
 
 @router.get(
@@ -76,3 +98,14 @@ async def get_study_program(
     if result is None:
         raise HTTPException(status_code=404, detail="Study program not found")
     return StudyProgramResponse.from_domain(result)
+
+
+@router.get("/{id}/parser-result", response_model=ScrapResourceParserResultResponse)
+async def parse_study_program_resource(
+    id: int,
+    use_case: ParseScrapResourceUseCase = Depends(get_parse_study_program_use_case),
+):
+    result = await use_case.execute(id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Study program not found")
+    return ScrapResourceParserResultResponse.from_domain(result)

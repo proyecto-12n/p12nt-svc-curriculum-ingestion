@@ -19,6 +19,7 @@ from domain.model.pdf_resource import PDFResource
 from domain.model.edge import Edge
 from domain.model.curriculum import Curriculum
 from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
+from domain.model.scrap_resource_parser_result import ScrapResourceParserResult
 
 __all__ = [
     "Modality",
@@ -33,4 +34,5 @@ __all__ = [
     "Edge",
     "Curriculum",
     "CurriculumHierarchyType",
+    "ScrapResourceParserResult",
 ]

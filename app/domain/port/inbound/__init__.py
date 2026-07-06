@@ -19,10 +19,12 @@ from domain.port.inbound.ingest_curriculum_use_case import (
 from domain.port.inbound.list_curriculum_hierarchy_item_use_case import (
     ListCurriculumHierarchyItemUseCase,
 )
+from domain.port.inbound.parse_scrap_resource_use_case import ParseScrapResourceUseCase
 
 __all__ = [
     "IngestCurriculumUseCase",
     "ConvertPDFToMarkdownUseCase",
     "GetCurriculumHierarchyItemUseCase",
     "ListCurriculumHierarchyItemUseCase",
+    "ParseScrapResourceUseCase",
 ]

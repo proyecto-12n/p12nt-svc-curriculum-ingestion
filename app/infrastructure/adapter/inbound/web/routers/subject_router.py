@@ -18,18 +18,29 @@ from application.usecase.get_curriculum_hierarchy_item_usecase import (
 from application.usecase.list_curriculum_hierarchy_item_usecase import (
     ListCurriculumHierarchyItemUseCaseImpl,
 )
+from application.usecase.parse_scrap_resource_usecase import (
+    ParseScrapResourceUseCaseImpl,
+)
 from domain.model import Subject
+from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
 from domain.port.inbound.get_curriculum_hierarchy_item_use_case import (
     GetCurriculumHierarchyItemUseCase,
 )
 from domain.port.inbound.list_curriculum_hierarchy_item_use_case import (
     ListCurriculumHierarchyItemUseCase,
 )
+from domain.port.inbound.parse_scrap_resource_use_case import ParseScrapResourceUseCase
 from infrastructure.adapter.inbound.web.dto.subject_response import (
     SubjectResponse,
 )
+from infrastructure.adapter.inbound.web.dto.scrap_resource_parser_result_response import (
+    ScrapResourceParserResultResponse,
+)
 from infrastructure.adapter.outbound.db.impl.sql_subject_repository_adapter import (
     SqlSubjectRepositoryAdapter,
+)
+from infrastructure.adapter.outbound.http.scrap_resource_parser_provider_adapter import (
+    ScrapResourceParserProviderAdapter,
 )
 from infrastructure.database import get_db
 
@@ -48,6 +59,15 @@ def get_get_subject_use_case(
 ) -> GetCurriculumHierarchyItemUseCase[Subject]:
     repo = SqlSubjectRepositoryAdapter(session)
     return GetCurriculumHierarchyItemUseCaseImpl(repo)
+
+
+def get_parse_subject_use_case(
+    session: Session = Depends(get_db),
+) -> ParseScrapResourceUseCase:
+    repo = SqlSubjectRepositoryAdapter(session)
+    return ParseScrapResourceUseCaseImpl(
+        repo, ScrapResourceParserProviderAdapter(), CurriculumHierarchyType.SUBJECT
+    )
 
 
 @router.get(
@@ -76,3 +96,14 @@ async def get_subject(
     if result is None:
         raise HTTPException(status_code=404, detail="Subject not found")
     return SubjectResponse.from_domain(result)
+
+
+@router.get("/{id}/parser-result", response_model=ScrapResourceParserResultResponse)
+async def parse_subject_resource(
+    id: int,
+    use_case: ParseScrapResourceUseCase = Depends(get_parse_subject_use_case),
+):
+    result = await use_case.execute(id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Subject not found")
+    return ScrapResourceParserResultResponse.from_domain(result)

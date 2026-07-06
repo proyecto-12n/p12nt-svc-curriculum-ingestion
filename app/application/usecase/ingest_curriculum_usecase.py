@@ -51,7 +51,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
         self.markdown_tool_name = markdown_tool_name or "default"
 
     async def execute(self, refresh: bool = False) -> None:
-        logger.info("Starting ingestion of curriculum data...")
+        logger.info("Starting curriculum ingestion. refresh=%s", refresh)
 
         root_node = Edge(
             url=urljoin(
@@ -63,9 +63,11 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
         )
 
         await self.__navigator(refresh, root_node)
+        logger.info("Curriculum ingestion finished.")
 
     async def __navigator(self, refresh: bool, edge: Edge) -> None:
         assert isinstance(edge, Edge)
+        logger.debug("Visiting %s resource: %s", edge.hierarchy.value, edge.url)
 
         cache, resource = await self.__get_resource(refresh, edge)
         parser = self.resource_parser_provider_adapter.get_parser(edge.hierarchy)
@@ -85,9 +87,16 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
             model = await repository.save(mapper.to_model(aux_edge))
             await self.__save_markdown_if_needed(repository, model)
 
-            logger.info("Save %s data for %s", edge.hierarchy.value, resource.url)
+            logger.info(
+                "Saved %s data for %s with id=%s",
+                edge.hierarchy.value,
+                resource.url,
+                model.id,
+            )
 
+        child_count = 0
         async for child_raw in parser.get_children(resource):
+            child_count += 1
             child = replace(
                 child_raw,
                 url=urljoin(IngestCurriculumUseCaseImpl.BASE_URL, child_raw.url),
@@ -95,6 +104,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
             )
 
             await self.__navigator(refresh, child)
+        logger.debug("Processed %s child resources for %s", child_count, edge.url)
 
     async def __get_resource(
         self, refresh: bool, edge: Edge
@@ -103,6 +113,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
         repository = self.repository_provider_adapter.get_repository(edge.hierarchy)
         cache_node = await repository.find_by_url(edge.url) if not refresh else None
         if cache_node is None:
+            logger.info("Downloading %s resource: %s", edge.hierarchy.value, edge.url)
             downloader = self.downloader_provider.get_downloader(edge.type)
             try:
                 return False, await downloader.download(edge.url)
@@ -110,13 +121,16 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                 if edge.type != ResourceType.PDF:
                     raise
                 logger.warning(
-                    "PDF download failed for %s; saving empty content", edge.url
+                    "PDF download failed for %s; saving empty content",
+                    edge.url,
+                    exc_info=True,
                 )
                 return (
                     False,
                     ScrapResource(url=edge.url, type=ResourceType.PDF, content=b""),
                 )
 
+        logger.info("Using cached %s resource: %s", edge.hierarchy.value, edge.url)
         mapper = self.curriculum_hierarchy_mapper_provider.get_mapper(edge.hierarchy)
         await self.__save_markdown_if_needed(repository, cache_node)
         edge = mapper.to_edge(cache_node)
@@ -139,14 +153,29 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
             self.markdown_tool_name,
         )
         if existing:
+            logger.debug(
+                "Markdown already exists for study_program_id=%s tool=%s",
+                model.id,
+                self.markdown_tool_name,
+            )
             return False
 
+        logger.info(
+            "Generating markdown for study_program_id=%s tool=%s",
+            model.id,
+            self.markdown_tool_name,
+        )
         markdown = await self.pdf_to_markdown_use_case.execute(
             PDFResource(content=model.content), self.markdown_tool_name
         )
         await repository.save_markdown(
             model,
             markdown,
+            self.markdown_tool_name,
+        )
+        logger.info(
+            "Saved markdown for study_program_id=%s tool=%s",
+            model.id,
             self.markdown_tool_name,
         )
         return True

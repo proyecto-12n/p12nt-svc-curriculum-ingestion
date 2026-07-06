@@ -12,6 +12,7 @@ from infrastructure.models.modality import Modality
 from infrastructure.models.subject import Subject
 from infrastructure.models.grade_level import GradeLevel
 from infrastructure.models.study_program import StudyProgram
+from infrastructure.models.study_program_json import StudyProgramJson
 from infrastructure.models.study_program_markdown import StudyProgramMarkdown
 from infrastructure.models.study_program_ref import StudyProgramRef
 
@@ -21,6 +22,7 @@ __all__ = [
     "Subject",
     "GradeLevel",
     "StudyProgram",
+    "StudyProgramJson",
     "StudyProgramMarkdown",
     "StudyProgramRef",
 ]

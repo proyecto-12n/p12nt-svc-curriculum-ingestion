@@ -14,6 +14,9 @@ from domain.model import (
     StudyProgramRef,
     Subject,
 )
+from domain.model.edge import Edge
+from domain.model.resource_type import ResourceType
+from domain.model.scrap_resource_parser_result import ScrapResourceParserResult
 from infrastructure.adapter.inbound.web.routers import (
     curriculum_router,
     grade_level_router,
@@ -128,21 +131,39 @@ GET_CASES = [
     ),
 ]
 
+PARSE_CASES = [
+    (curriculum_router.parse_curriculum_resource, "Curriculum not found"),
+    (modality_router.parse_modality_resource, "Modality not found"),
+    (subject_router.parse_subject_resource, "Subject not found"),
+    (grade_level_router.parse_grade_level_resource, "Grade level not found"),
+    (
+        study_program_ref_router.parse_study_program_ref_resource,
+        "Study program ref not found",
+    ),
+    (study_program_router.parse_study_program_resource, "Study program not found"),
+]
+
 FACTORY_CASES = [
     curriculum_router.get_list_curriculums_use_case,
     curriculum_router.get_get_curriculum_use_case,
+    curriculum_router.get_parse_curriculum_use_case,
     modality_router.get_list_modalities_use_case,
     modality_router.get_get_modality_use_case,
+    modality_router.get_parse_modality_use_case,
     subject_router.get_list_subjects_use_case,
     subject_router.get_get_subject_use_case,
+    subject_router.get_parse_subject_use_case,
     grade_level_router.get_list_grade_levels_use_case,
     grade_level_router.get_get_grade_level_use_case,
+    grade_level_router.get_parse_grade_level_use_case,
     grade_level_router.get_list_grade_level_detail_report_use_case,
     grade_level_router.get_grade_level_summary_report_use_case,
     study_program_ref_router.get_list_study_program_refs_use_case,
     study_program_ref_router.get_get_study_program_ref_use_case,
+    study_program_ref_router.get_parse_study_program_ref_use_case,
     study_program_router.get_list_study_programs_use_case,
     study_program_router.get_get_study_program_use_case,
+    study_program_router.get_parse_study_program_use_case,
 ]
 
 PARENT_FILTER_ROUTERS = [
@@ -194,6 +215,35 @@ class TestCurriculumHierarchyRouters:
     @pytest.mark.parametrize("handler,_model,detail", GET_CASES)
     async def test_given_missing_id_when_get_then_raises_not_found(
         self, handler, _model, detail
+    ):
+        use_case = SimpleNamespace(execute=AsyncMock(return_value=None))
+
+        with pytest.raises(HTTPException) as exc_info:
+            await handler(1, use_case=use_case)
+
+        assert exc_info.value.status_code == 404
+        assert exc_info.value.detail == detail
+
+    @pytest.mark.parametrize("handler,_detail", PARSE_CASES)
+    async def test_given_existing_id_when_parse_resource_then_returns_parser_result(
+        self, handler, _detail
+    ):
+        child = Edge(url="child", type=ResourceType.HTML)
+        use_case = SimpleNamespace(
+            execute=AsyncMock(
+                return_value=ScrapResourceParserResult(title="Parsed", children=[child])
+            )
+        )
+
+        result = await handler(1, use_case=use_case)
+
+        assert result.title == "Parsed"
+        assert result.children[0]["url"] == "child"
+        use_case.execute.assert_awaited_once_with(1)
+
+    @pytest.mark.parametrize("handler,detail", PARSE_CASES)
+    async def test_given_missing_id_when_parse_resource_then_raises_not_found(
+        self, handler, detail
     ):
         use_case = SimpleNamespace(execute=AsyncMock(return_value=None))
 

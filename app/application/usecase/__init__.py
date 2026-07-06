@@ -19,10 +19,14 @@ from application.usecase.ingest_curriculum_usecase import (
 from application.usecase.list_curriculum_hierarchy_item_usecase import (
     ListCurriculumHierarchyItemUseCaseImpl,
 )
+from application.usecase.parse_scrap_resource_usecase import (
+    ParseScrapResourceUseCaseImpl,
+)
 
 __all__ = [
     "IngestCurriculumUseCaseImpl",
     "ConvertPDFToMarkdownUseCaseImpl",
     "GetCurriculumHierarchyItemUseCaseImpl",
     "ListCurriculumHierarchyItemUseCaseImpl",
+    "ParseScrapResourceUseCaseImpl",
 ]
