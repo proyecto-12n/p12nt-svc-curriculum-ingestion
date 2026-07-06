@@ -56,7 +56,9 @@ class GradeLevelScrapResourceParser(ScrapResourceParser[str]):
         for div in soup.find_all("div", class_="three-grid-content"):
             for card in div.find_all("div", class_="card--content"):
                 badge = card.find("span", class_="badge")
-                if not badge or "Programa de estudio" not in badge.get_text(strip=True):
+                if not badge or badge.get_text(strip=True) not in (
+                    "Programa de estudio"
+                ):
                     continue
 
                 a = card.find("a", href=True)
