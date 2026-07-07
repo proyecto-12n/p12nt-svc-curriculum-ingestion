@@ -1,7 +1,11 @@
 from pydantic import Field
 
-from infrastructure.adapter.external.study_program_agent_parser.output.activity import Activity
-from infrastructure.adapter.external.study_program_agent_parser.output.assessment import Assessment
+from infrastructure.adapter.external.study_program_agent_parser.output.activity import (
+    Activity,
+)
+from infrastructure.adapter.external.study_program_agent_parser.output.assessment import (
+    Assessment,
+)
 from infrastructure.adapter.external.study_program_agent_parser.output.curriculum_item import (
     CurriculumItem,
 )
@@ -11,7 +15,9 @@ from infrastructure.adapter.external.study_program_agent_parser.output.curriculu
 from infrastructure.adapter.external.study_program_agent_parser.output.evaluation_indicator import (
     EvaluationIndicator,
 )
-from infrastructure.adapter.external.study_program_agent_parser.output.guidance import Guidance
+from infrastructure.adapter.external.study_program_agent_parser.output.guidance import (
+    Guidance,
+)
 from infrastructure.adapter.external.study_program_agent_parser.output.learning_objective import (
     LearningObjective,
 )
@@ -50,14 +56,26 @@ class Unit(CurriculumOutputModel):
     )
 
     code: str | None = Field(None, description="Unit code or identifier.")
-    number: int | None = Field(None, description="Unit number inside the study program.")
-    semester: str | None = Field(None, description="Semester or school-year period associated with the unit.")
-    module_code: str | None = Field(None, description="Curriculum module code when applicable.")
+    number: int | None = Field(
+        None, description="Unit number inside the study program."
+    )
+    semester: str | None = Field(
+        None, description="Semester or school-year period associated with the unit."
+    )
+    module_code: str | None = Field(
+        None, description="Curriculum module code when applicable."
+    )
     title: str | None = Field(None, description="Official unit title.")
     purpose: str | None = Field(None, description="Unit purpose.")
-    description: str | None = Field(None, description="General unit description or synthesis.")
-    estimated_time: str | None = Field(None, description="Suggested time, duration, or pedagogical hours.")
-    guiding_questions: list[str] = Field(default_factory=list, description="Guiding questions declared for the unit.")
+    description: str | None = Field(
+        None, description="General unit description or synthesis."
+    )
+    estimated_time: str | None = Field(
+        None, description="Suggested time, duration, or pedagogical hours."
+    )
+    guiding_questions: list[str] = Field(
+        default_factory=list, description="Guiding questions declared for the unit."
+    )
     objective_codes: list[str] = Field(
         default_factory=list,
         description="OA, OAG, OAT, or expected learning codes covered.",
@@ -66,17 +84,31 @@ class Unit(CurriculumOutputModel):
         default_factory=list,
         description="Full objectives declared inside the unit.",
     )
-    knowledge_codes: list[str] = Field(default_factory=list, description="Knowledge items covered in the unit.")
+    knowledge_codes: list[str] = Field(
+        default_factory=list, description="Knowledge items covered in the unit."
+    )
     knowledge: list[CurriculumItem] = Field(
         default_factory=list,
         description="Knowledge items declared inside the unit.",
     )
-    skill_codes: list[str] = Field(default_factory=list, description="Skills developed in the unit.")
-    skills: list[CurriculumItem] = Field(default_factory=list, description="Skills declared inside the unit.")
-    attitude_codes: list[str] = Field(default_factory=list, description="Attitudes promoted in the unit.")
-    attitudes: list[CurriculumItem] = Field(default_factory=list, description="Attitudes declared inside the unit.")
-    keywords: list[str] = Field(default_factory=list, description="Keywords declared for the unit.")
-    prior_knowledge: list[str] = Field(default_factory=list, description="Required or suggested prior knowledge.")
+    skill_codes: list[str] = Field(
+        default_factory=list, description="Skills developed in the unit."
+    )
+    skills: list[CurriculumItem] = Field(
+        default_factory=list, description="Skills declared inside the unit."
+    )
+    attitude_codes: list[str] = Field(
+        default_factory=list, description="Attitudes promoted in the unit."
+    )
+    attitudes: list[CurriculumItem] = Field(
+        default_factory=list, description="Attitudes declared inside the unit."
+    )
+    keywords: list[str] = Field(
+        default_factory=list, description="Keywords declared for the unit."
+    )
+    prior_knowledge: list[str] = Field(
+        default_factory=list, description="Required or suggested prior knowledge."
+    )
     indicators: list[EvaluationIndicator] = Field(
         default_factory=list,
         description="Suggested assessment indicators in the unit.",
@@ -97,4 +129,6 @@ class Unit(CurriculumOutputModel):
         default_factory=list,
         description="Declared contents when the source uses this category.",
     )
-    source: SourceReference | None = Field(None, description="Source document reference.")
+    source: SourceReference | None = Field(
+        None, description="Source document reference."
+    )

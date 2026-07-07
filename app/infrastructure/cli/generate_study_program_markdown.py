@@ -63,7 +63,10 @@ async def run_cli():
                 continue
 
             markdown = await use_case.execute(
-                PDFResource(content=study_program.content),
+                PDFResource(
+                    content=study_program.content,
+                    source_name=study_program.url,
+                ),
                 args.pdf_converter,
             )
             await repository.save_markdown(

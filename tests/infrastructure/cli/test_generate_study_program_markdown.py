@@ -9,7 +9,11 @@ class TestGenerateStudyProgramMarkdownCli:
         self,
     ):
         session_context = MagicMock()
-        study_program = SimpleNamespace(id=1, content=b"pdf")
+        study_program = SimpleNamespace(
+            id=1,
+            content=b"pdf",
+            url="https://example.cl/programa.pdf",
+        )
         repository = MagicMock()
         repository.list = AsyncMock(return_value=[study_program])
         repository.find_markdown_by_study_program_id_and_tool_name = AsyncMock(
@@ -49,6 +53,10 @@ class TestGenerateStudyProgramMarkdownCli:
             "markitdown",
         )
         use_case.execute.assert_awaited_once()
+        resource, provider_name = use_case.execute.await_args.args
+        assert resource.content == b"pdf"
+        assert resource.source_name == "https://example.cl/programa.pdf"
+        assert provider_name == "markitdown"
         repository.save_markdown.assert_awaited_once_with(
             study_program,
             "# Program",
@@ -57,7 +65,11 @@ class TestGenerateStudyProgramMarkdownCli:
 
     async def test_given_existing_markdown_when_run_cli_then_skips_generation(self):
         session_context = MagicMock()
-        study_program = SimpleNamespace(id=1, content=b"pdf")
+        study_program = SimpleNamespace(
+            id=1,
+            content=b"pdf",
+            url="https://example.cl/programa.pdf",
+        )
         repository = MagicMock()
         repository.list = AsyncMock(return_value=[study_program])
         repository.find_markdown_by_study_program_id_and_tool_name = AsyncMock(

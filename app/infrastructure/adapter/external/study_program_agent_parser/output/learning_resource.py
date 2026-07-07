@@ -22,7 +22,14 @@ class LearningResource(CurriculumOutputModel):
     )
 
     title: str | None = Field(None, description="Suggested resource title or name.")
-    type: str | None = Field(None, description="Resource type: website, text, video, image, material, or other.")
+    type: str | None = Field(
+        None,
+        description="Resource type: website, text, video, image, material, or other.",
+    )
     url: str | None = Field(None, description="Resource URL, when present.")
-    description: str | None = Field(None, description="Suggested resource description or use.")
-    source: SourceReference | None = Field(None, description="Source document reference.")
+    description: str | None = Field(
+        None, description="Suggested resource description or use."
+    )
+    source: SourceReference | None = Field(
+        None, description="Source document reference."
+    )

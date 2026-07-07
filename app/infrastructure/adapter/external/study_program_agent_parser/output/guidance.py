@@ -3,7 +3,9 @@ from pydantic import Field
 from infrastructure.adapter.external.study_program_agent_parser.output.curriculum_output_model import (
     CurriculumOutputModel,
 )
-from infrastructure.adapter.external.study_program_agent_parser.output.guidance_type import GuidanceType
+from infrastructure.adapter.external.study_program_agent_parser.output.guidance_type import (
+    GuidanceType,
+)
 from infrastructure.adapter.external.study_program_agent_parser.output.schema_examples import (
     schema_examples,
 )
@@ -24,8 +26,14 @@ class Guidance(CurriculumOutputModel):
     )
 
     title: str | None = Field(None, description="Guidance title.")
-    type: GuidanceType | str | None = Field(None, description="Guidance type according to its curricular function.")
+    type: GuidanceType | str | None = Field(
+        None, description="Guidance type according to its curricular function."
+    )
     description: str = Field(..., description="Guidance text.")
-    objective_codes: list[str] = Field(default_factory=list, description="Related learning objectives.")
+    objective_codes: list[str] = Field(
+        default_factory=list, description="Related learning objectives."
+    )
     unit_code: str | None = Field(None, description="Associated unit, when applicable.")
-    source: SourceReference | None = Field(None, description="Source document reference.")
+    source: SourceReference | None = Field(
+        None, description="Source document reference."
+    )

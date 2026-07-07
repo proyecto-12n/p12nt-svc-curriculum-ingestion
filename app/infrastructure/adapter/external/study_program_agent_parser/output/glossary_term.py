@@ -21,8 +21,16 @@ class GlossaryTerm(CurriculumOutputModel):
         }
     )
 
-    term: str = Field(..., description="Curricular or technical term used in the source.")
+    term: str = Field(
+        ..., description="Curricular or technical term used in the source."
+    )
     acronym: str | None = Field(None, description="Associated acronym, when present.")
-    definition: str | None = Field(None, description="Definition provided by the glossary or study program.")
-    normalized_term: str | None = Field(None, description="Homologated name used by the model.")
-    source: SourceReference | None = Field(None, description="Place where the term was defined.")
+    definition: str | None = Field(
+        None, description="Definition provided by the glossary or study program."
+    )
+    normalized_term: str | None = Field(
+        None, description="Homologated name used by the model."
+    )
+    source: SourceReference | None = Field(
+        None, description="Place where the term was defined."
+    )

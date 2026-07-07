@@ -24,6 +24,12 @@ class CurriculumItem(CurriculumOutputModel):
     code: str | None = Field(None, description="Official code or identifier.")
     name: str | None = Field(None, description="Item name, title, or label.")
     description: str | None = Field(None, description="Item textual description.")
-    original_text: str | None = Field(None, description="Literal text when it differs from the normalized version.")
-    normalized_term: str | None = Field(None, description="Concept homologated through the glossary.")
-    source: SourceReference | None = Field(None, description="Source PDF and page reference.")
+    original_text: str | None = Field(
+        None, description="Literal text when it differs from the normalized version."
+    )
+    normalized_term: str | None = Field(
+        None, description="Concept homologated through the glossary."
+    )
+    source: SourceReference | None = Field(
+        None, description="Source PDF and page reference."
+    )

@@ -27,13 +27,25 @@ class Assessment(CurriculumOutputModel):
     )
 
     title: str | None = Field(None, description="Assessment title or name.")
-    description: str | None = Field(None, description="Assessment activity, instrument, or suggestion description.")
-    type: str | None = Field(None, description="Assessment type indicated by the source.")
-    objective_codes: list[str] = Field(default_factory=list, description="Assessed objective codes.")
-    indicators: list[EvaluationIndicator] = Field(default_factory=list, description="Assessment indicators used.")
-    criteria: list[str] = Field(default_factory=list, description="Assessment criteria, rubrics, or guidelines.")
+    description: str | None = Field(
+        None, description="Assessment activity, instrument, or suggestion description."
+    )
+    type: str | None = Field(
+        None, description="Assessment type indicated by the source."
+    )
+    objective_codes: list[str] = Field(
+        default_factory=list, description="Assessed objective codes."
+    )
+    indicators: list[EvaluationIndicator] = Field(
+        default_factory=list, description="Assessment indicators used."
+    )
+    criteria: list[str] = Field(
+        default_factory=list, description="Assessment criteria, rubrics, or guidelines."
+    )
     instruments: list[str] = Field(
         default_factory=list,
         description="Mentioned instruments, such as rubrics, checklists, or tests.",
     )
-    source: SourceReference | None = Field(None, description="Source document reference.")
+    source: SourceReference | None = Field(
+        None, description="Source document reference."
+    )

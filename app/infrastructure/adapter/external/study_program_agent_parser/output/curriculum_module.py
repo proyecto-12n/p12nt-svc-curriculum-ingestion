@@ -30,12 +30,22 @@ class CurriculumModule(CurriculumOutputModel):
     title: str | None = Field(None, description="Curriculum module title.")
     description: str | None = Field(None, description="General module description.")
     purpose: str | None = Field(None, description="Module formative purpose.")
-    estimated_time: str | None = Field(None, description="Module duration or estimated time.")
-    overview: list[dict[str, Any]] = Field(default_factory=list, description="Semester, annual, or module overview.")
+    estimated_time: str | None = Field(
+        None, description="Module duration or estimated time."
+    )
+    overview: list[dict[str, Any]] = Field(
+        default_factory=list, description="Semester, annual, or module overview."
+    )
     objective_codes: list[str] = Field(
         default_factory=list,
         description="Learning objectives associated with the module.",
     )
-    attitude_codes: list[str] = Field(default_factory=list, description="Attitudes associated with the module.")
-    units: list[Unit] = Field(default_factory=list, description="Units that compose the module.")
-    source: SourceReference | None = Field(None, description="Source document reference.")
+    attitude_codes: list[str] = Field(
+        default_factory=list, description="Attitudes associated with the module."
+    )
+    units: list[Unit] = Field(
+        default_factory=list, description="Units that compose the module."
+    )
+    source: SourceReference | None = Field(
+        None, description="Source document reference."
+    )

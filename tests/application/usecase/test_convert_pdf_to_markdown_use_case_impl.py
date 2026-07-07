@@ -34,6 +34,14 @@ class TestConvertPDFToMarkdownUseCaseImpl:
         self.provider.get_converter.assert_not_called()
         self.converter.convert.assert_not_called()
 
+    async def test_given_same_pdf_with_different_source_when_execute_then_skips_cache(
+        self,
+    ):
+        await self.use_case.execute(PDFResource(content=b"pdf", source_name="a.pdf"))
+        await self.use_case.execute(PDFResource(content=b"pdf", source_name="b.pdf"))
+
+        assert self.converter.convert.call_count == 2
+
     async def test_given_provider_name_when_execute_then_requests_named_converter(self):
         result = await self.use_case.execute(
             PDFResource(content=b"other"), provider_name="pymupdf"

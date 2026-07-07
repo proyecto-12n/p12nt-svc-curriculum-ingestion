@@ -41,18 +41,33 @@ class LearningObjective(CurriculumItem):
         ...,
         description="Curricular objective type: OA, OAG, OAT, or expected learning.",
     )
-    subtype: str | None = Field(None, description="Declared subtype, for example knowledge, skill, attitude, or axis.")
+    subtype: str | None = Field(
+        None,
+        description="Declared subtype, for example knowledge, skill, attitude, or axis.",
+    )
     axis_code: str | None = Field(None, description="Associated axis code or name.")
-    module_code: str | None = Field(None, description="Associated curriculum module, when applicable.")
-    semester: str | None = Field(None, description="Semester or period when the objective is addressed.")
-    priority: str | None = Field(None, description="Curricular prioritization category, when present.")
-    unit_codes: list[str] = Field(default_factory=list, description="Units where this objective is covered.")
-    skill_codes: list[str] = Field(default_factory=list, description="Skills associated with the objective.")
+    module_code: str | None = Field(
+        None, description="Associated curriculum module, when applicable."
+    )
+    semester: str | None = Field(
+        None, description="Semester or period when the objective is addressed."
+    )
+    priority: str | None = Field(
+        None, description="Curricular prioritization category, when present."
+    )
+    unit_codes: list[str] = Field(
+        default_factory=list, description="Units where this objective is covered."
+    )
+    skill_codes: list[str] = Field(
+        default_factory=list, description="Skills associated with the objective."
+    )
     knowledge_codes: list[str] = Field(
         default_factory=list,
         description="Knowledge items associated with the objective.",
     )
-    attitude_codes: list[str] = Field(default_factory=list, description="Attitudes associated with the objective.")
+    attitude_codes: list[str] = Field(
+        default_factory=list, description="Attitudes associated with the objective."
+    )
     indicators: list[EvaluationIndicator] = Field(
         default_factory=list,
         description="Suggested assessment indicators for the objective.",
@@ -61,4 +76,6 @@ class LearningObjective(CurriculumItem):
         default_factory=list,
         description="Activities or examples associated with the objective.",
     )
-    related_objectives: list[str] = Field(default_factory=list, description="Linked or integrated objective codes.")
+    related_objectives: list[str] = Field(
+        default_factory=list, description="Linked or integrated objective codes."
+    )

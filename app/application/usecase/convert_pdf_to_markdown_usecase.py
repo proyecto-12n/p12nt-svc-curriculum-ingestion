@@ -30,8 +30,11 @@ class ConvertPDFToMarkdownUseCaseImpl(ConvertPDFToMarkdownUseCase):
     async def execute(
         self, resource: PDFResource, provider_name: str | None = None
     ) -> str:
-        # Calculate SHA-256 of the content to act as the cache key
-        checksum = sha256(resource.content).hexdigest()
+        # Calculate SHA-256 of the content and source to act as the cache key
+        hasher = sha256(resource.content)
+        hasher.update(b"\0")
+        hasher.update(resource.source_name.encode("utf-8"))
+        checksum = hasher.hexdigest()
 
         if checksum in self._cache:
             return self._cache[checksum]

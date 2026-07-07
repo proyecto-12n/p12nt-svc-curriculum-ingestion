@@ -18,7 +18,13 @@ class SourceReference(CurriculumOutputModel):
         }
     )
 
-    document: str | None = Field(None, description="Source PDF name, URL, or identifier.")
-    page: int | None = Field(None, description="Document page where the information appears.")
+    document: str | None = Field(
+        None, description="Source PDF name, URL, or identifier."
+    )
+    page: int | None = Field(
+        None, description="Document page where the information appears."
+    )
     section: str | None = Field(None, description="Source section, title, or heading.")
-    original_text: str | None = Field(None, description="Original extracted text without normalization.")
+    original_text: str | None = Field(
+        None, description="Original extracted text without normalization."
+    )

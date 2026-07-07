@@ -6,3 +6,4 @@ class TestPDFResource:
         resource = PDFResource(content=b"pdf")
 
         assert resource.content == b"pdf"
+        assert resource.source_name == "unknown.pdf"

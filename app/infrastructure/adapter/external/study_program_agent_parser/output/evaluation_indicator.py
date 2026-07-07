@@ -18,7 +18,17 @@ class EvaluationIndicator(CurriculumItem):
         }
     )
 
-    objective_code: str | None = Field(None, description="Associated OA, OAG, OAT, or expected learning code.")
-    achievement_level: str | None = Field(None, description="Expected level, range, or performance when present.")
-    criteria: list[str] = Field(default_factory=list, description="Assessment criteria associated with the indicator.")
-    evidence: list[str] = Field(default_factory=list, description="Observable evidence suggested to verify learning.")
+    objective_code: str | None = Field(
+        None, description="Associated OA, OAG, OAT, or expected learning code."
+    )
+    achievement_level: str | None = Field(
+        None, description="Expected level, range, or performance when present."
+    )
+    criteria: list[str] = Field(
+        default_factory=list,
+        description="Assessment criteria associated with the indicator.",
+    )
+    evidence: list[str] = Field(
+        default_factory=list,
+        description="Observable evidence suggested to verify learning.",
+    )
