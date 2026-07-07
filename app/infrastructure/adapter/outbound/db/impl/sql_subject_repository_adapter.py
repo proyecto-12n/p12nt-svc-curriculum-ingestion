@@ -11,7 +11,10 @@ from typing import Optional, List
 
 from sqlmodel import Session, select
 
-from infrastructure.adapter.outbound.db import CurriculumHierarchyRepository
+from infrastructure.adapter.outbound.db import (
+    CurriculumHierarchyRepository,
+    save_hierarchy_model,
+)
 from infrastructure.models.subject import Subject
 
 
@@ -43,28 +46,12 @@ class SqlSubjectRepositoryAdapter(CurriculumHierarchyRepository[Subject]):
         return [row for row in results]
 
     async def save(self, subject: Subject) -> Subject:
-        parent_id = subject.parent_id
         statement = select(Subject).where(
             (Subject.url == subject.url) | (Subject.id == subject.id)
         )
-        sql_sub = self.session.exec(statement).first()
-        if sql_sub:
-            sql_sub.url = subject.url
-            sql_sub.parent_id = parent_id
-            sql_sub.title = subject.title
-            sql_sub.content = subject.content
-            sql_sub.extracted_at = subject.extracted_at
-        else:
-            sql_sub = Subject(
-                id=subject.id,
-                url=subject.url,
-                parent_id=parent_id,
-                title=subject.title,
-                content=subject.content,
-                extracted_at=subject.extracted_at,
-            )
-            self.session.add(sql_sub)
-        self.session.commit()
-        self.session.refresh(sql_sub)
-        subject.id = sql_sub.id
-        return subject
+        return save_hierarchy_model(
+            self.session,
+            subject,
+            statement,
+            ("url", "parent_id", "title", "content", "extracted_at"),
+        )

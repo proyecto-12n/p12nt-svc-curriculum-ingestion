@@ -35,6 +35,7 @@ class GradeLevel(SQLModel, table=True):
     extracted_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     subject: Mapped["Subject"] = Relationship(back_populates="grade_levels")
+
     study_program_refs: Mapped[list["StudyProgramRef"]] = Relationship(
         back_populates="grade_levels",
         link_model=GradeLevelStudyProgramRef,

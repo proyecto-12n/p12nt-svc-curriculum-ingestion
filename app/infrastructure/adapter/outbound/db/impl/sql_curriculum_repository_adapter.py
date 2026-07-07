@@ -13,6 +13,7 @@ from sqlmodel import Session, select
 
 from infrastructure.adapter.outbound.db.curriculum_hierarchy_repository import (
     CurriculumHierarchyRepository,
+    save_hierarchy_model,
 )
 from infrastructure.models.curriculum import Curriculum
 
@@ -36,21 +37,9 @@ class SqlCurriculumRepositoryAdapter(CurriculumHierarchyRepository[Curriculum]):
 
     async def save(self, curriculum: Curriculum) -> Curriculum:
         statement = select(Curriculum).where(Curriculum.url == curriculum.url)
-        sql_cur = self.session.exec(statement).first()
-        if sql_cur:
-            sql_cur.title = curriculum.title
-            sql_cur.content = curriculum.content
-            sql_cur.extracted_at = curriculum.extracted_at
-        else:
-            sql_cur = Curriculum(
-                id=curriculum.id,
-                title=curriculum.title,
-                url=curriculum.url,
-                content=curriculum.content,
-                extracted_at=curriculum.extracted_at,
-            )
-            self.session.add(sql_cur)
-        self.session.commit()
-        self.session.refresh(sql_cur)
-        curriculum.id = sql_cur.id
-        return curriculum
+        return save_hierarchy_model(
+            self.session,
+            curriculum,
+            statement,
+            ("title", "url", "content", "extracted_at"),
+        )

@@ -37,6 +37,7 @@ class StudyProgramRef(SQLModel, table=True):
         back_populates="study_program_refs",
         link_model=GradeLevelStudyProgramRef,
     )
+
     study_programs: Mapped[list["StudyProgram"]] = Relationship(
         back_populates="study_program_ref"
     )

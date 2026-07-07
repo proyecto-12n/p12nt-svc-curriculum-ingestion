@@ -31,4 +31,5 @@ class Modality(SQLModel, table=True):
     extracted_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     curriculum: Mapped["Curriculum"] = Relationship(back_populates="modalities")
+
     subjects: Mapped[list["Subject"]] = Relationship(back_populates="modality")

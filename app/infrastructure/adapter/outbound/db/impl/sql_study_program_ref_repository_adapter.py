@@ -11,7 +11,10 @@ from typing import Optional, List
 
 from sqlmodel import Session, select
 
-from infrastructure.adapter.outbound.db import CurriculumHierarchyRepository
+from infrastructure.adapter.outbound.db import (
+    CurriculumHierarchyRepository,
+    save_hierarchy_model,
+)
 from infrastructure.models.grade_level_study_program_ref import (
     GradeLevelStudyProgramRef,
 )
@@ -33,30 +36,13 @@ class SqlStudyProgramRefRepositoryAdapter(
         statement = select(StudyProgramRef).where(
             StudyProgramRef.url == study_program_ref.url
         )
-        sql_ref = self.session.exec(statement).first()
-        if sql_ref:
-            sql_ref.title = study_program_ref.title
-            sql_ref.content = study_program_ref.content
-            sql_ref.extracted_at = study_program_ref.extracted_at
-        else:
-            sql_ref = StudyProgramRef(
-                id=study_program_ref.id,
-                url=study_program_ref.url,
-                title=study_program_ref.title,
-                content=study_program_ref.content,
-                extracted_at=study_program_ref.extracted_at,
-            )
-            self.session.add(sql_ref)
-        if grade_level_id is not None:
-            self.session.merge(
-                GradeLevelStudyProgramRef(
-                    grade_level_id=grade_level_id,
-                    study_program_ref_id=study_program_ref.id,
-                )
-            )
-        self.session.commit()
-        self.session.refresh(sql_ref)
-        study_program_ref.id = sql_ref.id
+        study_program_ref = save_hierarchy_model(
+            self.session,
+            study_program_ref,
+            statement,
+            ("url", "title", "content", "extracted_at"),
+            self._merge_grade_level_ref(grade_level_id),
+        )
         if grade_level_id is not None:
             object.__setattr__(study_program_ref, "_grade_level_id", grade_level_id)
         return study_program_ref
@@ -82,3 +68,17 @@ class SqlStudyProgramRefRepositoryAdapter(
         if not study_program_ref.grade_levels:
             return None
         return study_program_ref.grade_levels[0].id
+
+    def _merge_grade_level_ref(self, grade_level_id: Optional[int]):
+        if grade_level_id is None:
+            return None
+
+        def merge(study_program_ref: StudyProgramRef) -> None:
+            self.session.merge(
+                GradeLevelStudyProgramRef(
+                    grade_level_id=grade_level_id,
+                    study_program_ref_id=study_program_ref.id,
+                )
+            )
+
+        return merge

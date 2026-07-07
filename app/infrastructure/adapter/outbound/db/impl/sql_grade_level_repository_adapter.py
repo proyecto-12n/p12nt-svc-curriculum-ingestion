@@ -13,7 +13,10 @@ from sqlalchemy import case, func
 from sqlmodel import Session, select
 
 from domain.model.grade_level_detail_report import GradeLevelDetailReport
-from infrastructure.adapter.outbound.db import CurriculumHierarchyRepository
+from infrastructure.adapter.outbound.db import (
+    CurriculumHierarchyRepository,
+    save_hierarchy_model,
+)
 from infrastructure.models.grade_level import GradeLevel
 from infrastructure.models.grade_level_study_program_ref import (
     GradeLevelStudyProgramRef,
@@ -28,31 +31,15 @@ class SqlGradeLevelRepositoryAdapter(CurriculumHierarchyRepository[GradeLevel]):
         self.session = session
 
     async def save(self, grade_level: GradeLevel) -> GradeLevel:
-        parent_id = grade_level.parent_id
         statement = select(GradeLevel).where(
             (GradeLevel.url == grade_level.url) | (GradeLevel.id == grade_level.id)
         )
-        sql_grade = self.session.exec(statement).first()
-        if sql_grade:
-            sql_grade.url = grade_level.url
-            sql_grade.parent_id = parent_id
-            sql_grade.title = grade_level.title
-            sql_grade.content = grade_level.content
-            sql_grade.extracted_at = grade_level.extracted_at
-        else:
-            sql_grade = GradeLevel(
-                id=grade_level.id,
-                url=grade_level.url,
-                parent_id=parent_id,
-                title=grade_level.title,
-                content=grade_level.content,
-                extracted_at=grade_level.extracted_at,
-            )
-            self.session.add(sql_grade)
-        self.session.commit()
-        self.session.refresh(sql_grade)
-        grade_level.id = sql_grade.id
-        return grade_level
+        return save_hierarchy_model(
+            self.session,
+            grade_level,
+            statement,
+            ("url", "parent_id", "title", "content", "extracted_at"),
+        )
 
     async def find_by_url(self, url: str) -> Optional[GradeLevel]:
         statement = select(GradeLevel).where(GradeLevel.url == url)
@@ -77,7 +64,7 @@ class SqlGradeLevelRepositoryAdapter(CurriculumHierarchyRepository[GradeLevel]):
         results = self.session.exec(statement).all()
         return [row for row in results]
 
-    async def list_detail_report(self) -> list[GradeLevelDetailReport]:
+    async def list_detail_report(self) -> List[GradeLevelDetailReport]:
         markdowns = (
             select(
                 StudyProgramMarkdown.study_program_id,

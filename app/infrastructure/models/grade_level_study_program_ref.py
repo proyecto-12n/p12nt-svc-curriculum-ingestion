@@ -18,6 +18,7 @@ class GradeLevelStudyProgramRef(SQLModel, table=True):
         foreign_key="curriculum_ingestion.grade_levels.id",
         primary_key=True,
     )
+
     study_program_ref_id: int = Field(
         foreign_key="curriculum_ingestion.study_program_refs.id",
         primary_key=True,

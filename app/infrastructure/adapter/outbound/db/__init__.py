@@ -9,6 +9,7 @@ All rights reserved.
 
 from infrastructure.adapter.outbound.db.curriculum_hierarchy_repository import (
     CurriculumHierarchyRepository,
+    save_hierarchy_model,
 )
 
 from infrastructure.adapter.outbound.db.impl import (
@@ -23,6 +24,7 @@ from infrastructure.adapter.outbound.db.impl import (
 
 __all__ = [
     "CurriculumHierarchyRepository",
+    "save_hierarchy_model",
     "SqlCurriculumRepositoryAdapter",
     "SqlModalityRepositoryAdapter",
     "SqlSubjectRepositoryAdapter",

@@ -11,7 +11,10 @@ from typing import Optional, List
 
 from sqlmodel import Session, select
 
-from infrastructure.adapter.outbound.db import CurriculumHierarchyRepository
+from infrastructure.adapter.outbound.db import (
+    CurriculumHierarchyRepository,
+    save_hierarchy_model,
+)
 from infrastructure.models.modality import Modality
 
 
@@ -28,28 +31,13 @@ class SqlModalityRepositoryAdapter(CurriculumHierarchyRepository[Modality]):
         return self.session.exec(statement).first()
 
     async def save(self, modality: Modality) -> Modality:
-        parent_id = modality.parent_id
         statement = select(Modality).where(Modality.url == modality.url)
-        sql_mod = self.session.exec(statement).first()
-        if sql_mod:
-            sql_mod.parent_id = parent_id
-            sql_mod.title = modality.title
-            sql_mod.content = modality.content
-            sql_mod.extracted_at = modality.extracted_at
-        else:
-            sql_mod = Modality(
-                id=modality.id,
-                url=modality.url,
-                parent_id=parent_id,
-                title=modality.title,
-                content=modality.content,
-                extracted_at=modality.extracted_at,
-            )
-            self.session.add(sql_mod)
-        self.session.commit()
-        self.session.refresh(sql_mod)
-        modality.id = sql_mod.id
-        return modality
+        return save_hierarchy_model(
+            self.session,
+            modality,
+            statement,
+            ("url", "parent_id", "title", "content", "extracted_at"),
+        )
 
     async def list(self, parent_id: Optional[int] = None) -> List[Modality]:
         statement = select(Modality)
