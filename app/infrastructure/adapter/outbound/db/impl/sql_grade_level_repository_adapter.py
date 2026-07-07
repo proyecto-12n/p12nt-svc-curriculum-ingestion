@@ -15,7 +15,7 @@ from sqlmodel import Session, select
 from domain.model.grade_level_detail_report import GradeLevelDetailReport
 from infrastructure.adapter.outbound.db import (
     CurriculumHierarchyRepository,
-    save_hierarchy_model,
+    CurriculumHierarchyRepositoryHelper,
 )
 from infrastructure.models.grade_level import GradeLevel
 from infrastructure.models.grade_level_study_program_ref import (
@@ -34,7 +34,7 @@ class SqlGradeLevelRepositoryAdapter(CurriculumHierarchyRepository[GradeLevel]):
         statement = select(GradeLevel).where(
             (GradeLevel.url == grade_level.url) | (GradeLevel.id == grade_level.id)
         )
-        return save_hierarchy_model(
+        return CurriculumHierarchyRepositoryHelper.save_hierarchy_model(
             self.session,
             grade_level,
             statement,

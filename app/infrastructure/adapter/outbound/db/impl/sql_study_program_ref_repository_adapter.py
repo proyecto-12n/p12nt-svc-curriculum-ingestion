@@ -13,7 +13,7 @@ from sqlmodel import Session, select
 
 from infrastructure.adapter.outbound.db import (
     CurriculumHierarchyRepository,
-    save_hierarchy_model,
+    CurriculumHierarchyRepositoryHelper,
 )
 from infrastructure.models.grade_level_study_program_ref import (
     GradeLevelStudyProgramRef,
@@ -36,7 +36,7 @@ class SqlStudyProgramRefRepositoryAdapter(
         statement = select(StudyProgramRef).where(
             StudyProgramRef.url == study_program_ref.url
         )
-        study_program_ref = save_hierarchy_model(
+        study_program_ref = CurriculumHierarchyRepositoryHelper.save_hierarchy_model(
             self.session,
             study_program_ref,
             statement,

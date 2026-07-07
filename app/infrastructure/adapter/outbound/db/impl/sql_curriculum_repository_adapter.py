@@ -13,7 +13,9 @@ from sqlmodel import Session, select
 
 from infrastructure.adapter.outbound.db.curriculum_hierarchy_repository import (
     CurriculumHierarchyRepository,
-    save_hierarchy_model,
+)
+from infrastructure.adapter.outbound.db.curriculum_hierarchy_repository_helper import (
+    CurriculumHierarchyRepositoryHelper,
 )
 from infrastructure.models.curriculum import Curriculum
 
@@ -37,7 +39,7 @@ class SqlCurriculumRepositoryAdapter(CurriculumHierarchyRepository[Curriculum]):
 
     async def save(self, curriculum: Curriculum) -> Curriculum:
         statement = select(Curriculum).where(Curriculum.url == curriculum.url)
-        return save_hierarchy_model(
+        return CurriculumHierarchyRepositoryHelper.save_hierarchy_model(
             self.session,
             curriculum,
             statement,

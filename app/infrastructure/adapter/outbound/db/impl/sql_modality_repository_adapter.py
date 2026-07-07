@@ -13,7 +13,7 @@ from sqlmodel import Session, select
 
 from infrastructure.adapter.outbound.db import (
     CurriculumHierarchyRepository,
-    save_hierarchy_model,
+    CurriculumHierarchyRepositoryHelper,
 )
 from infrastructure.models.modality import Modality
 
@@ -32,7 +32,7 @@ class SqlModalityRepositoryAdapter(CurriculumHierarchyRepository[Modality]):
 
     async def save(self, modality: Modality) -> Modality:
         statement = select(Modality).where(Modality.url == modality.url)
-        return save_hierarchy_model(
+        return CurriculumHierarchyRepositoryHelper.save_hierarchy_model(
             self.session,
             modality,
             statement,

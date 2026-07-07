@@ -12,18 +12,21 @@ from infrastructure.adapter.external.pdf_converter.impl.pymupdf_pdf_converter im
 
 
 class TestPDFConverterProvider:
+    def setup_method(self):
+        self.provider = PDFConverterProvider()
+
     def test_given_pymupdf_name_when_get_converter_then_returns_pymupdf_converter(self):
         assert isinstance(
-            PDFConverterProvider().get_converter("pymupdf4llm"), PyMuPDFPDFConverter
+            self.provider.get_converter("pymupdf4llm"), PyMuPDFPDFConverter
         )
 
     def test_given_markitdown_name_when_get_converter_then_returns_markitdown_converter(
         self,
     ):
         assert isinstance(
-            PDFConverterProvider().get_converter("markitdown"), MarkItDownPDFConverter
+            self.provider.get_converter("markitdown"), MarkItDownPDFConverter
         )
 
     def test_given_unknown_name_when_get_converter_then_raises_value_error(self):
         with pytest.raises(ValueError, match="No PDF converter found"):
-            PDFConverterProvider().get_converter("unknown")
+            self.provider.get_converter("unknown")

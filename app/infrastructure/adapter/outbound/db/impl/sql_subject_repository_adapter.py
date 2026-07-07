@@ -13,7 +13,7 @@ from sqlmodel import Session, select
 
 from infrastructure.adapter.outbound.db import (
     CurriculumHierarchyRepository,
-    save_hierarchy_model,
+    CurriculumHierarchyRepositoryHelper,
 )
 from infrastructure.models.subject import Subject
 
@@ -49,7 +49,7 @@ class SqlSubjectRepositoryAdapter(CurriculumHierarchyRepository[Subject]):
         statement = select(Subject).where(
             (Subject.url == subject.url) | (Subject.id == subject.id)
         )
-        return save_hierarchy_model(
+        return CurriculumHierarchyRepositoryHelper.save_hierarchy_model(
             self.session,
             subject,
             statement,

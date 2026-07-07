@@ -8,11 +8,13 @@ from infrastructure.models import GradeLevel
 
 
 class TestGradeLevelMapper:
+    def setup_method(self):
+        self.mapper = GradeLevelMapper()
+
     def test_given_sql_model_when_to_edge_then_returns_matching_edge(self):
         model = GradeLevel(id=1, url="url", title="title", parent_id=99, content="html")
-        mapper = GradeLevelMapper()
 
-        edge = mapper.to_edge(model)
+        edge = self.mapper.to_edge(model)
 
         assert edge.url == "url"
         assert edge.type == ResourceType.HTML
@@ -29,9 +31,8 @@ class TestGradeLevelMapper:
             title="title",
             content="html",
         )
-        mapper = GradeLevelMapper()
 
-        model = mapper.to_model(edge)
+        model = self.mapper.to_model(edge)
 
         assert model.url == "url"
         assert model.title == "title"
@@ -46,7 +47,6 @@ class TestGradeLevelMapper:
             title="title",
             content="html",
         )
-        mapper = GradeLevelMapper()
 
         with pytest.raises(AssertionError):
-            mapper.to_model(edge)
+            self.mapper.to_model(edge)

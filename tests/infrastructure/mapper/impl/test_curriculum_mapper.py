@@ -8,11 +8,13 @@ from infrastructure.models import Curriculum
 
 
 class TestCurriculumMapper:
+    def setup_method(self):
+        self.mapper = CurriculumMapper()
+
     def test_given_sql_model_when_to_edge_then_returns_matching_edge(self):
         model = Curriculum(id=1, url="url", title="title", content="html")
-        mapper = CurriculumMapper()
 
-        edge = mapper.to_edge(model)
+        edge = self.mapper.to_edge(model)
 
         assert edge.url == "url"
         assert edge.type == ResourceType.HTML
@@ -28,9 +30,8 @@ class TestCurriculumMapper:
             title="title",
             content="html",
         )
-        mapper = CurriculumMapper()
 
-        model = mapper.to_model(edge)
+        model = self.mapper.to_model(edge)
 
         assert model.url == "url"
         assert model.title == "title"
@@ -44,7 +45,6 @@ class TestCurriculumMapper:
             title="title",
             content="html",
         )
-        mapper = CurriculumMapper()
 
         with pytest.raises(AssertionError):
-            mapper.to_model(edge)
+            self.mapper.to_model(edge)

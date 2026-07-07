@@ -10,6 +10,9 @@ from infrastructure.models import StudyProgram
 
 
 class TestStudyProgramMapper:
+    def setup_method(self):
+        self.mapper = StudyProgramMapper()
+
     def test_given_sql_model_when_to_edge_then_returns_pdf_edge(self):
         model = StudyProgram(
             id=1,
@@ -19,9 +22,8 @@ class TestStudyProgramMapper:
             content=b"pdf",
             checksum="checksum",
         )
-        mapper = StudyProgramMapper()
 
-        edge = mapper.to_edge(model)
+        edge = self.mapper.to_edge(model)
 
         assert edge.type == ResourceType.PDF
         assert edge.hierarchy == CurriculumHierarchyType.STUDY_PROGRAM
@@ -36,9 +38,8 @@ class TestStudyProgramMapper:
             title="title",
             content=b"pdf",
         )
-        mapper = StudyProgramMapper()
 
-        model = mapper.to_model(edge)
+        model = self.mapper.to_model(edge)
 
         assert model.url == "url.pdf"
         assert model.content == b"pdf"
@@ -54,7 +55,7 @@ class TestStudyProgramMapper:
             content=b"",
         )
 
-        model = StudyProgramMapper().to_model(edge)
+        model = self.mapper.to_model(edge)
 
         assert model.content == b""
 
@@ -66,4 +67,4 @@ class TestStudyProgramMapper:
         )
 
         with pytest.raises(AssertionError):
-            StudyProgramMapper().to_model(edge)
+            self.mapper.to_model(edge)
