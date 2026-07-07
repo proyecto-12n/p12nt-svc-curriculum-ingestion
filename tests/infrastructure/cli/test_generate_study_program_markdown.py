@@ -1,0 +1,93 @@
+from types import SimpleNamespace
+from unittest.mock import AsyncMock, MagicMock, patch
+
+from infrastructure.cli import generate_study_program_markdown
+
+
+class TestGenerateStudyProgramMarkdownCli:
+    async def test_given_pdf_converter_argument_when_run_cli_then_saves_missing_markdown(
+        self,
+    ):
+        session_context = MagicMock()
+        study_program = SimpleNamespace(id=1, content=b"pdf")
+        repository = MagicMock()
+        repository.list = AsyncMock(return_value=[study_program])
+        repository.find_markdown_by_study_program_id_and_tool_name = AsyncMock(
+            return_value=None
+        )
+        repository.save_markdown = AsyncMock()
+        use_case = MagicMock()
+        use_case.execute = AsyncMock(return_value="# Program")
+
+        with (
+            patch(
+                "sys.argv",
+                ["generate_study_program_markdown", "--pdf-converter", "markitdown"],
+            ),
+            patch("infrastructure.database.init_db"),
+            patch("infrastructure.database.engine"),
+            patch.object(
+                generate_study_program_markdown,
+                "Session",
+                return_value=session_context,
+            ),
+            patch.object(
+                generate_study_program_markdown,
+                "SqlStudyProgramRepositoryAdapter",
+                return_value=repository,
+            ),
+            patch.object(
+                generate_study_program_markdown,
+                "ConvertPDFToMarkdownUseCaseImpl",
+                return_value=use_case,
+            ),
+        ):
+            await generate_study_program_markdown.run_cli()
+
+        repository.find_markdown_by_study_program_id_and_tool_name.assert_awaited_once_with(
+            1,
+            "markitdown",
+        )
+        use_case.execute.assert_awaited_once()
+        repository.save_markdown.assert_awaited_once_with(
+            study_program,
+            "# Program",
+            "markitdown",
+        )
+
+    async def test_given_existing_markdown_when_run_cli_then_skips_generation(self):
+        session_context = MagicMock()
+        study_program = SimpleNamespace(id=1, content=b"pdf")
+        repository = MagicMock()
+        repository.list = AsyncMock(return_value=[study_program])
+        repository.find_markdown_by_study_program_id_and_tool_name = AsyncMock(
+            return_value=SimpleNamespace(content="# Existing")
+        )
+        repository.save_markdown = AsyncMock()
+        use_case = MagicMock()
+        use_case.execute = AsyncMock()
+
+        with (
+            patch("sys.argv", ["generate_study_program_markdown"]),
+            patch("infrastructure.database.init_db"),
+            patch("infrastructure.database.engine"),
+            patch.object(
+                generate_study_program_markdown,
+                "Session",
+                return_value=session_context,
+            ),
+            patch.object(
+                generate_study_program_markdown,
+                "SqlStudyProgramRepositoryAdapter",
+                return_value=repository,
+            ),
+            patch.object(
+                generate_study_program_markdown,
+                "ConvertPDFToMarkdownUseCaseImpl",
+                return_value=use_case,
+            ),
+        ):
+            await generate_study_program_markdown.run_cli()
+
+        use_case.execute.assert_not_awaited()
+        repository.save_markdown.assert_not_awaited()
