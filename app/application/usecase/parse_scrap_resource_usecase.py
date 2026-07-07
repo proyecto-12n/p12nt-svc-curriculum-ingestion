@@ -7,6 +7,7 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
+from dataclasses import replace
 from typing import Any, Optional
 
 from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
@@ -49,5 +50,8 @@ class ParseScrapResourceUseCaseImpl(ParseScrapResourceUseCase):
 
         return ScrapResourceParserResult(
             title=await parser.get_title(resource),
-            children=[child async for child in parser.get_children(resource)],
+            children=[
+                replace(child, parent_id=id)
+                async for child in parser.get_children(resource)
+            ],
         )

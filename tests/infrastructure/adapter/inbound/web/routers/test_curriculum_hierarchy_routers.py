@@ -228,7 +228,7 @@ class TestCurriculumHierarchyRouters:
     async def test_given_existing_id_when_parse_resource_then_returns_parser_result(
         self, handler, _detail
     ):
-        child = Edge(url="child", type=ResourceType.HTML)
+        child = Edge(url="child", type=ResourceType.HTML, parent_id=1)
         use_case = SimpleNamespace(
             execute=AsyncMock(
                 return_value=ScrapResourceParserResult(title="Parsed", children=[child])
@@ -239,6 +239,7 @@ class TestCurriculumHierarchyRouters:
 
         assert result.title == "Parsed"
         assert result.children[0]["url"] == "child"
+        assert result.children[0]["parent_id"] == 1
         use_case.execute.assert_awaited_once_with(1)
 
     @pytest.mark.parametrize("handler,detail", PARSE_CASES)

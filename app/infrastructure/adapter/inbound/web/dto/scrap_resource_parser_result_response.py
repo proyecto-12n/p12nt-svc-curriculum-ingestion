@@ -39,6 +39,7 @@ class ScrapResourceParserResultResponse(BaseModel):
             "type": child.type.value,
             "hierarchy": child.hierarchy.value if child.hierarchy else None,
             "parent_url": child.parent_url,
+            "parent_id": child.parent_id,
             "title": child.title,
             "content": content,
         }

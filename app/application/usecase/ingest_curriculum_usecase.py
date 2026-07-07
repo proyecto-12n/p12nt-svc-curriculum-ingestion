@@ -50,8 +50,14 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
         self.pdf_to_markdown_use_case = pdf_to_markdown_use_case
         self.markdown_tool_name = markdown_tool_name or "default"
 
-    async def execute(self, refresh: bool = False) -> None:
-        logger.info("Starting curriculum ingestion. refresh=%s", refresh)
+    async def execute(
+        self, refresh: bool = False, ignore_pdf_resources: bool = False
+    ) -> None:
+        logger.info(
+            "Starting curriculum ingestion. refresh=%s ignore_pdf_resources=%s",
+            refresh,
+            ignore_pdf_resources,
+        )
 
         root_node = Edge(
             url=urljoin(
@@ -62,12 +68,17 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
             hierarchy=CurriculumHierarchyType.CURRICULUM,
         )
 
-        await self.__navigator(refresh, root_node)
+        await self.__navigator(refresh, root_node, ignore_pdf_resources)
         logger.info("Curriculum ingestion finished.")
 
-    async def __navigator(self, refresh: bool, edge: Edge) -> None:
+    async def __navigator(
+        self, refresh: bool, edge: Edge, ignore_pdf_resources: bool = False
+    ) -> None:
         assert isinstance(edge, Edge)
         logger.debug("Visiting %s resource: %s", edge.hierarchy.value, edge.url)
+        if ignore_pdf_resources and edge.type == ResourceType.PDF:
+            logger.info("Skipping PDF resource: %s", edge.url)
+            return
 
         cache, resource = await self.__get_resource(refresh, edge)
         parser = self.resource_parser_provider_adapter.get_parser(edge.hierarchy)
@@ -103,7 +114,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                 parent_url=edge.url,
             )
 
-            await self.__navigator(refresh, child)
+            await self.__navigator(refresh, child, ignore_pdf_resources)
         logger.debug("Processed %s child resources for %s", child_count, edge.url)
 
     async def __get_resource(

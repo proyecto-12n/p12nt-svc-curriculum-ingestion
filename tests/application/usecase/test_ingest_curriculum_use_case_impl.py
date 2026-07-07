@@ -89,6 +89,30 @@ class TestIngestCurriculumUseCaseImpl:
         assert resource.type == ResourceType.PDF
         assert resource.content == b""
 
+    async def test_given_ignore_pdf_resources_when_navigate_pdf_then_skips_processing(
+        self,
+    ):
+        repository_provider = SimpleNamespace(get_repository=MagicMock())
+        downloader_provider = SimpleNamespace(get_downloader=MagicMock())
+        use_case = IngestCurriculumUseCaseImpl(
+            repository_provider_adapter=repository_provider,
+            resource_parser_provider_adapter=MagicMock(),
+            curriculum_hierarchy_mapper_provider=MagicMock(),
+            downloader_provider=downloader_provider,
+        )
+        edge = Edge(
+            url="https://example.test/program.pdf",
+            type=ResourceType.PDF,
+            hierarchy=CurriculumHierarchyType.STUDY_PROGRAM,
+        )
+
+        await use_case._IngestCurriculumUseCaseImpl__navigator(
+            False, edge, ignore_pdf_resources=True
+        )
+
+        repository_provider.get_repository.assert_not_called()
+        downloader_provider.get_downloader.assert_not_called()
+
     async def test_given_uncached_study_program_when_navigate_then_generates_markdown_without_replacing_pdf(
         self,
     ):

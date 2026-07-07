@@ -22,5 +22,6 @@ class Edge(Generic[T]):
     hierarchy: Optional[CurriculumHierarchyType] = None
 
     parent_url: Optional[str] = None
+    parent_id: Optional[int] = None
     title: Optional[str] = None
     content: Optional[T] = None

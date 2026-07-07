@@ -20,7 +20,8 @@ class TestParseScrapResourceUseCaseImpl:
         result = await use_case.execute(1)
 
         assert result.title == "Parsed"
-        assert result.children == [child]
+        assert result.children[0].url == child.url
+        assert result.children[0].parent_id == 1
 
     async def test_given_missing_item_when_execute_then_returns_none(self):
         use_case = ParseScrapResourceUseCaseImpl(

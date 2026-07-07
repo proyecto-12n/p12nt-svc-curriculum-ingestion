@@ -2,8 +2,8 @@ from domain.port.inbound.ingest_curriculum_use_case import IngestCurriculumUseCa
 
 
 class ConcreteIngestCurriculumUseCase:
-    async def execute(self, refresh=False):
-        return refresh
+    async def execute(self, refresh=False, ignore_pdf_resources=False):
+        return refresh, ignore_pdf_resources
 
 
 class TestIngestCurriculumUseCase:
@@ -12,4 +12,7 @@ class TestIngestCurriculumUseCase:
     ):
         port: IngestCurriculumUseCase = ConcreteIngestCurriculumUseCase()
 
-        assert await port.execute(refresh=True) is True
+        assert await port.execute(refresh=True, ignore_pdf_resources=True) == (
+            True,
+            True,
+        )

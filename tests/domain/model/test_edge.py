@@ -10,11 +10,13 @@ class TestEdge:
             type=ResourceType.HTML,
             hierarchy=CurriculumHierarchyType.CURRICULUM,
             parent_url="parent",
+            parent_id=1,
             title="title",
             content="content",
         )
 
         assert edge.parent_url == "parent"
+        assert edge.parent_id == 1
         assert edge.title == "title"
         assert edge.content == "content"
 

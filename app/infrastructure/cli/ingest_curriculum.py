@@ -35,7 +35,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def run_cli():
+async def run_cli():
     import argparse
 
     parser = argparse.ArgumentParser(
@@ -46,12 +46,20 @@ def run_cli():
         action="store_true",
         help="Force the update of elements even if they already exist in the database.",
     )
+
     parser.add_argument(
         "--pdf-converter",
         choices=("pymupdf4llm", "markitdown"),
         default=settings.pdf_converter,
         help="PDF converter used to generate stored Markdown.",
     )
+
+    parser.add_argument(
+        "--ignore-pdf-resources",
+        action="store_true",
+        help="Skip PDF resource download, persistence, and Markdown generation.",
+    )
+
     args = parser.parse_args()
 
     # Database setup
@@ -84,12 +92,15 @@ def run_cli():
             pdf_to_markdown_use_case=pdf_to_markdown_use_case,
             markdown_tool_name=args.pdf_converter,
         )
-        import asyncio
-
-        asyncio.run(use_case.execute(refresh=args.refresh))
+        await use_case.execute(
+            refresh=args.refresh,
+            ignore_pdf_resources=args.ignore_pdf_resources,
+        )
 
     logger.info("Ingestion completed successfully.")
 
 
 if __name__ == "__main__":
-    run_cli()
+    import asyncio
+
+    asyncio.run(run_cli())
