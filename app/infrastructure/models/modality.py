@@ -8,7 +8,14 @@ All rights reserved.
 """
 
 from datetime import UTC, datetime
-from sqlmodel import Field, SQLModel
+from typing import TYPE_CHECKING
+
+from sqlalchemy.orm import Mapped
+from sqlmodel import Field, Relationship, SQLModel
+
+if TYPE_CHECKING:
+    from infrastructure.models.curriculum import Curriculum
+    from infrastructure.models.subject import Subject
 
 
 class Modality(SQLModel, table=True):
@@ -22,3 +29,6 @@ class Modality(SQLModel, table=True):
     title: str
     content: str
     extracted_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    curriculum: Mapped["Curriculum"] = Relationship(back_populates="modalities")
+    subjects: Mapped[list["Subject"]] = Relationship(back_populates="modality")

@@ -8,7 +8,13 @@ All rights reserved.
 """
 
 from datetime import UTC, datetime
-from sqlmodel import Field, SQLModel
+from typing import TYPE_CHECKING
+
+from sqlalchemy.orm import Mapped
+from sqlmodel import Field, Relationship, SQLModel
+
+if TYPE_CHECKING:
+    from infrastructure.models.study_program_ref import StudyProgramRef
 
 
 class StudyProgram(SQLModel, table=True):
@@ -23,3 +29,7 @@ class StudyProgram(SQLModel, table=True):
     content: bytes
     checksum: str
     extracted_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    study_program_ref: Mapped["StudyProgramRef"] = Relationship(
+        back_populates="study_programs"
+    )

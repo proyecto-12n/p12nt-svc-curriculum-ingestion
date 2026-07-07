@@ -15,6 +15,9 @@ from sqlmodel import Session, select
 from domain.model.grade_level_detail_report import GradeLevelDetailReport
 from infrastructure.adapter.outbound.db import CurriculumHierarchyRepository
 from infrastructure.models.grade_level import GradeLevel
+from infrastructure.models.grade_level_study_program_ref import (
+    GradeLevelStudyProgramRef,
+)
 from infrastructure.models.study_program import StudyProgram
 from infrastructure.models.study_program_markdown import StudyProgramMarkdown
 from infrastructure.models.study_program_ref import StudyProgramRef
@@ -109,8 +112,12 @@ class SqlGradeLevelRepositoryAdapter(CurriculumHierarchyRepository[GradeLevel]):
                 markdowns.c.study_program_pymupdf4llm_id,
             )
             .outerjoin(
+                GradeLevelStudyProgramRef,
+                GradeLevelStudyProgramRef.grade_level_id == GradeLevel.id,
+            )
+            .outerjoin(
                 StudyProgramRef,
-                StudyProgramRef.parent_id == GradeLevel.id,
+                StudyProgramRef.id == GradeLevelStudyProgramRef.study_program_ref_id,
             )
             .outerjoin(
                 StudyProgram,

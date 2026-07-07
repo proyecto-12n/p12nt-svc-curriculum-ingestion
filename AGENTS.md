@@ -26,6 +26,7 @@ Base structure under the `app/` directory:
 ### 3. Infrastructure Layer (`infrastructure`)
 * **`infrastructure/adapter/inbound/web/`**: FastAPI routers (`APIRouter`), endpoints, dependency injection (`Depends()`), and Pydantic Schemas/DTOs.
 * **`infrastructure/adapter/outbound/db/`**: Outbound port implementations using database drivers/adapters (e.g., SQLModel). Here resides `SqlStudyProgramRepositoryAdapter`.
+* **`infrastructure/adapter/outbound/http/parser/impl/`**: Scrap resource parser implementations are named with the `*_edge_parser.py` suffix (e.g., `grade_level_edge_parser.py`) because they produce curriculum hierarchy `Edge` values.
 * **`config.py`**: Environment variables management through `pydantic-settings`.
 * **`infrastructure/cli/ingest_curriculum.py`**: CLI entrypoint for curriculum ingestion.
 
@@ -44,6 +45,9 @@ When generating or refactoring code, you must strictly respect the following Pyt
 2. **Model Isolation**: SQLModel database models (`table=True`) **ONLY** can exist in the infrastructure layer. You must explicitly map these models to/from the pure domain model (`StudyProgram`) before they cross architecture boundaries.
 3. **Hierarchy Parent Field**: Infrastructure SQLModel hierarchy models use the generic `parent_id` field. Domain models keep explicit names like `curriculum_id`, `modality_id`, `subject_id`, `grade_level_id`, and `study_program_ref_id`.
 4. **PDF Conversion**: The active PDF converter is `pymupdf4llm` through `PDFConverterProvider`. Do not reintroduce a second converter unless the business explicitly needs it.
+
+## 🌐 API Behavior
+* **Parser Result Endpoint**: Each hierarchy router exposes `GET /{resource}/{id}/parser-result`. It returns the configured `ScrapResourceParser` result for the stored resource as `title` plus `children`. Do not add a `parser_option` query parameter or expose parser `get_edge()` unless explicitly requested.
 
 ## 📐 SOLID Design Principles
 
@@ -83,3 +87,5 @@ This codebase strictly adheres to the SOLID principles to ensure maintainability
 * **Ingestion Command**: Run ingestion with `python -m infrastructure.cli.ingest_curriculum`; add `--refresh` to force updates of existing records.
 * **Coverage Command**: Run coverage with `.venv\Scripts\pytest --cov=app --cov-report=term-missing`. The current suite has been verified at about **96% total coverage** with 181 tests.
 * **Pre-commit**: Use `.venv\Scripts\pre-commit.exe run --all-files` on Windows. If `pytest-coverage` fails with `[WinError 3] El sistema no puede encontrar la ruta especificada`, verify tests manually and follow the `git-commit` skill's `--no-verify` fallback.
+* **PowerShell Executables**: Prefer explicit `.exe` paths when running local tools in PowerShell (e.g., `& .\.venv\Scripts\pytest.exe`). Extensionless shims can be interpreted as modules.
+* **Async Tests**: Do not inherit from `unittest.TestCase` for `async def` pytest tests; pytest may report false positives while leaving coroutines unawaited. Use plain pytest classes and `setup_method` for shared setup when it removes real duplication.

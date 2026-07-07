@@ -11,7 +11,7 @@ from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
 from domain.model.edge import Edge
 from domain.model.resource_type import ResourceType
 from domain.port.outbound.curriculum_hierarchy_mapper import CurriculumHierarchyMapper
-from infrastructure.models import StudyProgramRef
+from infrastructure.models import GradeLevel, StudyProgramRef
 from infrastructure.util import generate_id
 
 
@@ -29,11 +29,20 @@ class StudyProgramRefMapper(CurriculumHierarchyMapper[StudyProgramRef, str]):
         assert edge.hierarchy == CurriculumHierarchyType.STUDY_PROGRAM_REF
         assert edge.parent_url
         assert edge.content
+        grade_level_id = generate_id(edge.parent_url)
 
         return StudyProgramRef(
             id=generate_id(edge.url),
             url=edge.url,
-            parent_id=generate_id(edge.parent_url),
             title=edge.title,
             content=edge.content,
+            grade_levels=[
+                GradeLevel(
+                    id=grade_level_id,
+                    parent_id=0,
+                    url="",
+                    title="",
+                    content="",
+                )
+            ],
         )

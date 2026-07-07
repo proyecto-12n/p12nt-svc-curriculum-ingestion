@@ -25,7 +25,13 @@ class StudyProgramRefResponse(BaseModel):
         return cls(
             id=ref.id,
             grade_level_id=(
-                ref.grade_level_id if hasattr(ref, "grade_level_id") else ref.parent_id
+                ref.grade_level_id
+                if hasattr(ref, "grade_level_id")
+                else getattr(
+                    ref,
+                    "_grade_level_id",
+                    ref.grade_levels[0].id if ref.grade_levels else None,
+                )
             ),
             url=ref.url,
             title=ref.title,

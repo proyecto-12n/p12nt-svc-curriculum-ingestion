@@ -8,7 +8,18 @@ All rights reserved.
 """
 
 from datetime import UTC, datetime
-from sqlmodel import Field, SQLModel
+from typing import TYPE_CHECKING
+
+from sqlalchemy.orm import Mapped
+from sqlmodel import Field, Relationship, SQLModel
+
+from infrastructure.models.grade_level_study_program_ref import (
+    GradeLevelStudyProgramRef,
+)
+
+if TYPE_CHECKING:
+    from infrastructure.models.study_program_ref import StudyProgramRef
+    from infrastructure.models.subject import Subject
 
 
 class GradeLevel(SQLModel, table=True):
@@ -22,3 +33,9 @@ class GradeLevel(SQLModel, table=True):
     title: str
     content: str
     extracted_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    subject: Mapped["Subject"] = Relationship(back_populates="grade_levels")
+    study_program_refs: Mapped[list["StudyProgramRef"]] = Relationship(
+        back_populates="grade_levels",
+        link_model=GradeLevelStudyProgramRef,
+    )

@@ -8,7 +8,18 @@ All rights reserved.
 """
 
 from datetime import UTC, datetime
-from sqlmodel import Field, SQLModel
+from typing import TYPE_CHECKING
+
+from sqlalchemy.orm import Mapped
+from sqlmodel import Field, Relationship, SQLModel
+
+from infrastructure.models.grade_level_study_program_ref import (
+    GradeLevelStudyProgramRef,
+)
+
+if TYPE_CHECKING:
+    from infrastructure.models.grade_level import GradeLevel
+    from infrastructure.models.study_program import StudyProgram
 
 
 class StudyProgramRef(SQLModel, table=True):
@@ -17,8 +28,15 @@ class StudyProgramRef(SQLModel, table=True):
 
     id: int = Field(primary_key=True)
     url: str = Field(unique=True)
-    parent_id: int = Field(foreign_key="curriculum_ingestion.grade_levels.id")
 
     title: str
     content: str
     extracted_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    grade_levels: Mapped[list["GradeLevel"]] = Relationship(
+        back_populates="study_program_refs",
+        link_model=GradeLevelStudyProgramRef,
+    )
+    study_programs: Mapped[list["StudyProgram"]] = Relationship(
+        back_populates="study_program_ref"
+    )
