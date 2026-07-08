@@ -8,11 +8,12 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 from pydantic_ai import Agent, TextContent
 from pydantic_ai.models import Model
 
-from domain.model.study_program import StudyProgram
-from domain.port.outbound.study_program_agent_parser import StudyProgramAgentParser
+from infrastructure.adapter.external.study_program_agent_parser.output import (
+    StudyProgramOutput,
+)
 
 
-class PydanticAiStudyProgramAgentParser(StudyProgramAgentParser):
+class PydanticAiStudyProgramAgentParser:
     """
     Agent parser implementation using PydanticAI.
     """
@@ -38,11 +39,11 @@ class PydanticAiStudyProgramAgentParser(StudyProgramAgentParser):
     def __init__(self, model: Model):
         self.agent = Agent(
             model,
-            output_type=StudyProgram,
+            output_type=StudyProgramOutput,
             system_prompt=PydanticAiStudyProgramAgentParser.__SYSTEM_PROMPT,
         )
 
-    async def run(self, content: str) -> StudyProgram:
+    async def run(self, content: str) -> StudyProgramOutput:
         """
         Run the agent asynchronously with the given prompt.
         """

@@ -41,6 +41,11 @@ async def run_cli():
         default=settings.pdf_converter,
         help="PDF converter used to generate stored Markdown.",
     )
+    parser.add_argument(
+        "--study-program-id",
+        type=int,
+        help="Process only the study_programs.id value provided.",
+    )
     args = parser.parse_args()
 
     from infrastructure.database import engine, init_db
@@ -51,8 +56,14 @@ async def run_cli():
         repository = SqlStudyProgramRepositoryAdapter(session)
         use_case = ConvertPDFToMarkdownUseCaseImpl(PDFConverterProvider())
 
+        if args.study_program_id is not None:
+            study_program = await repository.find_by_id(args.study_program_id)
+            study_programs = [study_program] if study_program else []
+        else:
+            study_programs = await repository.list()
+
         generated_count = 0
-        for study_program in await repository.list():
+        for study_program in study_programs:
             if not study_program.content:
                 continue
             existing = await repository.find_markdown_by_study_program_id_and_tool_name(

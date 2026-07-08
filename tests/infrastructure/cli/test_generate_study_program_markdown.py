@@ -103,3 +103,51 @@ class TestGenerateStudyProgramMarkdownCli:
 
         use_case.execute.assert_not_awaited()
         repository.save_markdown.assert_not_awaited()
+
+    async def test_given_study_program_id_when_run_cli_then_processes_only_that_program(
+        self,
+    ):
+        session_context = MagicMock()
+        study_program = SimpleNamespace(
+            id=2,
+            content=b"pdf",
+            url="https://example.cl/programa.pdf",
+        )
+        repository = MagicMock()
+        repository.list = AsyncMock()
+        repository.find_by_id = AsyncMock(return_value=study_program)
+        repository.find_markdown_by_study_program_id_and_tool_name = AsyncMock(
+            return_value=None
+        )
+        repository.save_markdown = AsyncMock()
+        use_case = MagicMock()
+        use_case.execute = AsyncMock(return_value="# Program")
+
+        with (
+            patch(
+                "sys.argv",
+                ["generate_study_program_markdown", "--study-program-id", "2"],
+            ),
+            patch("infrastructure.database.init_db"),
+            patch("infrastructure.database.engine"),
+            patch.object(
+                generate_study_program_markdown,
+                "Session",
+                return_value=session_context,
+            ),
+            patch.object(
+                generate_study_program_markdown,
+                "SqlStudyProgramRepositoryAdapter",
+                return_value=repository,
+            ),
+            patch.object(
+                generate_study_program_markdown,
+                "ConvertPDFToMarkdownUseCaseImpl",
+                return_value=use_case,
+            ),
+        ):
+            await generate_study_program_markdown.run_cli()
+
+        repository.find_by_id.assert_awaited_once_with(2)
+        repository.list.assert_not_awaited()
+        repository.save_markdown.assert_awaited_once()

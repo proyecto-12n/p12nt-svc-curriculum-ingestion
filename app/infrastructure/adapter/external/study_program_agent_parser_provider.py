@@ -7,7 +7,6 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 
 from typing import Dict
 
-from domain.port.outbound.study_program_agent_parser import StudyProgramAgentParser
 from infrastructure.adapter.external.study_program_agent_parser.pydantic_ai_study_program_agent_parser import (
     PydanticAiStudyProgramAgentParser,
 )
@@ -30,9 +29,9 @@ class StudyProgramAgentParserProvider:
             "ollama": OllamaModelFactory(),
             "gemini": GeminiModelFactory(),
         }
-        self._registry: Dict[str, StudyProgramAgentParser] = {}
+        self._registry: Dict[str, PydanticAiStudyProgramAgentParser] = {}
 
-    def get_parser(self, name: str | None = None) -> StudyProgramAgentParser:
+    def get_parser(self, name: str | None = None) -> PydanticAiStudyProgramAgentParser:
         """
         Get an instance of a StudyProgramAgentParser.
         If name is None, falls back to the setting from the configuration.

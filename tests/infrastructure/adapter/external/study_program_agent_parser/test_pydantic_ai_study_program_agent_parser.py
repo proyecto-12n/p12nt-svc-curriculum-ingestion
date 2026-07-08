@@ -22,4 +22,8 @@ class TestPydanticAiStudyProgramAgentParser:
             output = await parser.run("content")
 
         assert output == "parsed"
+        agent_class.assert_called_once()
+        assert agent_class.call_args.kwargs["output_type"].__name__ == (
+            "StudyProgramOutput"
+        )
         agent.run.assert_awaited_once()

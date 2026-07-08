@@ -1,7 +1,7 @@
 from infrastructure.adapter.outbound.db.impl.sql_study_program_repository_adapter import (
     SqlStudyProgramRepositoryAdapter,
 )
-from infrastructure.models import StudyProgram, StudyProgramMarkdown
+from infrastructure.models import StudyProgram, StudyProgramJson, StudyProgramMarkdown
 from infrastructure.util import generate_id
 from tests.infrastructure.adapter.outbound.db.conftest import (
     configure_all_result,
@@ -220,3 +220,97 @@ class TestSqlStudyProgramRepositoryAdapter:
         assert result.content == "# Gemini"
         assert result.tool_name == "gemini"
         session.add.assert_called_once()
+
+    async def test_given_markdown_tool_when_list_markdowns_then_returns_matching_records(
+        self, session
+    ):
+        expected = [
+            StudyProgramMarkdown(
+                id=1,
+                study_program_id=1,
+                content="# Program",
+                tool_name="pymupdf4llm",
+            )
+        ]
+        configure_all_result(session, expected)
+        repository = SqlStudyProgramRepositoryAdapter(session)
+
+        result = await repository.list_markdowns("pymupdf4llm")
+
+        assert result == expected
+        session.exec.assert_called_once()
+
+    async def test_given_markdown_tool_and_study_program_id_when_list_markdowns_then_returns_matching_records(
+        self, session
+    ):
+        expected = [
+            StudyProgramMarkdown(
+                id=1,
+                study_program_id=2,
+                content="# Program",
+                tool_name="pymupdf4llm",
+            )
+        ]
+        configure_all_result(session, expected)
+        repository = SqlStudyProgramRepositoryAdapter(session)
+
+        result = await repository.list_markdowns("pymupdf4llm", 2)
+
+        assert result == expected
+        session.exec.assert_called_once()
+
+    async def test_given_study_program_id_and_tool_when_find_json_then_returns_first_exec_result(
+        self, session
+    ):
+        expected = StudyProgramJson(
+            id=1,
+            study_program_id=1,
+            content={"title": "Program"},
+            tool_name="gemini",
+        )
+        configure_first_result(session, expected)
+        repository = SqlStudyProgramRepositoryAdapter(session)
+
+        result = await repository.find_json_by_study_program_id_and_tool_name(
+            1, "gemini"
+        )
+
+        assert result == expected
+        session.exec.assert_called_once()
+
+    async def test_given_new_json_when_save_json_then_adds_commits_and_refreshes(
+        self, session
+    ):
+        configure_first_result(session, None)
+        repository = SqlStudyProgramRepositoryAdapter(session)
+
+        result = await repository.save_json(1, {"title": "Program"}, "gemini")
+
+        assert result.id == generate_id("gemini", "1")
+        assert result.study_program_id == 1
+        assert result.content == {"title": "Program"}
+        assert result.tool_name == "gemini"
+        session.add.assert_called_once()
+        session.commit.assert_called_once()
+        session.refresh.assert_called_once_with(result)
+
+    async def test_given_existing_json_when_save_json_then_updates_without_add(
+        self, session
+    ):
+        existing = StudyProgramJson(
+            id=1,
+            study_program_id=1,
+            content={"title": "Old"},
+            tool_name="gemini",
+        )
+        configure_first_result(session, existing)
+        repository = SqlStudyProgramRepositoryAdapter(session)
+
+        result = await repository.save_json(1, {"title": "Program"}, "gemini")
+
+        assert result == existing
+        assert existing.content == {"title": "Program"}
+        assert existing.tool_name == "gemini"
+        session.add.assert_not_called()
+        session.commit.assert_called_once()
+        session.refresh.assert_called_once_with(existing)
