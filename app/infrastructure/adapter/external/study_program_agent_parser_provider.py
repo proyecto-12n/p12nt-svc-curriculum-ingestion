@@ -5,15 +5,14 @@ This file is part of the NP Collector Curriculum project.
 Unauthorized copying of this file, via any medium is strictly prohibited.
 """
 
-from typing import Dict
-
 from infrastructure.adapter.external.study_program_agent_parser.pydantic_ai_study_program_agent_parser import (
     PydanticAiStudyProgramAgentParser,
 )
-from infrastructure.adapter.external.study_program_agent_parser import (
-    LLMModelFactory,
-    OllamaModelFactory,
+from infrastructure.adapter.external.study_program_agent_parser.gemini_model_factory import (
     GeminiModelFactory,
+)
+from infrastructure.adapter.external.study_program_agent_parser.ollama_model_factory import (
+    OllamaModelFactory,
 )
 from app.config import Settings
 
@@ -25,11 +24,11 @@ class StudyProgramAgentParserProvider:
 
     def __init__(self, settings: Settings):
         self.settings = settings
-        self._factories: Dict[str, LLMModelFactory] = {
+        self._factories = {
             "ollama": OllamaModelFactory(),
             "gemini": GeminiModelFactory(),
         }
-        self._registry: Dict[str, PydanticAiStudyProgramAgentParser] = {}
+        self._registry: dict[str, PydanticAiStudyProgramAgentParser] = {}
 
     def get_parser(self, name: str | None = None) -> PydanticAiStudyProgramAgentParser:
         """

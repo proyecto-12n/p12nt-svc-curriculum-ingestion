@@ -8,7 +8,7 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 from pydantic_ai import Agent, TextContent
 from pydantic_ai.models import Model
 
-from infrastructure.adapter.external.study_program_agent_parser.output import (
+from infrastructure.adapter.external.study_program_agent_parser.output.study_program_output import (
     StudyProgramOutput,
 )
 

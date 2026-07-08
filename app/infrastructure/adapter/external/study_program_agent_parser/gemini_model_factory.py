@@ -9,13 +9,10 @@ from pydantic_ai.models import Model
 from pydantic_ai.models.google import GoogleModel
 from pydantic_ai.providers.google import GoogleProvider
 
-from infrastructure.adapter.external.study_program_agent_parser.llm_model_factory import (
-    LLMModelFactory,
-)
 from app.config import Settings
 
 
-class GeminiModelFactory(LLMModelFactory):
+class GeminiModelFactory:
     """
     Concrete factory for Gemini models.
     """

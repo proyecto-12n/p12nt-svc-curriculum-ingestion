@@ -9,13 +9,10 @@ from pydantic_ai.models import Model
 from pydantic_ai.models.ollama import OllamaModel
 from pydantic_ai.providers.ollama import OllamaProvider
 
-from infrastructure.adapter.external.study_program_agent_parser.llm_model_factory import (
-    LLMModelFactory,
-)
 from app.config import Settings
 
 
-class OllamaModelFactory(LLMModelFactory):
+class OllamaModelFactory:
     """
     Concrete factory for Ollama models.
     """

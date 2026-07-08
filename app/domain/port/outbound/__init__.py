@@ -26,9 +26,6 @@ from domain.port.outbound.scrap_resource_parser_provider import (
 )
 from domain.port.outbound.pdf_converter import PDFConverter
 from domain.port.outbound.pdf_converter_provider import PDFConverterProvider
-from domain.port.outbound.study_program_agent_parser import (
-    StudyProgramAgentParser,
-)
 
 __all__ = [
     "ContentDownloader",
@@ -36,7 +33,6 @@ __all__ = [
     "ScrapResourceParserProvider",
     "PDFConverter",
     "PDFConverterProvider",
-    "StudyProgramAgentParser",
     "CurriculumHierarchyRepository",
     "CurriculumHierarchyRepositoryProvider",
     "CurriculumHierarchyMapper",
