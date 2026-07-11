@@ -10,20 +10,12 @@ All rights reserved.
 from os import path
 from urllib.parse import unquote, urlparse
 
-from bs4 import BeautifulSoup
-
 from domain.model.scrap_resource import ScrapResource
 
 
-class ScrapResourceTitleHelper:
+class PdfScrapResourceTitleStrategy:
     @staticmethod
-    def extract_from_soup(soup: BeautifulSoup) -> str:
-        h1_tag = soup.find("h1")
-        assert h1_tag
-        return h1_tag.get_text(strip=True)
-
-    @staticmethod
-    def extract_from_pdf(resource: ScrapResource[bytes]) -> str:
+    def extract(resource: ScrapResource[bytes]) -> str:
         try:
             from io import BytesIO
 

@@ -15,8 +15,8 @@ from domain.model.scrap_resource import ScrapResource
 from infrastructure.adapter.outbound.http.parser.scrap_resource_parser import (
     ScrapResourceParser,
 )
-from infrastructure.adapter.outbound.http.parser.scrap_resource_title_helper import (
-    ScrapResourceTitleHelper,
+from infrastructure.adapter.outbound.http.parser.pdf_scrap_resource_title_strategy import (
+    PdfScrapResourceTitleStrategy,
 )
 
 
@@ -29,7 +29,7 @@ class StudyProgramScrapResourceParser(ScrapResourceParser[bytes]):
 
     async def get_edge(self, resource: ScrapResource[bytes]) -> Edge[bytes]:
 
-        title = ScrapResourceTitleHelper.extract_from_pdf(resource)
+        title = PdfScrapResourceTitleStrategy.extract(resource)
 
         return Edge(
             url=resource.url,
@@ -40,4 +40,4 @@ class StudyProgramScrapResourceParser(ScrapResourceParser[bytes]):
         )
 
     async def get_title(self, resource: ScrapResource[bytes]) -> str:
-        return ScrapResourceTitleHelper.extract_from_pdf(resource)
+        return PdfScrapResourceTitleStrategy.extract(resource)

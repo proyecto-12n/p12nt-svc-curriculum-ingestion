@@ -16,8 +16,8 @@ from domain.model.scrap_resource import ScrapResource
 from infrastructure.adapter.outbound.http.parser.scrap_resource_parser import (
     ScrapResourceParser,
 )
-from infrastructure.adapter.outbound.http.parser.scrap_resource_title_helper import (
-    ScrapResourceTitleHelper,
+from infrastructure.adapter.outbound.http.parser.html_scrap_resource_title_strategy import (
+    HtmlScrapResourceTitleStrategy,
 )
 from infrastructure.adapter.outbound.http.parser.breadcrumb_parser import (
     BreadcrumbParser,
@@ -46,7 +46,7 @@ class GradeLevelScrapResourceParser(ScrapResourceParser[str]):
     async def get_edge(self, resource: ScrapResource[str]) -> Edge[str]:
 
         soup = BeautifulSoupBuilder.build(resource)
-        title = ScrapResourceTitleHelper.extract_from_soup(soup)
+        title = HtmlScrapResourceTitleStrategy.extract(soup)
         breadcrumbs = self.breadcrumb_parser.parse(soup)
 
         return Edge(
@@ -60,7 +60,7 @@ class GradeLevelScrapResourceParser(ScrapResourceParser[str]):
 
     async def get_title(self, resource: ScrapResource[str]) -> str:
         soup = BeautifulSoupBuilder.build(resource)
-        title = ScrapResourceTitleHelper.extract_from_soup(soup)
+        title = HtmlScrapResourceTitleStrategy.extract(soup)
 
         breadcrumbs = self.breadcrumb_parser.parse(soup)
         subject = breadcrumbs.get(CurriculumHierarchyType.SUBJECT)
