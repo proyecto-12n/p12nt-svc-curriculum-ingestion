@@ -1,4 +1,4 @@
-from app.config import Settings
+from app.config import ENV_FILE, Settings
 
 
 class TestSettings:
@@ -8,5 +8,5 @@ class TestSettings:
         settings = Settings(PROJECT_NAME="test-project")
 
         assert settings.PROJECT_NAME == "test-project"
-        assert settings.model_config.get("env_file") == ".env"
+        assert settings.model_config.get("env_file") == ENV_FILE
         assert settings.model_config.get("case_sensitive") is False

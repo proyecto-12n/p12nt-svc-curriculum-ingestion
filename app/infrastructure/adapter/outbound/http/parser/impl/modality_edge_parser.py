@@ -7,7 +7,7 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from typing import Optional, Any, AsyncGenerator
+from typing import Any, AsyncGenerator
 
 from bs4 import BeautifulSoup
 
@@ -16,6 +16,9 @@ from domain.model.resource_type import ResourceType
 from domain.model.scrap_resource import ScrapResource
 from infrastructure.adapter.outbound.http.parser.scrap_resource_parser import (
     ScrapResourceParser,
+)
+from infrastructure.adapter.outbound.http.parser.scrap_resource_title_helper import (
+    ScrapResourceTitleHelper,
 )
 from infrastructure.util import BeautifulSoupBuilder
 from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
@@ -32,7 +35,7 @@ class ModalityScrapResourceParser(ScrapResourceParser[str]):
     async def get_edge(self, resource: ScrapResource[str]) -> Edge[str]:
 
         soup = BeautifulSoupBuilder.build(resource)
-        title = await self.__extract_title(soup)
+        title = ScrapResourceTitleHelper.extract_from_soup(soup)
 
         return Edge(
             url=resource.url,
@@ -42,15 +45,9 @@ class ModalityScrapResourceParser(ScrapResourceParser[str]):
             content=resource.content,
         )
 
-    async def get_title(self, resource: ScrapResource[str]) -> Optional[str]:
+    async def get_title(self, resource: ScrapResource[str]) -> str:
         soup = BeautifulSoupBuilder.build(resource)
-        return await self.__extract_title(soup)
-
-    @staticmethod
-    async def __extract_title(soup: BeautifulSoup) -> Optional[str]:
-        h1_tag = soup.find("h1")
-        title = h1_tag.get_text(strip=True) if h1_tag else None
-        return title
+        return ScrapResourceTitleHelper.extract_from_soup(soup)
 
     @staticmethod
     async def __extract_nodes(soup: BeautifulSoup) -> AsyncGenerator[Edge, Any]:

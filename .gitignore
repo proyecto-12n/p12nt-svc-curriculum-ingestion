@@ -222,3 +222,5 @@ __marimo__/
 .agents/
 .codegraph/
 curriculum_cache.db
+cache/
+laboratory/

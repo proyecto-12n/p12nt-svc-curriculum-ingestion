@@ -7,7 +7,7 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from typing import Optional, AsyncGenerator, Any
+from typing import AsyncGenerator, Any
 
 from bs4 import BeautifulSoup
 from domain.model.edge import Edge
@@ -16,11 +16,26 @@ from domain.model.scrap_resource import ScrapResource
 from infrastructure.adapter.outbound.http.parser.scrap_resource_parser import (
     ScrapResourceParser,
 )
+from infrastructure.adapter.outbound.http.parser.scrap_resource_title_helper import (
+    ScrapResourceTitleHelper,
+)
+from infrastructure.adapter.outbound.http.parser.breadcrumb_parser import (
+    BreadcrumbParser,
+)
 from infrastructure.util import BeautifulSoupBuilder
 from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
 
 
 class GradeLevelScrapResourceParser(ScrapResourceParser[str]):
+    TITLE_REPLACEMENTS = {
+        "SC (Sala Cuna)": "Sala Cuna (SC)",
+        "NM (Nivel Medio)": "Nivel Medio (NM)",
+        "NT (Nivel Transición)": "Nivel Transición (NT)",
+    }
+
+    def __init__(self):
+        self.breadcrumb_parser = BreadcrumbParser()
+
     async def get_children(
         self, resource: ScrapResource[str]
     ) -> AsyncGenerator[Edge[str], Any]:
@@ -31,25 +46,28 @@ class GradeLevelScrapResourceParser(ScrapResourceParser[str]):
     async def get_edge(self, resource: ScrapResource[str]) -> Edge[str]:
 
         soup = BeautifulSoupBuilder.build(resource)
-        title = await self.__extract_title(soup)
+        title = ScrapResourceTitleHelper.extract_from_soup(soup)
+        breadcrumbs = self.breadcrumb_parser.parse(soup)
 
         return Edge(
             url=resource.url,
             type=ResourceType.HTML,
             hierarchy=CurriculumHierarchyType.GRADE_LEVEL,
+            parent_url=breadcrumbs[CurriculumHierarchyType.SUBJECT].url,
             title=title,
             content=resource.content,
         )
 
-    async def get_title(self, resource: ScrapResource[str]) -> Optional[str]:
+    async def get_title(self, resource: ScrapResource[str]) -> str:
         soup = BeautifulSoupBuilder.build(resource)
-        return await self.__extract_title(soup)
+        title = ScrapResourceTitleHelper.extract_from_soup(soup)
 
-    @staticmethod
-    async def __extract_title(soup: BeautifulSoup) -> Optional[str]:
-        h1_tag = soup.find("h1")
-        title = h1_tag.get_text(strip=True) if h1_tag else None
-        return title
+        breadcrumbs = self.breadcrumb_parser.parse(soup)
+        subject = breadcrumbs.get(CurriculumHierarchyType.SUBJECT)
+        if subject and title.casefold().startswith(subject.title.casefold()):
+            title = title[len(subject.title) :].strip()
+
+        return self.TITLE_REPLACEMENTS.get(title, title)
 
     @staticmethod
     async def __extract_nodes(soup: BeautifulSoup) -> AsyncGenerator[Edge, Any]:
