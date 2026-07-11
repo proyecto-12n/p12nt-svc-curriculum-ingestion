@@ -34,6 +34,7 @@ class TestSubjectScrapResourceParser:
         assert len(children) == 1
         assert children[0].url == "/grade"
         assert children[0].hierarchy == CurriculumHierarchyType.GRADE_LEVEL
+        assert children[0].title == "1"
 
     async def test_given_html_without_title_when_get_title_then_raises(self):
         resource = ScrapResource(

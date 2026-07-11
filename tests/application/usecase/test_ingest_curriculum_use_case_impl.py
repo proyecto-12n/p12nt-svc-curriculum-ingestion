@@ -55,6 +55,52 @@ class TestIngestCurriculumUseCaseImpl:
         )
         repository.save.assert_awaited_once_with("model")
 
+    async def test_given_edge_with_title_when_navigate_then_preserves_link_title(self):
+        repository = AsyncMock()
+        repository.find_by_url.return_value = None
+        repository_provider = SimpleNamespace(
+            get_repository=MagicMock(return_value=repository)
+        )
+        parser = MagicMock()
+        parser.get_title = AsyncMock(return_value="Page Title")
+
+        async def no_children(_resource):
+            if False:
+                yield None
+
+        parser.get_children = no_children
+        parser_provider = SimpleNamespace(get_parser=MagicMock(return_value=parser))
+        mapper = MagicMock()
+        mapper.to_model.return_value = "model"
+        mapper_provider = SimpleNamespace(get_mapper=MagicMock(return_value=mapper))
+        downloader = AsyncMock()
+        downloader.download.return_value = ScrapResource(
+            url="https://example.test/linked",
+            type=ResourceType.HTML,
+            content="<h1>Page Title</h1>",
+        )
+        downloader_provider = SimpleNamespace(
+            get_downloader=MagicMock(return_value=downloader)
+        )
+        use_case = IngestCurriculumUseCaseImpl(
+            repository_provider_adapter=repository_provider,
+            resource_parser_provider_adapter=parser_provider,
+            curriculum_hierarchy_mapper_provider=mapper_provider,
+            downloader_provider=downloader_provider,
+        )
+        edge = Edge(
+            url="https://example.test/linked",
+            type=ResourceType.HTML,
+            hierarchy=CurriculumHierarchyType.CURRICULUM,
+            title="Link Title",
+        )
+
+        await use_case._IngestCurriculumUseCaseImpl__navigator(False, edge)
+
+        mapper.to_model.assert_called_once()
+        assert mapper.to_model.call_args.args[0].title == "Link Title"
+        parser.get_title.assert_not_awaited()
+
     async def test_given_pdf_download_failure_when_get_resource_then_returns_empty_pdf_placeholder(
         self,
     ):

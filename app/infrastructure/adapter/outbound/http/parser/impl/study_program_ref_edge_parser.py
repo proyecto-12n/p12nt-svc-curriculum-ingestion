@@ -18,8 +18,8 @@ from domain.model.scrap_resource import ScrapResource
 from infrastructure.adapter.outbound.http.parser.scrap_resource_parser import (
     ScrapResourceParser,
 )
-from infrastructure.adapter.outbound.http.parser.html_scrap_resource_title_strategy import (
-    HtmlScrapResourceTitleStrategy,
+from infrastructure.adapter.outbound.http.parser.scrap_resource_title_strategy_provider import (
+    ScrapResourceTitleStrategyProvider,
 )
 from infrastructure.util import BeautifulSoupBuilder
 
@@ -33,21 +33,19 @@ class StudyProgramRefScrapResourceParser(ScrapResourceParser[str]):
             yield x
 
     async def get_edge(self, resource: ScrapResource[str]) -> Edge[str]:
-
-        soup = BeautifulSoupBuilder.build(resource)
-        title = HtmlScrapResourceTitleStrategy.extract(soup)
-
         return Edge(
             url=resource.url,
             type=ResourceType.HTML,
             hierarchy=CurriculumHierarchyType.STUDY_PROGRAM_REF,
-            title=title,
+            title=await self.get_title(resource),
             content=resource.content,
         )
 
     async def get_title(self, resource: ScrapResource[str]) -> str:
         soup = BeautifulSoupBuilder.build(resource)
-        return HtmlScrapResourceTitleStrategy.extract(soup)
+        return ScrapResourceTitleStrategyProvider.get_strategy(
+            ResourceType.HTML
+        ).extract(soup)
 
     @staticmethod
     async def __extract_nodes(soup: BeautifulSoup) -> AsyncGenerator[Edge[Any], Any]:
@@ -59,4 +57,5 @@ class StudyProgramRefScrapResourceParser(ScrapResourceParser[str]):
                 url=a.get("href"),
                 type=ResourceType.PDF,
                 hierarchy=CurriculumHierarchyType.STUDY_PROGRAM,
+                title=a.get_text(strip=True),
             )

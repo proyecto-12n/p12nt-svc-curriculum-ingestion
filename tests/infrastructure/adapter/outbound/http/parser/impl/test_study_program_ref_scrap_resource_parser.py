@@ -34,6 +34,7 @@ class TestStudyProgramRefScrapResourceParser:
         assert len(children) == 1
         assert children[0].url == "/file.pdf"
         assert children[0].hierarchy == CurriculumHierarchyType.STUDY_PROGRAM
+        assert children[0].title == "PDF"
 
     async def test_given_html_without_title_when_get_title_then_raises(self):
         resource = ScrapResource(

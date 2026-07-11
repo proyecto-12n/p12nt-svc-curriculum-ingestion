@@ -87,7 +87,9 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
             )
 
             aux_edge = replace(
-                edge, title=await parser.get_title(resource), content=resource.content
+                edge,
+                title=edge.title or await parser.get_title(resource),
+                content=resource.content,
             )
 
             model = await repository.save(mapper.to_model(aux_edge))
