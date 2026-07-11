@@ -25,6 +25,8 @@ from infrastructure.util import BeautifulSoupBuilder
 
 
 class SubjectScrapResourceParser(ScrapResourceParser[str]):
+    TITLE_SUFFIXES = ("3° medio", "4° medio", "3º medio", "4º medio")
+
     async def get_children(
         self, resource: ScrapResource[str]
     ) -> AsyncGenerator[Edge[str], Any]:
@@ -32,20 +34,20 @@ class SubjectScrapResourceParser(ScrapResourceParser[str]):
         async for x in self.__extract_nodes(soup):
             yield x
 
-    async def get_edge(self, resource: ScrapResource[str]) -> Edge[str]:
-        return Edge(
-            url=resource.url,
-            type=ResourceType.HTML,
-            hierarchy=CurriculumHierarchyType.SUBJECT,
-            title=await self.get_title(resource),
-            content=resource.content,
-        )
-
     async def get_title(self, resource: ScrapResource[str]) -> str:
         soup = BeautifulSoupBuilder.build(resource)
-        return ScrapResourceTitleStrategyProvider.get_strategy(
+        title = ScrapResourceTitleStrategyProvider.get_strategy(
             ResourceType.HTML
         ).extract(soup)
+        return self.__remove_title_suffix(title)
+
+    @classmethod
+    def __remove_title_suffix(cls, title: str) -> str:
+        for suffix in cls.TITLE_SUFFIXES:
+            if title.casefold().endswith(suffix.casefold()):
+                return title[: -len(suffix)].strip()
+
+        return title
 
     @staticmethod
     async def __extract_nodes(soup: BeautifulSoup) -> AsyncGenerator[Edge[str], Any]:

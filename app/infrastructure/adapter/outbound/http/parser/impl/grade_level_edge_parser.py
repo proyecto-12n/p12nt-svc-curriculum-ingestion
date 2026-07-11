@@ -43,20 +43,6 @@ class GradeLevelScrapResourceParser(ScrapResourceParser[str]):
         async for x in self.__extract_nodes(soup):
             yield x
 
-    async def get_edge(self, resource: ScrapResource[str]) -> Edge[str]:
-
-        soup = BeautifulSoupBuilder.build(resource)
-        breadcrumbs = self.breadcrumb_parser.parse(soup)
-
-        return Edge(
-            url=resource.url,
-            type=ResourceType.HTML,
-            hierarchy=CurriculumHierarchyType.GRADE_LEVEL,
-            parent_url=breadcrumbs[CurriculumHierarchyType.SUBJECT].url,
-            title=await self.get_title(resource),
-            content=resource.content,
-        )
-
     async def get_title(self, resource: ScrapResource[str]) -> str:
         soup = BeautifulSoupBuilder.build(resource)
         title = ScrapResourceTitleStrategyProvider.get_strategy(

@@ -17,15 +17,6 @@ class TestSubjectScrapResourceParser:
             content='<h1>Sub</h1><div class="cursos-wrapper"><div class="grade-wrapper"><a href="/grade">1</a></div></div>',
         )
 
-    async def test_given_html_resource_when_get_edge_then_returns_current_hierarchy_edge(
-        self,
-    ):
-        edge = await self.parser.get_edge(self.resource)
-
-        assert edge.url == "url"
-        assert edge.type == ResourceType.HTML
-        assert edge.hierarchy == CurriculumHierarchyType.SUBJECT
-
     async def test_given_html_resource_when_get_children_then_returns_expected_child_hierarchy(
         self,
     ):
@@ -43,3 +34,15 @@ class TestSubjectScrapResourceParser:
 
         with pytest.raises(AssertionError):
             await self.parser.get_title(resource)
+
+    @pytest.mark.parametrize("suffix", ["3° medio", "4° MEDIO"])
+    async def test_given_title_with_grade_suffix_when_get_title_then_removes_suffix(
+        self, suffix: str
+    ):
+        resource = ScrapResource(
+            url="url",
+            type=ResourceType.HTML,
+            content=f"<h1>Lengua y Literatura {suffix}</h1>",
+        )
+
+        assert await self.parser.get_title(resource) == "Lengua y Literatura"

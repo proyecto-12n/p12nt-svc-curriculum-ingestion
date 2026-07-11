@@ -27,16 +27,6 @@ class TestGradeLevelScrapResourceParser:
             """,
         )
 
-    async def test_given_html_resource_when_get_edge_then_returns_current_hierarchy_edge(
-        self,
-    ):
-        edge = await self.parser.get_edge(self.resource)
-
-        assert edge.url == "url"
-        assert edge.type == ResourceType.HTML
-        assert edge.hierarchy == CurriculumHierarchyType.GRADE_LEVEL
-        assert edge.parent_url == "/subject"
-
     async def test_given_html_resource_when_get_children_then_returns_expected_child_hierarchy(
         self,
     ):
@@ -45,6 +35,7 @@ class TestGradeLevelScrapResourceParser:
         assert len(children) == 1
         assert children[0].url == "/ref"
         assert children[0].hierarchy == CurriculumHierarchyType.STUDY_PROGRAM_REF
+        assert children[0].title == "Programa"
 
     async def test_given_html_without_title_when_get_title_then_raises(self):
         resource = ScrapResource(

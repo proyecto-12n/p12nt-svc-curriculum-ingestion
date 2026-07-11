@@ -32,15 +32,6 @@ class StudyProgramRefScrapResourceParser(ScrapResourceParser[str]):
         async for x in self.__extract_nodes(soup):
             yield x
 
-    async def get_edge(self, resource: ScrapResource[str]) -> Edge[str]:
-        return Edge(
-            url=resource.url,
-            type=ResourceType.HTML,
-            hierarchy=CurriculumHierarchyType.STUDY_PROGRAM_REF,
-            title=await self.get_title(resource),
-            content=resource.content,
-        )
-
     async def get_title(self, resource: ScrapResource[str]) -> str:
         soup = BeautifulSoupBuilder.build(resource)
         return ScrapResourceTitleStrategyProvider.get_strategy(

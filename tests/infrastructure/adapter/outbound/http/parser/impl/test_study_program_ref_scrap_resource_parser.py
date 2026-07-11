@@ -17,15 +17,6 @@ class TestStudyProgramRefScrapResourceParser:
             content='<h1>Ref</h1><a href="/file.pdf">PDF</a>',
         )
 
-    async def test_given_html_resource_when_get_edge_then_returns_current_hierarchy_edge(
-        self,
-    ):
-        edge = await self.parser.get_edge(self.resource)
-
-        assert edge.url == "url"
-        assert edge.type == ResourceType.HTML
-        assert edge.hierarchy == CurriculumHierarchyType.STUDY_PROGRAM_REF
-
     async def test_given_html_resource_when_get_children_then_returns_expected_child_hierarchy(
         self,
     ):

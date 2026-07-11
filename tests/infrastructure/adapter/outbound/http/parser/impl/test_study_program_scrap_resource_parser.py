@@ -1,6 +1,5 @@
 from unittest.mock import MagicMock, patch
 
-from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
 from domain.model.resource_type import ResourceType
 from domain.model.scrap_resource import ScrapResource
 from infrastructure.adapter.outbound.http.parser.impl.study_program_edge_parser import (
@@ -14,15 +13,6 @@ class TestStudyProgramScrapResourceParser:
         self.resource = ScrapResource(
             url="https://test/program.pdf", type=ResourceType.PDF, content=b"pdf"
         )
-
-    async def test_given_pdf_resource_when_get_edge_then_returns_study_program_edge(
-        self,
-    ):
-        edge = await self.parser.get_edge(self.resource)
-
-        assert edge.hierarchy == CurriculumHierarchyType.STUDY_PROGRAM
-        assert edge.title == "program"
-        assert edge.content == b"pdf"
 
     async def test_given_pdf_resource_when_get_children_then_yields_no_children(self):
         children = [child async for child in self.parser.get_children(self.resource)]

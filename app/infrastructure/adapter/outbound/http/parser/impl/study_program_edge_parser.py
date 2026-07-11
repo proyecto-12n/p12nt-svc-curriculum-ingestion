@@ -9,7 +9,7 @@ All rights reserved.
 
 from typing import AsyncGenerator, Any
 
-from domain.model import ResourceType, CurriculumHierarchyType
+from domain.model import ResourceType
 from domain.model.edge import Edge
 from domain.model.scrap_resource import ScrapResource
 from infrastructure.adapter.outbound.http.parser.scrap_resource_parser import (
@@ -26,15 +26,6 @@ class StudyProgramScrapResourceParser(ScrapResourceParser[bytes]):
     ) -> AsyncGenerator[Edge[bytes], Any]:
         if False:
             yield
-
-    async def get_edge(self, resource: ScrapResource[bytes]) -> Edge[bytes]:
-        return Edge(
-            url=resource.url,
-            type=ResourceType.PDF,
-            hierarchy=CurriculumHierarchyType.STUDY_PROGRAM,
-            title=await self.get_title(resource),
-            content=resource.content,
-        )
 
     async def get_title(self, resource: ScrapResource[bytes]) -> str:
         return ScrapResourceTitleStrategyProvider.get_strategy(

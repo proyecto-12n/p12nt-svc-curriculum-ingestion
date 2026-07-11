@@ -17,15 +17,6 @@ class TestCurriculumScrapResourceParser:
             content='<h1>Bases</h1><div class="menu"><a href="/mod"><h3>Mod</h3></a></div>',
         )
 
-    async def test_given_html_resource_when_get_edge_then_returns_current_hierarchy_edge(
-        self,
-    ):
-        edge = await self.parser.get_edge(self.resource)
-
-        assert edge.url == "url"
-        assert edge.type == ResourceType.HTML
-        assert edge.hierarchy == CurriculumHierarchyType.CURRICULUM
-
     async def test_given_html_resource_when_get_children_then_returns_expected_child_hierarchy(
         self,
     ):
