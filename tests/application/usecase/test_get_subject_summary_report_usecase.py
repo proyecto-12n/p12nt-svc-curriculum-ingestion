@@ -1,12 +1,12 @@
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
-from application.usecase.get_grade_level_summary_report_usecase import (
-    GetGradeLevelSummaryReportUseCaseImpl,
+from application.usecase.get_subject_summary_report_usecase import (
+    GetSubjectSummaryReportUseCaseImpl,
 )
 
 
-class TestGetGradeLevelSummaryReportUseCaseImpl:
+class TestGetSubjectSummaryReportUseCaseImpl:
     async def test_given_detail_reports_when_execute_then_counts_not_null_ids(self):
         repository = AsyncMock()
         repository.list_detail_report.return_value = [
@@ -32,7 +32,7 @@ class TestGetGradeLevelSummaryReportUseCaseImpl:
                 study_program_pymupdf4llm_id=None,
             ),
         ]
-        use_case = GetGradeLevelSummaryReportUseCaseImpl(repository)
+        use_case = GetSubjectSummaryReportUseCaseImpl(repository)
 
         result = await use_case.execute()
 

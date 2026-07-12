@@ -163,8 +163,8 @@ FACTORY_CASES = [
     grade_level_router.get_list_grade_levels_use_case,
     grade_level_router.get_get_grade_level_use_case,
     grade_level_router.get_parse_grade_level_use_case,
-    subject_router.get_list_grade_level_detail_report_use_case,
-    subject_router.get_grade_level_summary_report_use_case,
+    subject_router.get_list_subject_detail_report_use_case,
+    subject_router.get_subject_summary_report_use_case,
     study_program_ref_router.get_list_study_program_refs_use_case,
     study_program_ref_router.get_get_study_program_ref_use_case,
     study_program_ref_router.get_parse_study_program_ref_use_case,
@@ -283,7 +283,7 @@ class TestCurriculumHierarchyRouters:
 
         assert route.dependant.query_params == []
 
-    async def test_given_report_rows_when_list_grade_level_detail_report_then_returns_response(
+    async def test_given_report_rows_when_list_subject_detail_report_then_returns_response(
         self,
     ):
         use_case = SimpleNamespace(
@@ -305,7 +305,7 @@ class TestCurriculumHierarchyRouters:
             )
         )
 
-        result = await grade_level_router.list_grade_level_detail_report(use_case)
+        result = await subject_router.list_subject_detail_report(use_case)
 
         assert result[0].subject_id == 10
         assert result[0].subject_name == "Subject"
@@ -317,7 +317,7 @@ class TestCurriculumHierarchyRouters:
         assert result[0].pymupdf4llm_id is None
         use_case.execute.assert_awaited_once_with()
 
-    async def test_given_summary_when_get_grade_level_summary_report_then_returns_response(
+    async def test_given_summary_when_get_subject_summary_report_then_returns_response(
         self,
     ):
         use_case = SimpleNamespace(
@@ -332,7 +332,7 @@ class TestCurriculumHierarchyRouters:
             )
         )
 
-        result = await grade_level_router.get_grade_level_summary_report(use_case)
+        result = await subject_router.get_subject_summary_report(use_case)
 
         assert result.reference_sum == 1
         assert result.book_sum == 2
@@ -340,6 +340,15 @@ class TestCurriculumHierarchyRouters:
         assert result.pymupdf4llm_sum == 1
         assert result.total == 3
         use_case.execute.assert_awaited_once_with()
+
+    def test_given_report_routes_when_inspected_then_belong_to_subjects(self):
+        subject_paths = {route.path for route in subject_router.router.routes}
+        grade_level_paths = {route.path for route in grade_level_router.router.routes}
+
+        assert "/subjects/report/detail" in subject_paths
+        assert "/subjects/report/summary" in subject_paths
+        assert "/grade-levels/report/detail" not in grade_level_paths
+        assert "/grade-levels/report/summary" not in grade_level_paths
 
     @pytest.mark.parametrize("router", LIST_ROUTERS)
     def test_given_list_route_when_inspected_then_excludes_content(self, router):

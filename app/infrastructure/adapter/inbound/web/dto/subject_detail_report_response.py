@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from domain.model.grade_level_detail_report import GradeLevelDetailReport
 
 
-class GradeLevelDetailReportResponse(BaseModel):
+class SubjectDetailReportResponse(BaseModel):
     subject_id: int
     subject_name: str
     subject_url: str
@@ -18,7 +18,7 @@ class GradeLevelDetailReportResponse(BaseModel):
     @classmethod
     def from_domain(
         cls, grade_level_detail_report: GradeLevelDetailReport
-    ) -> "GradeLevelDetailReportResponse":
+    ) -> "SubjectDetailReportResponse":
         return cls(
             subject_id=grade_level_detail_report.subject_id,
             subject_name=grade_level_detail_report.subject_name,

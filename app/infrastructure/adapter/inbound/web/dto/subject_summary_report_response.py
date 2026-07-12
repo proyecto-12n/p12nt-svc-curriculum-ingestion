@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from domain.model.grade_level_summary_report import GradeLevelSummaryReport
 
 
-class GradeLevelSummaryReportResponse(BaseModel):
+class SubjectSummaryReportResponse(BaseModel):
     reference_sum: int
     book_sum: int
     markitdown_sum: int
@@ -13,7 +13,7 @@ class GradeLevelSummaryReportResponse(BaseModel):
     @classmethod
     def from_domain(
         cls, grade_level_summary_report: GradeLevelSummaryReport
-    ) -> "GradeLevelSummaryReportResponse":
+    ) -> "SubjectSummaryReportResponse":
         return cls(
             reference_sum=grade_level_summary_report.study_program_ref_sum,
             book_sum=grade_level_summary_report.study_program_sum,

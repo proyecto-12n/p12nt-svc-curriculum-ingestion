@@ -1,13 +1,13 @@
 from domain.model.grade_level_summary_report import GradeLevelSummaryReport
-from domain.port.inbound.get_grade_level_summary_report_use_case import (
-    GetGradeLevelSummaryReportUseCase,
+from domain.port.inbound.get_subject_summary_report_use_case import (
+    GetSubjectSummaryReportUseCase,
 )
 from domain.port.outbound.grade_level_detail_report_repository import (
     GradeLevelDetailReportRepository,
 )
 
 
-class GetGradeLevelSummaryReportUseCaseImpl(GetGradeLevelSummaryReportUseCase):
+class GetSubjectSummaryReportUseCaseImpl(GetSubjectSummaryReportUseCase):
     def __init__(self, repository: GradeLevelDetailReportRepository):
         self.repository = repository
 

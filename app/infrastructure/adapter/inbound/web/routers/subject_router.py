@@ -15,14 +15,14 @@ from sqlmodel import Session
 from application.usecase.get_curriculum_hierarchy_item_usecase import (
     GetCurriculumHierarchyItemUseCaseImpl,
 )
-from application.usecase.get_grade_level_summary_report_usecase import (
-    GetGradeLevelSummaryReportUseCaseImpl,
+from application.usecase.get_subject_summary_report_usecase import (
+    GetSubjectSummaryReportUseCaseImpl,
 )
 from application.usecase.list_curriculum_hierarchy_item_usecase import (
     ListCurriculumHierarchyItemUseCaseImpl,
 )
-from application.usecase.list_grade_level_detail_report_usecase import (
-    ListGradeLevelDetailReportUseCaseImpl,
+from application.usecase.list_subject_detail_report_usecase import (
+    ListSubjectDetailReportUseCaseImpl,
 )
 from application.usecase.parse_scrap_resource_usecase import (
     ParseScrapResourceUseCaseImpl,
@@ -32,16 +32,22 @@ from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
 from domain.port.inbound.get_curriculum_hierarchy_item_use_case import (
     GetCurriculumHierarchyItemUseCase,
 )
-from domain.port.inbound.get_grade_level_summary_report_use_case import (
-    GetGradeLevelSummaryReportUseCase,
+from domain.port.inbound.get_subject_summary_report_use_case import (
+    GetSubjectSummaryReportUseCase,
 )
 from domain.port.inbound.list_curriculum_hierarchy_item_use_case import (
     ListCurriculumHierarchyItemUseCase,
 )
-from domain.port.inbound.list_grade_level_detail_report_use_case import (
-    ListGradeLevelDetailReportUseCase,
+from domain.port.inbound.list_subject_detail_report_use_case import (
+    ListSubjectDetailReportUseCase,
 )
 from domain.port.inbound.parse_scrap_resource_use_case import ParseScrapResourceUseCase
+from infrastructure.adapter.inbound.web.dto.subject_detail_report_response import (
+    SubjectDetailReportResponse,
+)
+from infrastructure.adapter.inbound.web.dto.subject_summary_report_response import (
+    SubjectSummaryReportResponse,
+)
 from infrastructure.adapter.inbound.web.dto.subject_response import (
     SubjectResponse,
 )
@@ -82,18 +88,18 @@ def get_parse_subject_use_case(
     )
 
 
-def get_list_grade_level_detail_report_use_case(
+def get_list_subject_detail_report_use_case(
     session: Session = Depends(get_db),
-) -> ListGradeLevelDetailReportUseCase:
+) -> ListSubjectDetailReportUseCase:
     repo = SqlSubjectRepositoryAdapter(session)
-    return ListGradeLevelDetailReportUseCaseImpl(repo)
+    return ListSubjectDetailReportUseCaseImpl(repo)
 
 
-def get_grade_level_summary_report_use_case(
+def get_subject_summary_report_use_case(
     session: Session = Depends(get_db),
-) -> GetGradeLevelSummaryReportUseCase:
+) -> GetSubjectSummaryReportUseCase:
     repo = SqlSubjectRepositoryAdapter(session)
-    return GetGradeLevelSummaryReportUseCaseImpl(repo)
+    return GetSubjectSummaryReportUseCaseImpl(repo)
 
 
 @router.get(
@@ -109,6 +115,32 @@ async def list_subjects(
 ):
     results = await use_case.execute(parent_id)
     return [SubjectResponse.from_domain(s) for s in results]
+
+
+@router.get(
+    "/report/detail",
+    response_model=list[SubjectDetailReportResponse],
+)
+async def list_subject_detail_report(
+    use_case: ListSubjectDetailReportUseCase = Depends(
+        get_list_subject_detail_report_use_case
+    ),
+) -> list[SubjectDetailReportResponse]:
+    results = await use_case.execute()
+    return [SubjectDetailReportResponse.from_domain(result) for result in results]
+
+
+@router.get(
+    "/report/summary",
+    response_model=SubjectSummaryReportResponse,
+)
+async def get_subject_summary_report(
+    use_case: GetSubjectSummaryReportUseCase = Depends(
+        get_subject_summary_report_use_case
+    ),
+) -> SubjectSummaryReportResponse:
+    result = await use_case.execute()
+    return SubjectSummaryReportResponse.from_domain(result)
 
 
 @router.get("/{id}", response_model=SubjectResponse)
