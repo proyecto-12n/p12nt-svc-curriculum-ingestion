@@ -15,7 +15,6 @@ from infrastructure.models.grade_level_study_program_ref import (
     GradeLevelStudyProgramRef,
 )
 from infrastructure.models.study_program import StudyProgram
-from infrastructure.models.study_program_json import StudyProgramJson
 from infrastructure.models.study_program_markdown import StudyProgramMarkdown
 from infrastructure.models.study_program_ref import StudyProgramRef
 
@@ -26,7 +25,6 @@ __all__ = [
     "GradeLevel",
     "GradeLevelStudyProgramRef",
     "StudyProgram",
-    "StudyProgramJson",
     "StudyProgramMarkdown",
     "StudyProgramRef",
 ]

@@ -7,13 +7,12 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from typing import Any, List, Optional
+from typing import List, Optional
 
 from sqlmodel import Session, select
 
 from infrastructure.adapter.outbound.db import CurriculumHierarchyRepository
 from infrastructure.models.study_program import StudyProgram
-from infrastructure.models.study_program_json import StudyProgramJson
 from infrastructure.models.study_program_markdown import StudyProgramMarkdown
 from infrastructure.util import generate_id
 
@@ -109,33 +108,3 @@ class SqlStudyProgramRepositoryAdapter(CurriculumHierarchyRepository[StudyProgra
         self.session.commit()
         self.session.refresh(markdown)
         return markdown
-
-    async def find_json_by_study_program_id_and_tool_name(
-        self, study_program_id: int, tool_name: str
-    ) -> Optional[StudyProgramJson]:
-        statement = select(StudyProgramJson).where(
-            StudyProgramJson.study_program_id == study_program_id,
-            StudyProgramJson.tool_name == tool_name,
-        )
-        return self.session.exec(statement).first()
-
-    async def save_json(
-        self, study_program_id: int, content: dict[str, Any], tool_name: str
-    ) -> StudyProgramJson:
-        study_program_json = await self.find_json_by_study_program_id_and_tool_name(
-            study_program_id, tool_name
-        )
-        if study_program_json:
-            study_program_json.content = content
-            study_program_json.tool_name = tool_name
-        else:
-            study_program_json = StudyProgramJson(
-                id=generate_id(tool_name, str(study_program_id)),
-                study_program_id=study_program_id,
-                content=content,
-                tool_name=tool_name,
-            )
-            self.session.add(study_program_json)
-        self.session.commit()
-        self.session.refresh(study_program_json)
-        return study_program_json

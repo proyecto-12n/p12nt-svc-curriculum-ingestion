@@ -1,0 +1,5 @@
+# Changes here will be overwritten by Copier
+_src_path: C:\Users\ahenr\Project\proyecto-12nt\p12nt-tools-scaffold\templates\svc
+project_name: p12nt-svc-curriculum-ingestion
+service_slug: curriculum_ingestion
+python_version: "3.14"
