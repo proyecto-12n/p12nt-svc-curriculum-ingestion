@@ -151,3 +151,32 @@ class TestGenerateStudyProgramMarkdownCli:
         repository.find_by_id.assert_awaited_once_with(2)
         repository.list.assert_not_awaited()
         repository.save_markdown.assert_awaited_once()
+
+    async def test_given_init_db_disabled_when_run_cli_then_skips_database_init(self):
+        session_context = MagicMock()
+        repository = MagicMock()
+        repository.list = AsyncMock(return_value=[])
+
+        with (
+            patch("sys.argv", ["generate_study_program_markdown"]),
+            patch.object(
+                generate_study_program_markdown.settings,
+                "P12NT_CURRICULUM_INIT_DB",
+                False,
+            ),
+            patch("infrastructure.database.init_db") as init_db,
+            patch("infrastructure.database.engine"),
+            patch.object(
+                generate_study_program_markdown,
+                "Session",
+                return_value=session_context,
+            ),
+            patch.object(
+                generate_study_program_markdown,
+                "SqlStudyProgramRepositoryAdapter",
+                return_value=repository,
+            ),
+        ):
+            await generate_study_program_markdown.run_cli()
+
+        init_db.assert_not_called()

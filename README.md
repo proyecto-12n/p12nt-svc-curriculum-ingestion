@@ -38,14 +38,8 @@ Variables principales:
 ```env
 PROJECT_NAME=p12nt-svc-curriculum_ingestion-service
 API_V1_STR=/api/v1
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/p12nt_curriculum_ingestion
-
-LLM_AGENT_PARSER=gemini
-GEMINI_API_KEY=
-GEMINI_LLM_MODEL_NAME=gemini-1.5-flash
-
-OLLAMA_LLM_BASE_URL=http://localhost:11434
-OLLAMA_LLM_MODEL_NAME=llama3
+P12NT_CURRICULUM_DATABASE_URL=postgresql://postgres:postgres@localhost:5432/p12nt_curriculum_ingestion
+P12NT_CURRICULUM_INIT_DB=true
 
 PDF_CONVERTER=pymupdf4llm
 ```
@@ -75,6 +69,8 @@ export PYTHONPATH=app
 ```powershell
 python app/main.py
 ```
+
+La API queda disponible en `http://127.0.0.1:8000`.
 
 Endpoints utiles:
 

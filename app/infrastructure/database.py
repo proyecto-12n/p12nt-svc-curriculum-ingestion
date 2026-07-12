@@ -2,7 +2,7 @@ from sqlalchemy.orm import declarative_base
 from sqlmodel import Session, create_engine
 from config import settings
 
-db_url = settings.DATABASE_URL
+db_url = settings.P12NT_CURRICULUM_DATABASE_URL
 if db_url.startswith("postgresql+asyncpg://"):
     db_url = db_url.replace("postgresql+asyncpg://", "postgresql://", 1)
 

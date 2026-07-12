@@ -50,7 +50,8 @@ async def run_cli():
 
     from infrastructure.database import engine, init_db
 
-    init_db()
+    if settings.P12NT_CURRICULUM_INIT_DB:
+        init_db()
 
     with Session(engine) as session:
         repository = SqlStudyProgramRepositoryAdapter(session)

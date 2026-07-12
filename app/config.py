@@ -7,19 +7,12 @@ ENV_FILE = Path(__file__).resolve().parent.parent / ".env"
 
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "p12nt-svc-curriculum_ingestion-service"
+    PROJECT_NAME: str = "p12nt-svc-curriculum-ingestion"
     API_V1_STR: str = "/api/v1"
-    DATABASE_URL: str = (
+    P12NT_CURRICULUM_DATABASE_URL: str = (
         "postgresql://postgres:postgres@localhost:5432/p12nt_curriculum_ingestion"
     )
-
-    # LLM Settings for external study program parsing agent
-    llm_agent_parser: str = "gemini"
-    gemini_api_key: str | None = None
-    gemini_llm_model_name: str = "gemini-1.5-flash"
-
-    ollama_llm_base_url: str = "http://localhost:11434"
-    ollama_llm_model_name: str = "llama3"
+    P12NT_CURRICULUM_INIT_DB: bool = True
 
     # PDF Converter settings
     pdf_converter: str = "pymupdf4llm"

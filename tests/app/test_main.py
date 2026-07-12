@@ -18,6 +18,16 @@ class TestMain:
             async with main.lifespan(MagicMock()):
                 init_db.assert_called_once_with()
 
+    async def test_given_init_db_disabled_when_lifespan_entered_then_skips_database_init(
+        self,
+    ):
+        with (
+            patch.object(main.settings, "P12NT_CURRICULUM_INIT_DB", False),
+            patch.object(main, "init_db") as init_db,
+        ):
+            async with main.lifespan(MagicMock()):
+                init_db.assert_not_called()
+
     def test_given_app_when_created_then_registers_health_route(self):
         paths = {route.path for route in main.app.routes if hasattr(route, "path")}
 

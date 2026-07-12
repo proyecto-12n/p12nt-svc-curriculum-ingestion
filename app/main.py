@@ -27,7 +27,8 @@ from infrastructure.adapter.inbound.web.routers.study_program_router import (
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Initialize the database and create tables if they do not exist
-    init_db()
+    if settings.P12NT_CURRICULUM_INIT_DB:
+        init_db()
     yield
 
 
@@ -61,4 +62,4 @@ app.include_router(study_program_ref_router, prefix=settings.API_V1_STR)
 app.include_router(study_program_router, prefix=settings.API_V1_STR)
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)

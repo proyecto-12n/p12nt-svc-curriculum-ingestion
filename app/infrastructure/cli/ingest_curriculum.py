@@ -14,6 +14,7 @@ from sqlmodel import Session
 from application.usecase.ingest_curriculum_usecase import (
     IngestCurriculumUseCaseImpl,
 )
+from config import settings
 from infrastructure.adapter.outbound.db import (
     SqlCurriculumHierarchyRepositoryProviderAdapter,
 )
@@ -57,7 +58,8 @@ async def run_cli():
     # Database setup
     from infrastructure.database import engine, init_db
 
-    init_db()
+    if settings.P12NT_CURRICULUM_INIT_DB:
+        init_db()
 
     with Session(engine) as session:
         from infrastructure.adapter.external.downloader.downloader_provider import (
