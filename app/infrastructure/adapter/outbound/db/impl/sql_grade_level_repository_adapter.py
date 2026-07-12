@@ -58,7 +58,7 @@ class SqlGradeLevelRepositoryAdapter(CurriculumHierarchyRepository[GradeLevel]):
         return self.session.exec(statement).first()
 
     async def list(self, parent_id: Optional[int] = None) -> List[GradeLevel]:
-        statement = select(GradeLevel)
+        statement = select(GradeLevel).order_by(GradeLevel.title)
         if parent_id is not None:
             statement = statement.where(GradeLevel.parent_id == parent_id)
         results = self.session.exec(statement).all()

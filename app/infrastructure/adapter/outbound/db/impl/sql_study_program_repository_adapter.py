@@ -59,7 +59,7 @@ class SqlStudyProgramRepositoryAdapter(CurriculumHierarchyRepository[StudyProgra
     async def list(
         self, study_program_ref_id: Optional[int] = None
     ) -> List[StudyProgram]:
-        statement = select(StudyProgram)
+        statement = select(StudyProgram).order_by(StudyProgram.title)
         if study_program_ref_id is not None:
             statement = statement.where(StudyProgram.parent_id == study_program_ref_id)
         results = self.session.exec(statement).all()

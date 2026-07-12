@@ -33,7 +33,7 @@ class SqlCurriculumRepositoryAdapter(CurriculumHierarchyRepository[Curriculum]):
         return self.session.exec(statement).first()
 
     async def list(self, parent_id: Optional[int] = None) -> List[Curriculum]:
-        statement = select(Curriculum)
+        statement = select(Curriculum).order_by(Curriculum.title)
         results = self.session.exec(statement).all()
         return [row for row in results]
 

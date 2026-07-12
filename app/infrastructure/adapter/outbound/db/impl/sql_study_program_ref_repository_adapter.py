@@ -52,7 +52,7 @@ class SqlStudyProgramRefRepositoryAdapter(
         return self.session.exec(statement).first()
 
     async def list(self, grade_level_id: Optional[int] = None) -> List[StudyProgramRef]:
-        statement = select(StudyProgramRef)
+        statement = select(StudyProgramRef).order_by(StudyProgramRef.title)
         if grade_level_id is not None:
             statement = statement.join(GradeLevelStudyProgramRef).where(
                 GradeLevelStudyProgramRef.grade_level_id == grade_level_id

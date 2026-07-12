@@ -41,7 +41,7 @@ class SqlSubjectRepositoryAdapter(CurriculumHierarchyRepository[Subject]):
     async def list(
         self, curriculum_framework_id: Optional[int] = None
     ) -> List[Subject]:
-        statement = select(Subject)
+        statement = select(Subject).order_by(Subject.title)
         if curriculum_framework_id is not None:
             statement = statement.where(Subject.parent_id == curriculum_framework_id)
         results = self.session.exec(statement).all()

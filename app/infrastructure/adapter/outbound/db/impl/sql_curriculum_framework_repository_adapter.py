@@ -48,6 +48,8 @@ class SqlCurriculumFrameworkRepositoryAdapter(
     async def list(self, parent_id: Optional[int] = None) -> List[CurriculumFramework]:
         statement = select(CurriculumFramework)
         if parent_id is not None:
-            statement = statement.where(CurriculumFramework.parent_id == parent_id)
+            statement = statement.where(
+                CurriculumFramework.parent_id == parent_id
+            ).order_by(CurriculumFramework.title)
         results = self.session.exec(statement).all()
         return [row for row in results]
