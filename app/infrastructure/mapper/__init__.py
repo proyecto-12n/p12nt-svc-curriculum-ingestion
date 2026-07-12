@@ -9,7 +9,9 @@ All rights reserved.
 
 from infrastructure.mapper.impl.curriculum_mapper import CurriculumMapper
 from infrastructure.mapper.impl.grade_level_mapper import GradeLevelMapper
-from infrastructure.mapper.impl.modality_mapper import ModalityMapper
+from infrastructure.mapper.impl.curriculum_framework_mapper import (
+    CurriculumFrameworkMapper,
+)
 from infrastructure.mapper.impl.study_program_mapper import StudyProgramMapper
 from infrastructure.mapper.impl.study_program_ref_mapper import (
     StudyProgramRefMapper,
@@ -21,7 +23,7 @@ from infrastructure.mapper.curriculum_hierarchy_mapper_provider_adapter import (
 
 __all__ = [
     "CurriculumMapper",
-    "ModalityMapper",
+    "CurriculumFrameworkMapper",
     "SubjectMapper",
     "GradeLevelMapper",
     "StudyProgramRefMapper",

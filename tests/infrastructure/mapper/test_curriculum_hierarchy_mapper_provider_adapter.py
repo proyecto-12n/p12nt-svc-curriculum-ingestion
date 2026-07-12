@@ -5,7 +5,7 @@ from infrastructure.mapper import (
     CurriculumHierarchyMapperProviderAdapter,
     CurriculumMapper,
     GradeLevelMapper,
-    ModalityMapper,
+    CurriculumFrameworkMapper,
     StudyProgramMapper,
     StudyProgramRefMapper,
     SubjectMapper,
@@ -22,7 +22,8 @@ class TestCurriculumHierarchyMapperProviderAdapter:
             CurriculumMapper,
         )
         assert isinstance(
-            self.provider.get_mapper(CurriculumHierarchyType.MODALITY), ModalityMapper
+            self.provider.get_mapper(CurriculumHierarchyType.CURRICULUM_FRAMEWORK),
+            CurriculumFrameworkMapper,
         )
         assert isinstance(
             self.provider.get_mapper(CurriculumHierarchyType.SUBJECT), SubjectMapper

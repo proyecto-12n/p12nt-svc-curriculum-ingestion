@@ -24,7 +24,7 @@ from infrastructure.util import BeautifulSoupBuilder
 from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
 
 
-class ModalityScrapResourceParser(ScrapResourceParser[str]):
+class CurriculumFrameworkScrapResourceParser(ScrapResourceParser[str]):
     async def get_children(
         self, resource: ScrapResource[str]
     ) -> AsyncGenerator[Edge[str], Any]:

@@ -1,5 +1,5 @@
 from infrastructure.models.curriculum import Curriculum
-from infrastructure.models.modality import Modality
+from infrastructure.models.curriculum_framework import CurriculumFramework
 
 
 class TestCurriculum:
@@ -11,14 +11,18 @@ class TestCurriculum:
         assert model.title == "title"
         assert model.content == "html"
 
-    def test_given_modality_when_assigned_then_relation_is_available(self):
+    def test_given_curriculum_framework_when_assigned_then_relation_is_available(self):
         curriculum = Curriculum(id=1, url="url", title="title", content="html")
-        modality = Modality(
-            id=2, parent_id=1, url="modality-url", title="modality", content="html"
+        curriculum_framework = CurriculumFramework(
+            id=2,
+            parent_id=1,
+            url="curriculum-framework-url",
+            title="Curriculum Framework",
+            content="html",
         )
 
-        curriculum.modalities = [modality]
-        modality.curriculum = curriculum
+        curriculum.curriculum_frameworks = [curriculum_framework]
+        curriculum_framework.curriculum = curriculum
 
-        assert curriculum.modalities == [modality]
-        assert modality.curriculum == curriculum
+        assert curriculum.curriculum_frameworks == [curriculum_framework]
+        assert curriculum_framework.curriculum == curriculum

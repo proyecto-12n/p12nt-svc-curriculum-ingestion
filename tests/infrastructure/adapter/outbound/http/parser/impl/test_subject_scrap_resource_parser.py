@@ -35,7 +35,7 @@ class TestSubjectScrapResourceParser:
         with pytest.raises(AssertionError):
             await self.parser.get_title(resource)
 
-    @pytest.mark.parametrize("suffix", ["3° medio", "4° MEDIO"])
+    @pytest.mark.parametrize("suffix", ["3° medio", "4° MEDIO", "3º medio", "4º medio"])
     async def test_given_title_with_grade_suffix_when_get_title_then_removes_suffix(
         self, suffix: str
     ):

@@ -1,8 +1,8 @@
 from infrastructure.adapter.outbound.db.impl.sql_curriculum_repository_adapter import (
     SqlCurriculumRepositoryAdapter,
 )
-from infrastructure.adapter.outbound.db.impl.sql_modality_repository_adapter import (
-    SqlModalityRepositoryAdapter,
+from infrastructure.adapter.outbound.db.impl.sql_curriculum_framework_repository_adapter import (
+    SqlCurriculumFrameworkRepositoryAdapter,
 )
 from infrastructure.adapter.outbound.db.impl.sql_subject_repository_adapter import (
     SqlSubjectRepositoryAdapter,
@@ -22,7 +22,7 @@ from infrastructure.adapter.outbound.db.sql_curriculum_hierarchy_repository_prov
 
 __all__ = [
     "SqlCurriculumRepositoryAdapter",
-    "SqlModalityRepositoryAdapter",
+    "SqlCurriculumFrameworkRepositoryAdapter",
     "SqlSubjectRepositoryAdapter",
     "SqlGradeLevelRepositoryAdapter",
     "SqlStudyProgramRefRepositoryAdapter",

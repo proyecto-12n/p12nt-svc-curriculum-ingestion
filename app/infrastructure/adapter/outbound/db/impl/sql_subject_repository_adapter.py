@@ -30,18 +30,20 @@ class SqlSubjectRepositoryAdapter(CurriculumHierarchyRepository[Subject]):
         statement = select(Subject).where(Subject.url == url)
         return self.session.exec(statement).first()
 
-    async def find_subject_by_title_and_modality(
-        self, title: str, modality_id: int
+    async def find_subject_by_title_and_curriculum_framework(
+        self, title: str, curriculum_framework_id: int
     ) -> Optional[Subject]:
         statement = select(Subject).where(
-            Subject.title == title, Subject.parent_id == modality_id
+            Subject.title == title, Subject.parent_id == curriculum_framework_id
         )
         return self.session.exec(statement).first()
 
-    async def list(self, modality_id: Optional[int] = None) -> List[Subject]:
+    async def list(
+        self, curriculum_framework_id: Optional[int] = None
+    ) -> List[Subject]:
         statement = select(Subject)
-        if modality_id is not None:
-            statement = statement.where(Subject.parent_id == modality_id)
+        if curriculum_framework_id is not None:
+            statement = statement.where(Subject.parent_id == curriculum_framework_id)
         results = self.session.exec(statement).all()
         return [row for row in results]
 

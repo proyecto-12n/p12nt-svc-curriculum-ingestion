@@ -24,8 +24,8 @@ from infrastructure.adapter.outbound.db.impl.sql_curriculum_repository_adapter i
 from infrastructure.adapter.outbound.db.impl.sql_grade_level_repository_adapter import (
     SqlGradeLevelRepositoryAdapter,
 )
-from infrastructure.adapter.outbound.db.impl.sql_modality_repository_adapter import (
-    SqlModalityRepositoryAdapter,
+from infrastructure.adapter.outbound.db.impl.sql_curriculum_framework_repository_adapter import (
+    SqlCurriculumFrameworkRepositoryAdapter,
 )
 from infrastructure.adapter.outbound.db.impl.sql_study_program_ref_repository_adapter import (
     SqlStudyProgramRefRepositoryAdapter,
@@ -46,7 +46,9 @@ class SqlCurriculumHierarchyRepositoryProviderAdapter(
             CurriculumHierarchyType, CurriculumHierarchyRepository[Any]
         ] = {
             CurriculumHierarchyType.CURRICULUM: SqlCurriculumRepositoryAdapter(session),
-            CurriculumHierarchyType.MODALITY: SqlModalityRepositoryAdapter(session),
+            CurriculumHierarchyType.CURRICULUM_FRAMEWORK: SqlCurriculumFrameworkRepositoryAdapter(
+                session
+            ),
             CurriculumHierarchyType.SUBJECT: SqlSubjectRepositoryAdapter(session),
             CurriculumHierarchyType.GRADE_LEVEL: SqlGradeLevelRepositoryAdapter(
                 session

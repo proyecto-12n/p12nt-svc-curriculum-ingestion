@@ -8,14 +8,14 @@ All rights reserved.
 """
 
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from sqlalchemy.orm import Mapped
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from infrastructure.models.grade_level import GradeLevel
-    from infrastructure.models.modality import Modality
+    from infrastructure.models.curriculum_framework import CurriculumFramework
 
 
 class Subject(SQLModel, table=True):
@@ -24,12 +24,14 @@ class Subject(SQLModel, table=True):
 
     id: int = Field(primary_key=True)
     url: str = Field(unique=True)
-    parent_id: int = Field(foreign_key="curriculum_ingestion.modalities.id")
+    parent_id: int = Field(foreign_key="curriculum_ingestion.curriculum_frameworks.id")
 
     title: str
     content: str
     extracted_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
-    modality: Mapped["Modality"] = Relationship(back_populates="subjects")
+    curriculum_framework: Mapped["CurriculumFramework"] = Relationship(
+        back_populates="subjects"
+    )
 
-    grade_levels: Mapped[list["GradeLevel"]] = Relationship(back_populates="subject")
+    grade_levels: Mapped[List["GradeLevel"]] = Relationship(back_populates="subject")

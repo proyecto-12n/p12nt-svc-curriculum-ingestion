@@ -5,15 +5,17 @@ from infrastructure.models import Subject
 from tests.infrastructure.adapter.outbound.db.conftest import configure_first_result
 
 
-class TestSqlSubjectRepositoryAdapterFindSubjectByTitleAndModality:
-    async def test_given_matching_title_and_modality_when_find_then_returns_subject(
+class TestSqlSubjectRepositoryAdapterFindSubjectByTitleAndCurriculumFramework:
+    async def test_given_matching_title_and_curriculum_framework_when_find_then_returns_subject(
         self, session
     ):
         expected = Subject(id=1, parent_id=2, url="url", title="Math", content="html")
         configure_first_result(session, expected)
         repository = SqlSubjectRepositoryAdapter(session)
 
-        found = await repository.find_subject_by_title_and_modality("Math", 2)
+        found = await repository.find_subject_by_title_and_curriculum_framework(
+            "Math", 2
+        )
 
         assert found == expected
         session.exec.assert_called_once()

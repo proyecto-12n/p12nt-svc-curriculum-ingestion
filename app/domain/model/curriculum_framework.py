@@ -12,7 +12,7 @@ from datetime import datetime
 
 
 @dataclass
-class Modality:
+class CurriculumFramework:
     id: int
     curriculum_id: int
     url: str

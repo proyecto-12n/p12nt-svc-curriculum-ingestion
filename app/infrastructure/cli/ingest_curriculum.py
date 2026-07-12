@@ -46,6 +46,12 @@ async def run_cli():
         help="Skip PDF resource download, persistence, and Markdown generation.",
     )
 
+    parser.add_argument(
+        "--reprocess-titles",
+        action="store_true",
+        help="Reparse and save titles from stored content without forcing downloads.",
+    )
+
     args = parser.parse_args()
 
     # Database setup
@@ -76,6 +82,7 @@ async def run_cli():
         await use_case.execute(
             refresh=args.refresh,
             ignore_pdf_resources=args.ignore_pdf_resources,
+            reprocess_titles=args.reprocess_titles,
         )
 
     logger.info("Ingestion completed successfully.")

@@ -46,12 +46,17 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
         self.downloader_provider = downloader_provider
 
     async def execute(
-        self, refresh: bool = False, ignore_pdf_resources: bool = False
+        self,
+        refresh: bool = False,
+        ignore_pdf_resources: bool = False,
+        reprocess_titles: bool = False,
     ) -> None:
         logger.info(
-            "Starting curriculum ingestion. refresh=%s ignore_pdf_resources=%s",
+            "Starting curriculum ingestion. "
+            "refresh=%s ignore_pdf_resources=%s reprocess_titles=%s",
             refresh,
             ignore_pdf_resources,
+            reprocess_titles,
         )
 
         root_node = Edge(
@@ -63,11 +68,17 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
             hierarchy=CurriculumHierarchyType.CURRICULUM,
         )
 
-        await self.__navigator(refresh, root_node, ignore_pdf_resources)
+        await self.__navigator(
+            refresh, root_node, ignore_pdf_resources, reprocess_titles
+        )
         logger.info("Curriculum ingestion finished.")
 
     async def __navigator(
-        self, refresh: bool, edge: Edge, ignore_pdf_resources: bool = False
+        self,
+        refresh: bool,
+        edge: Edge,
+        ignore_pdf_resources: bool = False,
+        reprocess_titles: bool = False,
     ) -> None:
         assert isinstance(edge, Edge)
         logger.debug("Visiting %s resource: %s", edge.hierarchy.value, edge.url)
@@ -78,7 +89,7 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
         cache, resource = await self.__get_resource(refresh, edge)
         parser = self.resource_parser_provider_adapter.get_parser(edge.hierarchy)
 
-        if not cache:
+        if not cache or reprocess_titles:
             logger.info("Ingesting %s data for %s", edge.hierarchy.value, resource.url)
 
             repository = self.repository_provider_adapter.get_repository(edge.hierarchy)
@@ -88,7 +99,11 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
 
             aux_edge = replace(
                 edge,
-                title=edge.title or await parser.get_title(resource),
+                title=(
+                    await parser.get_title(resource)
+                    if reprocess_titles
+                    else edge.title or await parser.get_title(resource)
+                ),
                 content=resource.content,
             )
 
@@ -110,7 +125,9 @@ class IngestCurriculumUseCaseImpl(IngestCurriculumUseCase):
                 parent_url=edge.url,
             )
 
-            await self.__navigator(refresh, child, ignore_pdf_resources)
+            await self.__navigator(
+                refresh, child, ignore_pdf_resources, reprocess_titles
+            )
         logger.debug("Processed %s child resources for %s", child_count, edge.url)
 
     async def __get_resource(

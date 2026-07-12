@@ -3,14 +3,14 @@ import pytest
 from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
 from domain.model.resource_type import ResourceType
 from domain.model.scrap_resource import ScrapResource
-from infrastructure.adapter.outbound.http.parser.impl.modality_edge_parser import (
-    ModalityScrapResourceParser,
+from infrastructure.adapter.outbound.http.parser.impl.curriculum_framework_edge_parser import (
+    CurriculumFrameworkScrapResourceParser,
 )
 
 
-class TestModalityScrapResourceParser:
+class TestCurriculumFrameworkScrapResourceParser:
     def setup_method(self):
-        self.parser = ModalityScrapResourceParser()
+        self.parser = CurriculumFrameworkScrapResourceParser()
         self.resource = ScrapResource(
             url="url",
             type=ResourceType.HTML,

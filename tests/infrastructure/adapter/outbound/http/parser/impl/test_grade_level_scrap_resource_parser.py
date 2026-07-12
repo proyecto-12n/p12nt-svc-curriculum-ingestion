@@ -18,7 +18,7 @@ class TestGradeLevelScrapResourceParser:
                 <ol class="breadcrumb">
                   <li><a href="https://www.curriculumnacional.cl/">Inicio</a></li>
                   <li><a href="https://www.curriculumnacional.cl/curriculum">Currículum</a></li>
-                  <li><a href="/modality">Modalidad</a></li>
+                  <li><a href="/CurriculumFramework">Modalidad</a></li>
                   <li><a href="/subject">Asignatura</a></li>
                   <li>Grade</li>
                 </ol>
@@ -55,7 +55,7 @@ class TestGradeLevelScrapResourceParser:
                 <ol class="breadcrumb">
                   <li><a href="https://www.curriculumnacional.cl/">Inicio</a></li>
                   <li><a href="https://www.curriculumnacional.cl/curriculum">Currículum</a></li>
-                  <li><a href="/modality">Modalidad</a></li>
+                  <li><a href="/CurriculumFramework">Modalidad</a></li>
                   <li><a href="/subject">Asignatura</a></li>
                   <li>Grade</li>
                 </ol>
@@ -75,7 +75,7 @@ class TestGradeLevelScrapResourceParser:
                 <ol class="breadcrumb">
                   <li><a href="https://www.curriculumnacional.cl/">Inicio</a></li>
                   <li><a href="https://www.curriculumnacional.cl/curriculum">Currículum</a></li>
-                  <li><a href="/modality">Modalidad</a></li>
+                  <li><a href="/CurriculumFramework">Modalidad</a></li>
                   <li><a href="/subject">Asignatura</a></li>
                   <li>Grade</li>
                 </ol>
@@ -100,7 +100,7 @@ class TestGradeLevelScrapResourceParser:
                     <ol class="breadcrumb">
                       <li><a href="https://www.curriculumnacional.cl/">Inicio</a></li>
                       <li><a href="https://www.curriculumnacional.cl/curriculum">Currículum</a></li>
-                      <li><a href="/modality">Modalidad</a></li>
+                      <li><a href="/CurriculumFramework">Modalidad</a></li>
                       <li><a href="/subject">Asignatura</a></li>
                       <li>{title}</li>
                     </ol>

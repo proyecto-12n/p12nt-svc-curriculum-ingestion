@@ -101,6 +101,62 @@ class TestIngestCurriculumUseCaseImpl:
         assert mapper.to_model.call_args.args[0].title == "Link Title"
         parser.get_title.assert_not_awaited()
 
+    async def test_given_cached_edge_when_reprocess_titles_then_parses_title_and_saves(
+        self,
+    ):
+        cached_model = SimpleNamespace(
+            id=1,
+            url="https://example.test/linked",
+            title="Old Link Title",
+            content="<h1>Clean Page Title</h1>",
+        )
+        repository = AsyncMock()
+        repository.find_by_url.return_value = cached_model
+        repository_provider = SimpleNamespace(
+            get_repository=MagicMock(return_value=repository)
+        )
+        parser = MagicMock()
+        parser.get_title = AsyncMock(return_value="Clean Page Title")
+
+        async def no_children(_resource):
+            if False:
+                yield None
+
+        parser.get_children = no_children
+        parser_provider = SimpleNamespace(get_parser=MagicMock(return_value=parser))
+        mapper = MagicMock()
+        mapper.to_edge.return_value = Edge(
+            url=cached_model.url,
+            type=ResourceType.HTML,
+            hierarchy=CurriculumHierarchyType.CURRICULUM,
+            title=cached_model.title,
+            content=cached_model.content,
+        )
+        mapper.to_model.return_value = "updated-model"
+        mapper_provider = SimpleNamespace(get_mapper=MagicMock(return_value=mapper))
+        downloader_provider = SimpleNamespace(get_downloader=MagicMock())
+        use_case = IngestCurriculumUseCaseImpl(
+            repository_provider_adapter=repository_provider,
+            resource_parser_provider_adapter=parser_provider,
+            curriculum_hierarchy_mapper_provider=mapper_provider,
+            downloader_provider=downloader_provider,
+        )
+        edge = Edge(
+            url=cached_model.url,
+            type=ResourceType.HTML,
+            hierarchy=CurriculumHierarchyType.CURRICULUM,
+            title="Old Link Title",
+        )
+
+        await use_case._IngestCurriculumUseCaseImpl__navigator(
+            False, edge, reprocess_titles=True
+        )
+
+        parser.get_title.assert_awaited_once()
+        assert mapper.to_model.call_args.args[0].title == "Clean Page Title"
+        repository.save.assert_awaited_once_with("updated-model")
+        downloader_provider.get_downloader.assert_not_called()
+
     async def test_given_pdf_download_failure_when_get_resource_then_returns_empty_pdf_placeholder(
         self,
     ):

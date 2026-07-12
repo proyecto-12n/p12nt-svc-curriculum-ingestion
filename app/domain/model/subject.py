@@ -14,7 +14,7 @@ from datetime import datetime
 @dataclass
 class Subject:
     id: int
-    modality_id: int
+    curriculum_framework_id: int
     url: str
 
     title: str

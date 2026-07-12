@@ -1,22 +1,22 @@
-from infrastructure.adapter.outbound.db.impl.sql_modality_repository_adapter import (
-    SqlModalityRepositoryAdapter,
+from infrastructure.adapter.outbound.db.impl.sql_curriculum_framework_repository_adapter import (
+    SqlCurriculumFrameworkRepositoryAdapter,
 )
-from infrastructure.models import Modality
+from infrastructure.models import CurriculumFramework
 from tests.infrastructure.adapter.outbound.db.conftest import (
     configure_all_result,
     configure_first_result,
 )
 
 
-class TestSqlModalityRepositoryAdapter:
+class TestSqlCurriculumFrameworkRepositoryAdapter:
     async def test_given_id_when_find_by_id_then_returns_first_exec_result(
         self, session
     ):
-        expected = Modality(
+        expected = CurriculumFramework(
             id=1, parent_id=10, url="url", title="title", content="html"
         )
         configure_first_result(session, expected)
-        repository = SqlModalityRepositoryAdapter(session)
+        repository = SqlCurriculumFrameworkRepositoryAdapter(session)
 
         result = await repository.find_by_id(1)
 
@@ -26,11 +26,11 @@ class TestSqlModalityRepositoryAdapter:
     async def test_given_url_when_find_by_url_then_returns_first_exec_result(
         self, session
     ):
-        expected = Modality(
+        expected = CurriculumFramework(
             id=1, parent_id=10, url="url", title="title", content="html"
         )
         configure_first_result(session, expected)
-        repository = SqlModalityRepositoryAdapter(session)
+        repository = SqlCurriculumFrameworkRepositoryAdapter(session)
 
         result = await repository.find_by_url("url")
 
@@ -41,10 +41,12 @@ class TestSqlModalityRepositoryAdapter:
         self, session
     ):
         expected = [
-            Modality(id=1, parent_id=10, url="url", title="title", content="html")
+            CurriculumFramework(
+                id=1, parent_id=10, url="url", title="title", content="html"
+            )
         ]
         configure_all_result(session, expected)
-        repository = SqlModalityRepositoryAdapter(session)
+        repository = SqlCurriculumFrameworkRepositoryAdapter(session)
 
         result = await repository.list(10)
 
@@ -55,8 +57,10 @@ class TestSqlModalityRepositoryAdapter:
         self, session
     ):
         configure_first_result(session, None)
-        repository = SqlModalityRepositoryAdapter(session)
-        model = Modality(id=1, parent_id=10, url="url", title="title", content="html")
+        repository = SqlCurriculumFrameworkRepositoryAdapter(session)
+        model = CurriculumFramework(
+            id=1, parent_id=10, url="url", title="title", content="html"
+        )
 
         result = await repository.save(model)
 
@@ -68,10 +72,14 @@ class TestSqlModalityRepositoryAdapter:
     async def test_given_existing_model_when_save_then_updates_without_add(
         self, session
     ):
-        existing = Modality(id=1, parent_id=10, url="url", title="old", content="old")
+        existing = CurriculumFramework(
+            id=1, parent_id=10, url="url", title="old", content="old"
+        )
         configure_first_result(session, existing)
-        repository = SqlModalityRepositoryAdapter(session)
-        model = Modality(id=1, parent_id=11, url="url", title="updated", content="html")
+        repository = SqlCurriculumFrameworkRepositoryAdapter(session)
+        model = CurriculumFramework(
+            id=1, parent_id=11, url="url", title="updated", content="html"
+        )
 
         result = await repository.save(model)
 
