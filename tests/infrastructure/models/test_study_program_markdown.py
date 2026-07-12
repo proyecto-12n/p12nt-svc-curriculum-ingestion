@@ -1,4 +1,5 @@
 from infrastructure.models.study_program_markdown import StudyProgramMarkdown
+from sqlalchemy import Text
 
 
 class TestStudyProgramMarkdown:
@@ -14,3 +15,6 @@ class TestStudyProgramMarkdown:
         assert model.study_program_id == 1
         assert model.content == "# Program"
         assert model.tool_name == "pymupdf4llm"
+
+    def test_given_model_when_inspecting_content_column_then_uses_text_type(self):
+        assert isinstance(StudyProgramMarkdown.__table__.c.content.type, Text)

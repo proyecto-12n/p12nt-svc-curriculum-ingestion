@@ -9,6 +9,7 @@ All rights reserved.
 
 from datetime import UTC, datetime
 
+from sqlalchemy import Column, Text
 from sqlmodel import Field, SQLModel
 
 
@@ -20,6 +21,6 @@ class StudyProgramMarkdown(SQLModel, table=True):
     study_program_id: int = Field(
         foreign_key="curriculum_ingestion.study_programs.id",
     )
-    content: str
+    content: str = Field(sa_column=Column(Text))
     tool_name: str
     generated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))

@@ -47,6 +47,11 @@ async def run_cli():
         type=int,
         help="Process only the study_programs.id value provided.",
     )
+    parser.add_argument(
+        "--refresh",
+        action="store_true",
+        help="Regenerate JSON even when it already exists.",
+    )
     args = parser.parse_args()
 
     from infrastructure.database import engine, init_db
@@ -69,7 +74,7 @@ async def run_cli():
                 markdown.study_program_id,
                 args.llm_agent_parser,
             )
-            if existing:
+            if existing and not args.refresh:
                 continue
 
             output = await agent_parser.run(markdown.content)
