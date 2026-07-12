@@ -1,3 +1,6 @@
+from types import SimpleNamespace
+
+from domain.model.grade_level_detail_report import GradeLevelDetailReport
 from infrastructure.adapter.outbound.db.impl.sql_subject_repository_adapter import (
     SqlSubjectRepositoryAdapter,
 )
@@ -45,6 +48,44 @@ class TestSqlSubjectRepositoryAdapter:
         result = await repository.list(10)
 
         assert result == expected
+        session.exec.assert_called_once()
+
+    async def test_given_report_rows_when_list_detail_report_then_maps_domain_results(
+        self, session
+    ):
+        row = SimpleNamespace(
+            _mapping={
+                "subject_id": 10,
+                "subject_name": "Subject",
+                "subject_url": "subject-url",
+                "grade_level_id": 1,
+                "grade_level_title": "Grade",
+                "grade_level_url": "grade-url",
+                "study_program_ref_id": 2,
+                "study_program_id": 3,
+                "study_program_markitdown_id": 4,
+                "study_program_pymupdf4llm_id": None,
+            }
+        )
+        configure_all_result(session, [row])
+        repository = SqlSubjectRepositoryAdapter(session)
+
+        result = await repository.list_detail_report()
+
+        assert result == [
+            GradeLevelDetailReport(
+                subject_id=10,
+                subject_name="Subject",
+                subject_url="subject-url",
+                grade_level_id=1,
+                grade_level_title="Grade",
+                grade_level_url="grade-url",
+                study_program_ref_id=2,
+                study_program_id=3,
+                study_program_markitdown_id=4,
+                study_program_pymupdf4llm_id=None,
+            )
+        ]
         session.exec.assert_called_once()
 
     async def test_given_new_model_when_save_then_adds_commits_and_refreshes_model(

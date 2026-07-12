@@ -9,21 +9,13 @@ All rights reserved.
 
 from typing import Optional, List
 
-from sqlalchemy import case, func
 from sqlmodel import Session, select
 
-from domain.model.grade_level_detail_report import GradeLevelDetailReport
 from infrastructure.adapter.outbound.db import (
     CurriculumHierarchyRepository,
     CurriculumHierarchyRepositoryHelper,
 )
 from infrastructure.models.grade_level import GradeLevel
-from infrastructure.models.grade_level_study_program_ref import (
-    GradeLevelStudyProgramRef,
-)
-from infrastructure.models.study_program import StudyProgram
-from infrastructure.models.study_program_markdown import StudyProgramMarkdown
-from infrastructure.models.study_program_ref import StudyProgramRef
 
 
 class SqlGradeLevelRepositoryAdapter(CurriculumHierarchyRepository[GradeLevel]):
@@ -63,54 +55,3 @@ class SqlGradeLevelRepositoryAdapter(CurriculumHierarchyRepository[GradeLevel]):
             statement = statement.where(GradeLevel.parent_id == parent_id)
         results = self.session.exec(statement).all()
         return [row for row in results]
-
-    async def list_detail_report(self) -> List[GradeLevelDetailReport]:
-        markdowns = (
-            select(
-                StudyProgramMarkdown.study_program_id,
-                func.max(
-                    case(
-                        (
-                            StudyProgramMarkdown.tool_name == "markitdown",
-                            StudyProgramMarkdown.id,
-                        )
-                    )
-                ).label("study_program_markitdown_id"),
-                func.max(
-                    case(
-                        (
-                            StudyProgramMarkdown.tool_name == "pymupdf4llm",
-                            StudyProgramMarkdown.id,
-                        )
-                    )
-                ).label("study_program_pymupdf4llm_id"),
-            )
-            .group_by(StudyProgramMarkdown.study_program_id)
-            .subquery()
-        )
-        rows = self.session.exec(
-            select(
-                GradeLevel.id.label("id"),
-                GradeLevel.title.label("title"),
-                GradeLevel.url.label("url"),
-                StudyProgramRef.id.label("study_program_ref_id"),
-                StudyProgram.id.label("study_program_id"),
-                markdowns.c.study_program_markitdown_id,
-                markdowns.c.study_program_pymupdf4llm_id,
-            )
-            .outerjoin(
-                GradeLevelStudyProgramRef,
-                GradeLevelStudyProgramRef.grade_level_id == GradeLevel.id,
-            )
-            .outerjoin(
-                StudyProgramRef,
-                StudyProgramRef.id == GradeLevelStudyProgramRef.study_program_ref_id,
-            )
-            .outerjoin(
-                StudyProgram,
-                StudyProgram.parent_id == StudyProgramRef.id,
-            )
-            .outerjoin(markdowns, markdowns.c.study_program_id == StudyProgram.id)
-        ).all()
-
-        return [GradeLevelDetailReport(**row._mapping) for row in rows]

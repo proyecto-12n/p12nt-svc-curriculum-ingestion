@@ -4,6 +4,9 @@ from domain.model.grade_level_detail_report import GradeLevelDetailReport
 
 
 class GradeLevelDetailReportResponse(BaseModel):
+    subject_id: int
+    subject_name: str
+    subject_url: str
     id: int
     title: str
     url: str
@@ -17,9 +20,12 @@ class GradeLevelDetailReportResponse(BaseModel):
         cls, grade_level_detail_report: GradeLevelDetailReport
     ) -> "GradeLevelDetailReportResponse":
         return cls(
-            id=grade_level_detail_report.id,
-            title=grade_level_detail_report.title,
-            url=grade_level_detail_report.url,
+            subject_id=grade_level_detail_report.subject_id,
+            subject_name=grade_level_detail_report.subject_name,
+            subject_url=grade_level_detail_report.subject_url,
+            id=grade_level_detail_report.grade_level_id,
+            title=grade_level_detail_report.grade_level_title,
+            url=grade_level_detail_report.grade_level_url,
             reference_id=grade_level_detail_report.study_program_ref_id,
             book_id=grade_level_detail_report.study_program_id,
             markitdown_id=grade_level_detail_report.study_program_markitdown_id,

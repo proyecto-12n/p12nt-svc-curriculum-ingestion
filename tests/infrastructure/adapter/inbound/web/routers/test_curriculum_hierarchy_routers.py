@@ -163,8 +163,8 @@ FACTORY_CASES = [
     grade_level_router.get_list_grade_levels_use_case,
     grade_level_router.get_get_grade_level_use_case,
     grade_level_router.get_parse_grade_level_use_case,
-    grade_level_router.get_list_grade_level_detail_report_use_case,
-    grade_level_router.get_grade_level_summary_report_use_case,
+    subject_router.get_list_grade_level_detail_report_use_case,
+    subject_router.get_grade_level_summary_report_use_case,
     study_program_ref_router.get_list_study_program_refs_use_case,
     study_program_ref_router.get_get_study_program_ref_use_case,
     study_program_ref_router.get_parse_study_program_ref_use_case,
@@ -290,9 +290,12 @@ class TestCurriculumHierarchyRouters:
             execute=AsyncMock(
                 return_value=[
                     GradeLevelDetailReport(
-                        id=1,
-                        title="Grade",
-                        url="grade-url",
+                        subject_id=10,
+                        subject_name="Subject",
+                        subject_url="subject-url",
+                        grade_level_id=1,
+                        grade_level_title="Grade",
+                        grade_level_url="grade-url",
                         study_program_ref_id=2,
                         study_program_id=3,
                         study_program_markitdown_id=4,
@@ -304,6 +307,9 @@ class TestCurriculumHierarchyRouters:
 
         result = await grade_level_router.list_grade_level_detail_report(use_case)
 
+        assert result[0].subject_id == 10
+        assert result[0].subject_name == "Subject"
+        assert result[0].subject_url == "subject-url"
         assert result[0].id == 1
         assert result[0].reference_id == 2
         assert result[0].book_id == 3

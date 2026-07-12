@@ -15,12 +15,6 @@ from sqlmodel import Session
 from application.usecase.get_curriculum_hierarchy_item_usecase import (
     GetCurriculumHierarchyItemUseCaseImpl,
 )
-from application.usecase.get_grade_level_summary_report_usecase import (
-    GetGradeLevelSummaryReportUseCaseImpl,
-)
-from application.usecase.list_grade_level_detail_report_usecase import (
-    ListGradeLevelDetailReportUseCaseImpl,
-)
 from application.usecase.list_curriculum_hierarchy_item_usecase import (
     ListCurriculumHierarchyItemUseCaseImpl,
 )
@@ -54,6 +48,7 @@ from infrastructure.adapter.inbound.web.dto.grade_level_summary_report_response 
 from infrastructure.adapter.inbound.web.dto.scrap_resource_parser_result_response import (
     ScrapResourceParserResultResponse,
 )
+from infrastructure.adapter.inbound.web.routers import subject_router
 from infrastructure.adapter.outbound.db.impl.sql_grade_level_repository_adapter import (
     SqlGradeLevelRepositoryAdapter,
 )
@@ -88,20 +83,6 @@ def get_parse_grade_level_use_case(
     )
 
 
-def get_list_grade_level_detail_report_use_case(
-    session: Session = Depends(get_db),
-) -> ListGradeLevelDetailReportUseCase:
-    repo = SqlGradeLevelRepositoryAdapter(session)
-    return ListGradeLevelDetailReportUseCaseImpl(repo)
-
-
-def get_grade_level_summary_report_use_case(
-    session: Session = Depends(get_db),
-) -> GetGradeLevelSummaryReportUseCase:
-    repo = SqlGradeLevelRepositoryAdapter(session)
-    return GetGradeLevelSummaryReportUseCaseImpl(repo)
-
-
 @router.get(
     "",
     response_model=List[GradeLevelResponse],
@@ -123,7 +104,7 @@ async def list_grade_levels(
 )
 async def list_grade_level_detail_report(
     use_case: ListGradeLevelDetailReportUseCase = Depends(
-        get_list_grade_level_detail_report_use_case
+        subject_router.get_list_grade_level_detail_report_use_case
     ),
 ) -> list[GradeLevelDetailReportResponse]:
     results = await use_case.execute()
@@ -136,7 +117,7 @@ async def list_grade_level_detail_report(
 )
 async def get_grade_level_summary_report(
     use_case: GetGradeLevelSummaryReportUseCase = Depends(
-        get_grade_level_summary_report_use_case
+        subject_router.get_grade_level_summary_report_use_case
     ),
 ) -> GradeLevelSummaryReportResponse:
     result = await use_case.execute()

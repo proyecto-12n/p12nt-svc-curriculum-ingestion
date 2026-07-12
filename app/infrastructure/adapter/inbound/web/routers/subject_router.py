@@ -15,8 +15,14 @@ from sqlmodel import Session
 from application.usecase.get_curriculum_hierarchy_item_usecase import (
     GetCurriculumHierarchyItemUseCaseImpl,
 )
+from application.usecase.get_grade_level_summary_report_usecase import (
+    GetGradeLevelSummaryReportUseCaseImpl,
+)
 from application.usecase.list_curriculum_hierarchy_item_usecase import (
     ListCurriculumHierarchyItemUseCaseImpl,
+)
+from application.usecase.list_grade_level_detail_report_usecase import (
+    ListGradeLevelDetailReportUseCaseImpl,
 )
 from application.usecase.parse_scrap_resource_usecase import (
     ParseScrapResourceUseCaseImpl,
@@ -26,8 +32,14 @@ from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
 from domain.port.inbound.get_curriculum_hierarchy_item_use_case import (
     GetCurriculumHierarchyItemUseCase,
 )
+from domain.port.inbound.get_grade_level_summary_report_use_case import (
+    GetGradeLevelSummaryReportUseCase,
+)
 from domain.port.inbound.list_curriculum_hierarchy_item_use_case import (
     ListCurriculumHierarchyItemUseCase,
+)
+from domain.port.inbound.list_grade_level_detail_report_use_case import (
+    ListGradeLevelDetailReportUseCase,
 )
 from domain.port.inbound.parse_scrap_resource_use_case import ParseScrapResourceUseCase
 from infrastructure.adapter.inbound.web.dto.subject_response import (
@@ -68,6 +80,20 @@ def get_parse_subject_use_case(
     return ParseScrapResourceUseCaseImpl(
         repo, ScrapResourceParserProviderAdapter(), CurriculumHierarchyType.SUBJECT
     )
+
+
+def get_list_grade_level_detail_report_use_case(
+    session: Session = Depends(get_db),
+) -> ListGradeLevelDetailReportUseCase:
+    repo = SqlSubjectRepositoryAdapter(session)
+    return ListGradeLevelDetailReportUseCaseImpl(repo)
+
+
+def get_grade_level_summary_report_use_case(
+    session: Session = Depends(get_db),
+) -> GetGradeLevelSummaryReportUseCase:
+    repo = SqlSubjectRepositoryAdapter(session)
+    return GetGradeLevelSummaryReportUseCaseImpl(repo)
 
 
 @router.get(
