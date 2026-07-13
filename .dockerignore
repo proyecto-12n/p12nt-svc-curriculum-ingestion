@@ -1,0 +1,16 @@
+.git/
+.idea/
+.venv/
+
+.env
+.coverage
+.cache/
+.pytest_cache/
+.ruff_cache/
+__pycache__/
+*.py[cod]
+
+.agents/
+.codegraph/
+laboratory/
+tests/
