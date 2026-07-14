@@ -1,13 +1,13 @@
 from datetime import datetime
 
-from domain.model.curriculum_framework import CurriculumFramework
+from domain.model.modality import Modality
 
 
-class TestCurriculumFramework:
+class TestModality:
     def test_given_valid_values_when_created_then_stores_values_and_extraction_time(
         self,
     ):
-        model = CurriculumFramework(
+        model = Modality(
             id=1, curriculum_id=2, url="url", title="title", content="html"
         )
 

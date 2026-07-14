@@ -26,7 +26,7 @@ class TestGenerateStudyProgramMarkdownCli:
         with (
             patch(
                 "sys.argv",
-                ["generate_study_program_markdown", "--pdf-converter", "markitdown"],
+                ["generate_study_program_markdown", "--pdf-converter", "pymupdf4llm"],
             ),
             patch("infrastructure.database.init_db"),
             patch("infrastructure.database.engine"),
@@ -50,17 +50,17 @@ class TestGenerateStudyProgramMarkdownCli:
 
         repository.find_markdown_by_study_program_id_and_tool_name.assert_awaited_once_with(
             1,
-            "markitdown",
+            "pymupdf4llm",
         )
         use_case.execute.assert_awaited_once()
         resource, provider_name = use_case.execute.await_args.args
         assert resource.content == b"pdf"
         assert resource.source_name == "https://example.cl/programa.pdf"
-        assert provider_name == "markitdown"
+        assert provider_name == "pymupdf4llm"
         repository.save_markdown.assert_awaited_once_with(
             study_program,
             "# Program",
-            "markitdown",
+            "pymupdf4llm",
         )
 
     async def test_given_existing_markdown_when_run_cli_then_skips_generation(self):

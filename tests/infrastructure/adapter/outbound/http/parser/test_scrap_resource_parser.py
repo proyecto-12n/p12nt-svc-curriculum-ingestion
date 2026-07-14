@@ -1,6 +1,6 @@
 from domain.model.edge import Edge
 from domain.model.resource_type import ResourceType
-from infrastructure.adapter.outbound.http.parser.scrap_resource_parser import (
+from domain.port.outbound.scrap_resource_parser import (
     ScrapResourceParser,
 )
 

@@ -37,7 +37,7 @@ async def run_cli():
     )
     parser.add_argument(
         "--pdf-converter",
-        choices=("pymupdf4llm", "markitdown"),
+        choices=("pymupdf4llm",),
         default=settings.pdf_converter,
         help="PDF converter used to generate stored Markdown.",
     )

@@ -7,6 +7,7 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
+import asyncio
 from typing import Any, Callable, Optional, TypeVar
 
 K = TypeVar("K")
@@ -14,7 +15,24 @@ K = TypeVar("K")
 
 class CurriculumHierarchyRepositoryHelper:
     @staticmethod
-    def save_hierarchy_model(
+    async def save_hierarchy_model(
+        session: Any,
+        model: K,
+        statement: Any,
+        fields: tuple[str, ...],
+        before_commit: Optional[Callable[[Any], None]] = None,
+    ) -> K:
+        return await asyncio.to_thread(
+            CurriculumHierarchyRepositoryHelper._save_hierarchy_model,
+            session,
+            model,
+            statement,
+            fields,
+            before_commit,
+        )
+
+    @staticmethod
+    def _save_hierarchy_model(
         session: Any,
         model: K,
         statement: Any,
@@ -39,3 +57,22 @@ class CurriculumHierarchyRepositoryHelper:
         session.refresh(persisted_model)
         model.id = persisted_model.id
         return model
+
+
+async def execute_first(session: Any, statement: Any) -> Any:
+    return await asyncio.to_thread(lambda: session.exec(statement).first())
+
+
+async def execute_all(session: Any, statement: Any) -> list[Any]:
+    return await asyncio.to_thread(lambda: session.exec(statement).all())
+
+
+async def commit_and_refresh(session: Any, model: Any, add: bool = True) -> Any:
+    def persist() -> Any:
+        if add:
+            session.add(model)
+        session.commit()
+        session.refresh(model)
+        return model
+
+    return await asyncio.to_thread(persist)

@@ -9,7 +9,7 @@ All rights reserved.
 
 from infrastructure.adapter.outbound.db import (
     SqlCurriculumRepositoryAdapter,
-    SqlCurriculumFrameworkRepositoryAdapter,
+    SqlModalityRepositoryAdapter,
     SqlSubjectRepositoryAdapter,
     SqlGradeLevelRepositoryAdapter,
     SqlStudyProgramRefRepositoryAdapter,
@@ -18,7 +18,7 @@ from infrastructure.adapter.outbound.db import (
 
 __all__ = [
     "SqlCurriculumRepositoryAdapter",
-    "SqlCurriculumFrameworkRepositoryAdapter",
+    "SqlModalityRepositoryAdapter",
     "SqlSubjectRepositoryAdapter",
     "SqlGradeLevelRepositoryAdapter",
     "SqlStudyProgramRefRepositoryAdapter",

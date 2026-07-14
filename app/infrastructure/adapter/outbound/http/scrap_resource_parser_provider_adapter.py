@@ -13,13 +13,13 @@ from domain.port.outbound.scrap_resource_parser_provider import (
     ScrapResourceParserProvider,
 )
 from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
-from infrastructure.adapter.outbound.http.parser.scrap_resource_parser import (
+from domain.port.outbound.scrap_resource_parser import (
     ScrapResourceParser,
 )
 from infrastructure.adapter.outbound.http.parser.impl import (
     CurriculumScrapResourceParser,
     GradeLevelScrapResourceParser,
-    CurriculumFrameworkScrapResourceParser,
+    ModalityScrapResourceParser,
     StudyProgramScrapResourceParser,
     StudyProgramRefScrapResourceParser,
     SubjectScrapResourceParser,
@@ -30,7 +30,7 @@ class ScrapResourceParserProviderAdapter(ScrapResourceParserProvider):
     def __init__(self):
         self._parsers: Dict[CurriculumHierarchyType, ScrapResourceParser] = {
             CurriculumHierarchyType.CURRICULUM: CurriculumScrapResourceParser(),
-            CurriculumHierarchyType.CURRICULUM_FRAMEWORK: CurriculumFrameworkScrapResourceParser(),
+            CurriculumHierarchyType.MODALITY: ModalityScrapResourceParser(),
             CurriculumHierarchyType.SUBJECT: SubjectScrapResourceParser(),
             CurriculumHierarchyType.GRADE_LEVEL: GradeLevelScrapResourceParser(),
             CurriculumHierarchyType.STUDY_PROGRAM_REF: StudyProgramRefScrapResourceParser(),

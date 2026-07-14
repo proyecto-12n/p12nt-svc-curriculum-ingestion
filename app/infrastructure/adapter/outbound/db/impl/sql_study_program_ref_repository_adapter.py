@@ -11,9 +11,13 @@ from typing import Optional, List
 
 from sqlmodel import Session, select
 
-from infrastructure.adapter.outbound.db import (
+from domain.port.outbound.curriculum_hierarchy_repository import (
     CurriculumHierarchyRepository,
+)
+from infrastructure.adapter.outbound.db.curriculum_hierarchy_repository_helper import (
     CurriculumHierarchyRepositoryHelper,
+    execute_all,
+    execute_first,
 )
 from infrastructure.models.grade_level_study_program_ref import (
     GradeLevelStudyProgramRef,
@@ -29,19 +33,21 @@ class SqlStudyProgramRefRepositoryAdapter(
 
     async def find_by_url(self, url: str) -> Optional[StudyProgramRef]:
         statement = select(StudyProgramRef).where(StudyProgramRef.url == url)
-        return self.session.exec(statement).first()
+        return await execute_first(self.session, statement)
 
     async def save(self, study_program_ref: StudyProgramRef) -> StudyProgramRef:
         grade_level_id = self._get_grade_level_id(study_program_ref)
         statement = select(StudyProgramRef).where(
             StudyProgramRef.url == study_program_ref.url
         )
-        study_program_ref = CurriculumHierarchyRepositoryHelper.save_hierarchy_model(
-            self.session,
-            study_program_ref,
-            statement,
-            ("url", "title", "content", "extracted_at"),
-            self._merge_grade_level_ref(grade_level_id),
+        study_program_ref = (
+            await CurriculumHierarchyRepositoryHelper.save_hierarchy_model(
+                self.session,
+                study_program_ref,
+                statement,
+                ("url", "title", "content", "extracted_at"),
+                self._merge_grade_level_ref(grade_level_id),
+            )
         )
         if grade_level_id is not None:
             object.__setattr__(study_program_ref, "_grade_level_id", grade_level_id)
@@ -49,7 +55,7 @@ class SqlStudyProgramRefRepositoryAdapter(
 
     async def find_by_id(self, id: int) -> Optional[StudyProgramRef]:
         statement = select(StudyProgramRef).where(StudyProgramRef.id == id)
-        return self.session.exec(statement).first()
+        return await execute_first(self.session, statement)
 
     async def list(self, grade_level_id: Optional[int] = None) -> List[StudyProgramRef]:
         statement = select(StudyProgramRef).order_by(StudyProgramRef.title)
@@ -57,7 +63,7 @@ class SqlStudyProgramRefRepositoryAdapter(
             statement = statement.join(GradeLevelStudyProgramRef).where(
                 GradeLevelStudyProgramRef.grade_level_id == grade_level_id
             )
-        results = self.session.exec(statement).all()
+        results = await execute_all(self.session, statement)
         if grade_level_id is not None:
             for row in results:
                 object.__setattr__(row, "_grade_level_id", grade_level_id)

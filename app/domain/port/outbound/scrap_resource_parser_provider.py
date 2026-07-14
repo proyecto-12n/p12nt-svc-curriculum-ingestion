@@ -10,7 +10,7 @@ All rights reserved.
 from typing import Protocol, Any
 
 from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
-from infrastructure.adapter.outbound.http.parser.scrap_resource_parser import (
+from domain.port.outbound.scrap_resource_parser import (
     ScrapResourceParser,
 )
 

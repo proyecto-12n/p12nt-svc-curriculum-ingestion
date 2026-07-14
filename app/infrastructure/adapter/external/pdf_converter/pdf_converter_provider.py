@@ -33,12 +33,6 @@ class PDFConverterProvider(PDFConverterProviderPort):
             )
 
             converter_class = PyMuPDFPDFConverter
-        elif name == "markitdown":
-            from infrastructure.adapter.external.pdf_converter.impl.markitdown_pdf_converter import (
-                MarkItDownPDFConverter,
-            )
-
-            converter_class = MarkItDownPDFConverter
         else:
             raise ValueError(f"No PDF converter found with name: {provider_name}")
 

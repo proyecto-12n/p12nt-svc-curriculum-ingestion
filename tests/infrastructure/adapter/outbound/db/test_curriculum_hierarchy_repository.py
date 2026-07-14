@@ -1,4 +1,4 @@
-from infrastructure.adapter.outbound.db.curriculum_hierarchy_repository import (
+from domain.port.outbound.curriculum_hierarchy_repository import (
     CurriculumHierarchyRepository,
 )
 

@@ -12,7 +12,7 @@ from typing import Optional, TypeVar
 from domain.port.inbound.get_curriculum_hierarchy_item_use_case import (
     GetCurriculumHierarchyItemUseCase,
 )
-from infrastructure.adapter.outbound.db.curriculum_hierarchy_repository import (
+from domain.port.outbound.curriculum_hierarchy_repository import (
     CurriculumHierarchyRepository,
 )
 

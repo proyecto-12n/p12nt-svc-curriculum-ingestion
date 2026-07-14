@@ -8,7 +8,7 @@ All rights reserved.
 """
 
 from infrastructure.models.curriculum import Curriculum
-from infrastructure.models.curriculum_framework import CurriculumFramework
+from infrastructure.models.modality import Modality
 from infrastructure.models.subject import Subject
 from infrastructure.models.grade_level import GradeLevel
 from infrastructure.models.grade_level_study_program_ref import (
@@ -20,7 +20,7 @@ from infrastructure.models.study_program_ref import StudyProgramRef
 
 __all__ = [
     "Curriculum",
-    "CurriculumFramework",
+    "Modality",
     "Subject",
     "GradeLevel",
     "GradeLevelStudyProgramRef",

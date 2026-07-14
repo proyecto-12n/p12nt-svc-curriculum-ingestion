@@ -17,7 +17,7 @@ class TestBreadcrumbParser:
             <ol class="breadcrumb">
               <li><a href="https://www.curriculumnacional.cl/">Inicio</a></li>
               <li><a href="https://www.curriculumnacional.cl/curriculum">Currículum</a></li>
-              <li><a href="/CurriculumFramework">CurriculumFramework</a></li>
+              <li><a href="/Modality">Modality</a></li>
             </ol>
             """,
             "html.parser",
@@ -28,10 +28,7 @@ class TestBreadcrumbParser:
         assert breadcrumbs[CurriculumHierarchyType.CURRICULUM].url == (
             "https://www.curriculumnacional.cl/curriculum"
         )
-        assert (
-            breadcrumbs[CurriculumHierarchyType.CURRICULUM_FRAMEWORK].url
-            == "/CurriculumFramework"
-        )
+        assert breadcrumbs[CurriculumHierarchyType.MODALITY].url == "/Modality"
         assert CurriculumHierarchyType.SUBJECT not in breadcrumbs
 
     def test_given_required_breadcrumb_text_when_parse_then_ignores_required_urls(self):

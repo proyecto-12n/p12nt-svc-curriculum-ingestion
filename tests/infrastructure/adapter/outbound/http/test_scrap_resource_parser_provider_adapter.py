@@ -4,7 +4,7 @@ from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
 from infrastructure.adapter.outbound.http.parser.impl import (
     CurriculumScrapResourceParser,
     GradeLevelScrapResourceParser,
-    CurriculumFrameworkScrapResourceParser,
+    ModalityScrapResourceParser,
     StudyProgramScrapResourceParser,
     StudyProgramRefScrapResourceParser,
     SubjectScrapResourceParser,
@@ -24,8 +24,8 @@ class TestScrapResourceParserProviderAdapter:
             CurriculumScrapResourceParser,
         )
         assert isinstance(
-            self.provider.get_parser(CurriculumHierarchyType.CURRICULUM_FRAMEWORK),
-            CurriculumFrameworkScrapResourceParser,
+            self.provider.get_parser(CurriculumHierarchyType.MODALITY),
+            ModalityScrapResourceParser,
         )
         assert isinstance(
             self.provider.get_parser(CurriculumHierarchyType.SUBJECT),

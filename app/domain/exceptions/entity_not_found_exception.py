@@ -1,7 +1,4 @@
-class DomainException(Exception):
-    """Excepcion base de dominio"""
-
-    pass
+from domain.exceptions.domain_exception import DomainException
 
 
 class EntityNotFoundException(DomainException):

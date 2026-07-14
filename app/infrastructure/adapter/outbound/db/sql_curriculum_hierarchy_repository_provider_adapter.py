@@ -12,7 +12,7 @@ from typing import Dict, Any
 from sqlmodel import Session
 
 from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
-from infrastructure.adapter.outbound.db.curriculum_hierarchy_repository import (
+from domain.port.outbound.curriculum_hierarchy_repository import (
     CurriculumHierarchyRepository,
 )
 from domain.port.outbound.curriculum_hierarchy_repository_provider import (
@@ -24,8 +24,8 @@ from infrastructure.adapter.outbound.db.impl.sql_curriculum_repository_adapter i
 from infrastructure.adapter.outbound.db.impl.sql_grade_level_repository_adapter import (
     SqlGradeLevelRepositoryAdapter,
 )
-from infrastructure.adapter.outbound.db.impl.sql_curriculum_framework_repository_adapter import (
-    SqlCurriculumFrameworkRepositoryAdapter,
+from infrastructure.adapter.outbound.db.impl.sql_modality_repository_adapter import (
+    SqlModalityRepositoryAdapter,
 )
 from infrastructure.adapter.outbound.db.impl.sql_study_program_ref_repository_adapter import (
     SqlStudyProgramRefRepositoryAdapter,
@@ -46,9 +46,7 @@ class SqlCurriculumHierarchyRepositoryProviderAdapter(
             CurriculumHierarchyType, CurriculumHierarchyRepository[Any]
         ] = {
             CurriculumHierarchyType.CURRICULUM: SqlCurriculumRepositoryAdapter(session),
-            CurriculumHierarchyType.CURRICULUM_FRAMEWORK: SqlCurriculumFrameworkRepositoryAdapter(
-                session
-            ),
+            CurriculumHierarchyType.MODALITY: SqlModalityRepositoryAdapter(session),
             CurriculumHierarchyType.SUBJECT: SqlSubjectRepositoryAdapter(session),
             CurriculumHierarchyType.GRADE_LEVEL: SqlGradeLevelRepositoryAdapter(
                 session

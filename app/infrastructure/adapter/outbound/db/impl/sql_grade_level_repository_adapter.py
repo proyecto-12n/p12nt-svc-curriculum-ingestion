@@ -11,9 +11,13 @@ from typing import Optional, List
 
 from sqlmodel import Session, select
 
-from infrastructure.adapter.outbound.db import (
+from domain.port.outbound.curriculum_hierarchy_repository import (
     CurriculumHierarchyRepository,
+)
+from infrastructure.adapter.outbound.db.curriculum_hierarchy_repository_helper import (
     CurriculumHierarchyRepositoryHelper,
+    execute_all,
+    execute_first,
 )
 from infrastructure.models.grade_level import GradeLevel
 
@@ -26,7 +30,7 @@ class SqlGradeLevelRepositoryAdapter(CurriculumHierarchyRepository[GradeLevel]):
         statement = select(GradeLevel).where(
             (GradeLevel.url == grade_level.url) | (GradeLevel.id == grade_level.id)
         )
-        return CurriculumHierarchyRepositoryHelper.save_hierarchy_model(
+        return await CurriculumHierarchyRepositoryHelper.save_hierarchy_model(
             self.session,
             grade_level,
             statement,
@@ -35,11 +39,11 @@ class SqlGradeLevelRepositoryAdapter(CurriculumHierarchyRepository[GradeLevel]):
 
     async def find_by_url(self, url: str) -> Optional[GradeLevel]:
         statement = select(GradeLevel).where(GradeLevel.url == url)
-        return self.session.exec(statement).first()
+        return await execute_first(self.session, statement)
 
     async def find_by_id(self, id: int) -> Optional[GradeLevel]:
         statement = select(GradeLevel).where(GradeLevel.id == id)
-        return self.session.exec(statement).first()
+        return await execute_first(self.session, statement)
 
     async def find_grade_level_by_title_and_subject(
         self, title: str, subject_id: int
@@ -47,11 +51,11 @@ class SqlGradeLevelRepositoryAdapter(CurriculumHierarchyRepository[GradeLevel]):
         statement = select(GradeLevel).where(
             GradeLevel.title == title, GradeLevel.parent_id == subject_id
         )
-        return self.session.exec(statement).first()
+        return await execute_first(self.session, statement)
 
     async def list(self, parent_id: Optional[int] = None) -> List[GradeLevel]:
         statement = select(GradeLevel).order_by(GradeLevel.title)
         if parent_id is not None:
             statement = statement.where(GradeLevel.parent_id == parent_id)
-        results = self.session.exec(statement).all()
+        results = await execute_all(self.session, statement)
         return [row for row in results]

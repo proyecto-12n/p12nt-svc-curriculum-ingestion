@@ -1,0 +1,13 @@
+from typing import List, Optional, Protocol, TypeVar
+
+K = TypeVar("K")
+
+
+class CurriculumHierarchyRepository(Protocol[K]):
+    async def find_by_id(self, id: int) -> Optional[K]: ...
+
+    async def find_by_url(self, url: str) -> Optional[K]: ...
+
+    async def list(self, parent_id: Optional[int] = None) -> List[K]: ...
+
+    async def save(self, knowledge: K) -> K: ...

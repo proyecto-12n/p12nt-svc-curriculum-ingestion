@@ -18,7 +18,7 @@ class BreadcrumbParser:
     def __init__(self):
         self.hierarchy_by_position = {
             1: CurriculumHierarchyType.CURRICULUM,
-            2: CurriculumHierarchyType.CURRICULUM_FRAMEWORK,
+            2: CurriculumHierarchyType.MODALITY,
             3: CurriculumHierarchyType.SUBJECT,
             4: CurriculumHierarchyType.GRADE_LEVEL,
         }

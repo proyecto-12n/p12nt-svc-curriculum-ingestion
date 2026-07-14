@@ -11,11 +11,13 @@ from typing import Optional, List
 
 from sqlmodel import Session, select
 
-from infrastructure.adapter.outbound.db.curriculum_hierarchy_repository import (
+from domain.port.outbound.curriculum_hierarchy_repository import (
     CurriculumHierarchyRepository,
 )
 from infrastructure.adapter.outbound.db.curriculum_hierarchy_repository_helper import (
     CurriculumHierarchyRepositoryHelper,
+    execute_all,
+    execute_first,
 )
 from infrastructure.models.curriculum import Curriculum
 
@@ -26,20 +28,20 @@ class SqlCurriculumRepositoryAdapter(CurriculumHierarchyRepository[Curriculum]):
 
     async def find_by_id(self, id: int) -> Optional[Curriculum]:
         statement = select(Curriculum).where(Curriculum.id == id)
-        return self.session.exec(statement).first()
+        return await execute_first(self.session, statement)
 
     async def find_by_url(self, url: str) -> Optional[Curriculum]:
         statement = select(Curriculum).where(Curriculum.url == url)
-        return self.session.exec(statement).first()
+        return await execute_first(self.session, statement)
 
     async def list(self, parent_id: Optional[int] = None) -> List[Curriculum]:
         statement = select(Curriculum).order_by(Curriculum.title)
-        results = self.session.exec(statement).all()
+        results = await execute_all(self.session, statement)
         return [row for row in results]
 
     async def save(self, curriculum: Curriculum) -> Curriculum:
         statement = select(Curriculum).where(Curriculum.url == curriculum.url)
-        return CurriculumHierarchyRepositoryHelper.save_hierarchy_model(
+        return await CurriculumHierarchyRepositoryHelper.save_hierarchy_model(
             self.session,
             curriculum,
             statement,

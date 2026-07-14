@@ -18,8 +18,8 @@ if TYPE_CHECKING:
     from infrastructure.models.subject import Subject
 
 
-class CurriculumFramework(SQLModel, table=True):
-    __tablename__ = "curriculum_frameworks"
+class Modality(SQLModel, table=True):
+    __tablename__ = "modalities"
     __table_args__ = {"schema": "curriculum_ingestion"}
 
     id: int = Field(primary_key=True)
@@ -30,10 +30,6 @@ class CurriculumFramework(SQLModel, table=True):
     content: str
     extracted_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
-    curriculum: Mapped["Curriculum"] = Relationship(
-        back_populates="curriculum_frameworks"
-    )
+    curriculum: Mapped["Curriculum"] = Relationship(back_populates="modalities")
 
-    subjects: Mapped[List["Subject"]] = Relationship(
-        back_populates="curriculum_framework"
-    )
+    subjects: Mapped[List["Subject"]] = Relationship(back_populates="modality")

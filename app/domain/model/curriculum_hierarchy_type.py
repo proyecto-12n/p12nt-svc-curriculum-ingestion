@@ -12,7 +12,7 @@ from enum import Enum
 
 class CurriculumHierarchyType(str, Enum):
     CURRICULUM = "curriculum"
-    CURRICULUM_FRAMEWORK = "curriculum_framework"
+    MODALITY = "modality"
     SUBJECT = "subject"
     GRADE_LEVEL = "grade-level"
     STUDY_PROGRAM_REF = "study_program_ref"

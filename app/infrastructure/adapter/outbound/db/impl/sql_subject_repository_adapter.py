@@ -13,9 +13,13 @@ from sqlalchemy import case, func
 from sqlmodel import Session, select
 
 from domain.model.grade_level_detail_report import GradeLevelDetailReport
-from infrastructure.adapter.outbound.db import (
+from domain.port.outbound.curriculum_hierarchy_repository import (
     CurriculumHierarchyRepository,
+)
+from infrastructure.adapter.outbound.db.curriculum_hierarchy_repository_helper import (
     CurriculumHierarchyRepositoryHelper,
+    execute_all,
+    execute_first,
 )
 from infrastructure.models.grade_level import GradeLevel
 from infrastructure.models.grade_level_study_program_ref import (
@@ -33,27 +37,25 @@ class SqlSubjectRepositoryAdapter(CurriculumHierarchyRepository[Subject]):
 
     async def find_by_id(self, id: int) -> Optional[Subject]:
         statement = select(Subject).where(Subject.id == id)
-        return self.session.exec(statement).first()
+        return await execute_first(self.session, statement)
 
     async def find_by_url(self, url: str) -> Optional[Subject]:
         statement = select(Subject).where(Subject.url == url)
-        return self.session.exec(statement).first()
+        return await execute_first(self.session, statement)
 
-    async def find_subject_by_title_and_curriculum_framework(
-        self, title: str, curriculum_framework_id: int
+    async def find_subject_by_title_and_modality(
+        self, title: str, modality_id: int
     ) -> Optional[Subject]:
         statement = select(Subject).where(
-            Subject.title == title, Subject.parent_id == curriculum_framework_id
+            Subject.title == title, Subject.parent_id == modality_id
         )
-        return self.session.exec(statement).first()
+        return await execute_first(self.session, statement)
 
-    async def list(
-        self, curriculum_framework_id: Optional[int] = None
-    ) -> List[Subject]:
+    async def list(self, modality_id: Optional[int] = None) -> List[Subject]:
         statement = select(Subject).order_by(Subject.title)
-        if curriculum_framework_id is not None:
-            statement = statement.where(Subject.parent_id == curriculum_framework_id)
-        results = self.session.exec(statement).all()
+        if modality_id is not None:
+            statement = statement.where(Subject.parent_id == modality_id)
+        results = await execute_all(self.session, statement)
         return [row for row in results]
 
     async def list_detail_report(self) -> List[GradeLevelDetailReport]:
@@ -80,7 +82,8 @@ class SqlSubjectRepositoryAdapter(CurriculumHierarchyRepository[Subject]):
             .group_by(StudyProgramMarkdown.study_program_id)
             .subquery()
         )
-        rows = self.session.exec(
+        rows = await execute_all(
+            self.session,
             select(
                 Subject.id.label("subject_id"),
                 Subject.title.label("subject_name"),
@@ -111,8 +114,8 @@ class SqlSubjectRepositoryAdapter(CurriculumHierarchyRepository[Subject]):
                 StudyProgram.parent_id == StudyProgramRef.id,
             )
             .outerjoin(markdowns, markdowns.c.study_program_id == StudyProgram.id)
-            .order_by(Subject.title, GradeLevel.title)
-        ).all()
+            .order_by(Subject.title, GradeLevel.title),
+        )
 
         return [GradeLevelDetailReport(**row._mapping) for row in rows]
 
@@ -120,7 +123,7 @@ class SqlSubjectRepositoryAdapter(CurriculumHierarchyRepository[Subject]):
         statement = select(Subject).where(
             (Subject.url == subject.url) | (Subject.id == subject.id)
         )
-        return CurriculumHierarchyRepositoryHelper.save_hierarchy_model(
+        return await CurriculumHierarchyRepositoryHelper.save_hierarchy_model(
             self.session,
             subject,
             statement,

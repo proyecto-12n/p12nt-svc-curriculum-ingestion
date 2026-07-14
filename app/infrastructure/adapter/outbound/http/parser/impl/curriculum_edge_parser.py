@@ -15,7 +15,7 @@ from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
 from domain.model.edge import Edge
 from domain.model.resource_type import ResourceType
 from domain.model.scrap_resource import ScrapResource
-from infrastructure.adapter.outbound.http.parser.scrap_resource_parser import (
+from domain.port.outbound.scrap_resource_parser import (
     ScrapResourceParser,
 )
 from infrastructure.adapter.outbound.http.parser.scrap_resource_title_strategy_provider import (
@@ -49,6 +49,6 @@ class CurriculumScrapResourceParser(ScrapResourceParser[str]):
                 yield Edge(
                     url=a.get("href"),
                     type=ResourceType.HTML,
-                    hierarchy=CurriculumHierarchyType.CURRICULUM_FRAMEWORK,
+                    hierarchy=CurriculumHierarchyType.MODALITY,
                     title=h3.get_text(strip=True),
                 )

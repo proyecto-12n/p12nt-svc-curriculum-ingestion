@@ -7,16 +7,13 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 All rights reserved.
 """
 
-from infrastructure.adapter.outbound.db.curriculum_hierarchy_repository import (
-    CurriculumHierarchyRepository,
-)
 from infrastructure.adapter.outbound.db.curriculum_hierarchy_repository_helper import (
     CurriculumHierarchyRepositoryHelper,
 )
 
 from infrastructure.adapter.outbound.db.impl import (
     SqlCurriculumRepositoryAdapter,
-    SqlCurriculumFrameworkRepositoryAdapter,
+    SqlModalityRepositoryAdapter,
     SqlSubjectRepositoryAdapter,
     SqlGradeLevelRepositoryAdapter,
     SqlStudyProgramRefRepositoryAdapter,
@@ -25,10 +22,9 @@ from infrastructure.adapter.outbound.db.impl import (
 )
 
 __all__ = [
-    "CurriculumHierarchyRepository",
     "CurriculumHierarchyRepositoryHelper",
     "SqlCurriculumRepositoryAdapter",
-    "SqlCurriculumFrameworkRepositoryAdapter",
+    "SqlModalityRepositoryAdapter",
     "SqlSubjectRepositoryAdapter",
     "SqlGradeLevelRepositoryAdapter",
     "SqlStudyProgramRefRepositoryAdapter",

@@ -1,5 +1,5 @@
 from infrastructure.models.grade_level import GradeLevel
-from infrastructure.models.curriculum_framework import CurriculumFramework
+from infrastructure.models.modality import Modality
 from infrastructure.models.subject import Subject
 
 
@@ -10,10 +10,10 @@ class TestSubject:
         assert model.parent_id == 2
 
     def test_given_parent_and_child_when_assigned_then_relations_are_available(self):
-        curriculum_framework = CurriculumFramework(
+        modality = Modality(
             id=1,
             parent_id=9,
-            url="curriculum-framework-url",
+            url="modality-url",
             title="Curriculum Framework",
             content="html",
         )
@@ -22,8 +22,8 @@ class TestSubject:
             id=3, parent_id=2, url="grade-url", title="grade", content="html"
         )
 
-        subject.curriculum_framework = curriculum_framework
+        subject.modality = modality
         subject.grade_levels = [grade_level]
 
-        assert subject.curriculum_framework == curriculum_framework
+        assert subject.modality == modality
         assert subject.grade_levels == [grade_level]

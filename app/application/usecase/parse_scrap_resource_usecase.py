@@ -18,7 +18,7 @@ from domain.port.inbound.parse_scrap_resource_use_case import ParseScrapResource
 from domain.port.outbound.scrap_resource_parser_provider import (
     ScrapResourceParserProvider,
 )
-from infrastructure.adapter.outbound.db.curriculum_hierarchy_repository import (
+from domain.port.outbound.curriculum_hierarchy_repository import (
     CurriculumHierarchyRepository,
 )
 

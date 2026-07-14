@@ -14,7 +14,7 @@ from bs4 import BeautifulSoup
 from domain.model.edge import Edge
 from domain.model.resource_type import ResourceType
 from domain.model.scrap_resource import ScrapResource
-from infrastructure.adapter.outbound.http.parser.scrap_resource_parser import (
+from domain.port.outbound.scrap_resource_parser import (
     ScrapResourceParser,
 )
 from infrastructure.adapter.outbound.http.parser.scrap_resource_title_strategy_provider import (
@@ -24,7 +24,7 @@ from infrastructure.util import BeautifulSoupBuilder
 from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
 
 
-class CurriculumFrameworkScrapResourceParser(ScrapResourceParser[str]):
+class ModalityScrapResourceParser(ScrapResourceParser[str]):
     async def get_children(
         self, resource: ScrapResource[str]
     ) -> AsyncGenerator[Edge[str], Any]:

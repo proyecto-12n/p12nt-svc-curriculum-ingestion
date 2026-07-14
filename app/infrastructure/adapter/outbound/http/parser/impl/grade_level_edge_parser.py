@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 from domain.model.edge import Edge
 from domain.model.resource_type import ResourceType
 from domain.model.scrap_resource import ScrapResource
-from infrastructure.adapter.outbound.http.parser.scrap_resource_parser import (
+from domain.port.outbound.scrap_resource_parser import (
     ScrapResourceParser,
 )
 from infrastructure.adapter.outbound.http.parser.scrap_resource_title_strategy_provider import (

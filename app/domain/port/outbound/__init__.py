@@ -9,7 +9,7 @@ All rights reserved.
 
 from domain.port.outbound.content_downloader import ContentDownloader
 from domain.port.outbound.downloader_provider import DownloaderProvider
-from infrastructure.adapter.outbound.db.curriculum_hierarchy_repository import (
+from domain.port.outbound.curriculum_hierarchy_repository import (
     CurriculumHierarchyRepository,
 )
 from domain.port.outbound.curriculum_hierarchy_repository_provider import (
@@ -24,6 +24,7 @@ from domain.port.outbound.curriculum_hierarchy_mapper_provider import (
 from domain.port.outbound.scrap_resource_parser_provider import (
     ScrapResourceParserProvider,
 )
+from domain.port.outbound.scrap_resource_parser import ScrapResourceParser
 from domain.port.outbound.pdf_converter import PDFConverter
 from domain.port.outbound.pdf_converter_provider import PDFConverterProvider
 
@@ -31,6 +32,7 @@ __all__ = [
     "ContentDownloader",
     "DownloaderProvider",
     "ScrapResourceParserProvider",
+    "ScrapResourceParser",
     "PDFConverter",
     "PDFConverterProvider",
     "CurriculumHierarchyRepository",

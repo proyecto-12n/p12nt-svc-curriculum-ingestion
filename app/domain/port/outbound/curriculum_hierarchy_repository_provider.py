@@ -10,7 +10,7 @@ All rights reserved.
 from typing import Protocol, Any
 
 from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
-from infrastructure.adapter.outbound.db.curriculum_hierarchy_repository import (
+from domain.port.outbound.curriculum_hierarchy_repository import (
     CurriculumHierarchyRepository,
 )
 

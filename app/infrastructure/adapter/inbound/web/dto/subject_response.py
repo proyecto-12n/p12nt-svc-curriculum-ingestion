@@ -14,7 +14,7 @@ from domain.model.subject import Subject
 
 class SubjectResponse(BaseModel):
     id: int
-    curriculum_framework_id: int
+    modality_id: int
     url: str
     title: str
     content: str
@@ -24,9 +24,9 @@ class SubjectResponse(BaseModel):
     def from_domain(cls, subject: Subject) -> "SubjectResponse":
         return cls(
             id=subject.id,
-            curriculum_framework_id=(
-                subject.curriculum_framework_id
-                if hasattr(subject, "curriculum_framework_id")
+            modality_id=(
+                subject.modality_id
+                if hasattr(subject, "modality_id")
                 else subject.parent_id
             ),
             url=subject.url,

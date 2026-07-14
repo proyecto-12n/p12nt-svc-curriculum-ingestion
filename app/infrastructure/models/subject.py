@@ -15,7 +15,7 @@ from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from infrastructure.models.grade_level import GradeLevel
-    from infrastructure.models.curriculum_framework import CurriculumFramework
+    from infrastructure.models.modality import Modality
 
 
 class Subject(SQLModel, table=True):
@@ -24,14 +24,12 @@ class Subject(SQLModel, table=True):
 
     id: int = Field(primary_key=True)
     url: str = Field(unique=True)
-    parent_id: int = Field(foreign_key="curriculum_ingestion.curriculum_frameworks.id")
+    parent_id: int = Field(foreign_key="curriculum_ingestion.modalities.id")
 
     title: str
     content: str
     extracted_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
-    curriculum_framework: Mapped["CurriculumFramework"] = Relationship(
-        back_populates="subjects"
-    )
+    modality: Mapped["Modality"] = Relationship(back_populates="subjects")
 
     grade_levels: Mapped[List["GradeLevel"]] = Relationship(back_populates="subject")

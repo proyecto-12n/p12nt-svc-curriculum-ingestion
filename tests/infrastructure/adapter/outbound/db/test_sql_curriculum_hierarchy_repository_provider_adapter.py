@@ -5,7 +5,7 @@ from infrastructure.adapter.outbound.db import (
     SqlCurriculumHierarchyRepositoryProviderAdapter,
     SqlCurriculumRepositoryAdapter,
     SqlGradeLevelRepositoryAdapter,
-    SqlCurriculumFrameworkRepositoryAdapter,
+    SqlModalityRepositoryAdapter,
     SqlStudyProgramRefRepositoryAdapter,
     SqlStudyProgramRepositoryAdapter,
     SqlSubjectRepositoryAdapter,
@@ -23,8 +23,8 @@ class TestSqlCurriculumHierarchyRepositoryProviderAdapter:
             SqlCurriculumRepositoryAdapter,
         )
         assert isinstance(
-            provider.get_repository(CurriculumHierarchyType.CURRICULUM_FRAMEWORK),
-            SqlCurriculumFrameworkRepositoryAdapter,
+            provider.get_repository(CurriculumHierarchyType.MODALITY),
+            SqlModalityRepositoryAdapter,
         )
         assert isinstance(
             provider.get_repository(CurriculumHierarchyType.SUBJECT),
