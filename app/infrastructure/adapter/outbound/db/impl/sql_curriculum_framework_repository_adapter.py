@@ -19,35 +19,41 @@ from infrastructure.adapter.outbound.db.curriculum_hierarchy_repository_helper i
     execute_all,
     execute_first,
 )
-from infrastructure.models.modality import Modality
+from infrastructure.models.curriculum_framework import CurriculumFramework
 
 
-class SqlModalityRepositoryAdapter(CurriculumHierarchyRepository[Modality]):
+class SqlCurriculumFrameworkRepositoryAdapter(
+    CurriculumHierarchyRepository[CurriculumFramework]
+):
     def __init__(self, session: Session):
         self.session = session
 
-    async def find_by_id(self, id: int) -> Optional[Modality]:
-        statement = select(Modality).where(Modality.id == id)
+    async def find_by_id(self, id: int) -> Optional[CurriculumFramework]:
+        statement = select(CurriculumFramework).where(CurriculumFramework.id == id)
         return await execute_first(self.session, statement)
 
-    async def find_by_url(self, url: str) -> Optional[Modality]:
-        statement = select(Modality).where(Modality.url == url)
+    async def find_by_url(self, url: str) -> Optional[CurriculumFramework]:
+        statement = select(CurriculumFramework).where(CurriculumFramework.url == url)
         return await execute_first(self.session, statement)
 
-    async def save(self, modality: Modality) -> Modality:
-        statement = select(Modality).where(Modality.url == modality.url)
+    async def save(
+        self, curriculum_framework: CurriculumFramework
+    ) -> CurriculumFramework:
+        statement = select(CurriculumFramework).where(
+            CurriculumFramework.url == curriculum_framework.url
+        )
         return await CurriculumHierarchyRepositoryHelper.save_hierarchy_model(
             self.session,
-            modality,
+            curriculum_framework,
             statement,
             ("url", "parent_id", "title", "content", "extracted_at"),
         )
 
-    async def list(self, parent_id: Optional[int] = None) -> List[Modality]:
-        statement = select(Modality)
+    async def list(self, parent_id: Optional[int] = None) -> List[CurriculumFramework]:
+        statement = select(CurriculumFramework)
         if parent_id is not None:
-            statement = statement.where(Modality.parent_id == parent_id).order_by(
-                Modality.title
-            )
+            statement = statement.where(
+                CurriculumFramework.parent_id == parent_id
+            ).order_by(CurriculumFramework.title)
         results = await execute_all(self.session, statement)
         return [row for row in results]

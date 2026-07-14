@@ -14,7 +14,7 @@ from sqlalchemy.orm import Mapped
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
-    from infrastructure.models.modality import Modality
+    from infrastructure.models.curriculum_framework import CurriculumFramework
 
 
 class Curriculum(SQLModel, table=True):
@@ -27,4 +27,6 @@ class Curriculum(SQLModel, table=True):
     content: str
     extracted_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
-    modalities: Mapped[list["Modality"]] = Relationship(back_populates="curriculum")
+    curriculum_frameworks: Mapped[list["CurriculumFramework"]] = Relationship(
+        back_populates="curriculum"
+    )

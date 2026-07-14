@@ -3,24 +3,26 @@ import pytest
 from domain.model.curriculum_hierarchy_type import CurriculumHierarchyType
 from domain.model.edge import Edge
 from domain.model.resource_type import ResourceType
-from infrastructure.mapper.impl.modality_mapper import (
-    ModalityMapper,
+from infrastructure.mapper.impl.curriculum_framework_mapper import (
+    CurriculumFrameworkMapper,
 )
-from infrastructure.models import Modality
+from infrastructure.models import CurriculumFramework
 
 
-class TestModalityMapper:
+class TestCurriculumFrameworkMapper:
     def setup_method(self):
-        self.mapper = ModalityMapper()
+        self.mapper = CurriculumFrameworkMapper()
 
     def test_given_sql_model_when_to_edge_then_returns_matching_edge(self):
-        model = Modality(id=1, url="url", title="title", parent_id=99, content="html")
+        model = CurriculumFramework(
+            id=1, url="url", title="title", parent_id=99, content="html"
+        )
 
         edge = self.mapper.to_edge(model)
 
         assert edge.url == "url"
         assert edge.type == ResourceType.HTML
-        assert edge.hierarchy == CurriculumHierarchyType.MODALITY
+        assert edge.hierarchy == CurriculumHierarchyType.CURRICULUM_FRAMEWORK
         assert edge.title == "title"
         assert edge.content == "html"
 
@@ -28,7 +30,7 @@ class TestModalityMapper:
         edge = Edge(
             url="url",
             type=ResourceType.HTML,
-            hierarchy=CurriculumHierarchyType.MODALITY,
+            hierarchy=CurriculumHierarchyType.CURRICULUM_FRAMEWORK,
             parent_url="parent",
             title="title",
             content="html",

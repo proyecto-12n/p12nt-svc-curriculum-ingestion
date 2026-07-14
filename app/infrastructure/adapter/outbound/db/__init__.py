@@ -13,7 +13,7 @@ from infrastructure.adapter.outbound.db.curriculum_hierarchy_repository_helper i
 
 from infrastructure.adapter.outbound.db.impl import (
     SqlCurriculumRepositoryAdapter,
-    SqlModalityRepositoryAdapter,
+    SqlCurriculumFrameworkRepositoryAdapter,
     SqlSubjectRepositoryAdapter,
     SqlGradeLevelRepositoryAdapter,
     SqlStudyProgramRefRepositoryAdapter,
@@ -24,7 +24,7 @@ from infrastructure.adapter.outbound.db.impl import (
 __all__ = [
     "CurriculumHierarchyRepositoryHelper",
     "SqlCurriculumRepositoryAdapter",
-    "SqlModalityRepositoryAdapter",
+    "SqlCurriculumFrameworkRepositoryAdapter",
     "SqlSubjectRepositoryAdapter",
     "SqlGradeLevelRepositoryAdapter",
     "SqlStudyProgramRefRepositoryAdapter",

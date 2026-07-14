@@ -49,6 +49,6 @@ class CurriculumScrapResourceParser(ScrapResourceParser[str]):
                 yield Edge(
                     url=a.get("href"),
                     type=ResourceType.HTML,
-                    hierarchy=CurriculumHierarchyType.MODALITY,
+                    hierarchy=CurriculumHierarchyType.CURRICULUM_FRAMEWORK,
                     title=h3.get_text(strip=True),
                 )

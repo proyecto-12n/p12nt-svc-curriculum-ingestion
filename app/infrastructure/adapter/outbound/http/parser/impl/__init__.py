@@ -13,8 +13,8 @@ from infrastructure.adapter.outbound.http.parser.impl.curriculum_edge_parser imp
 from infrastructure.adapter.outbound.http.parser.impl.grade_level_edge_parser import (
     GradeLevelScrapResourceParser,
 )
-from infrastructure.adapter.outbound.http.parser.impl.modality_edge_parser import (
-    ModalityScrapResourceParser,
+from infrastructure.adapter.outbound.http.parser.impl.curriculum_framework_edge_parser import (
+    CurriculumFrameworkScrapResourceParser,
 )
 from infrastructure.adapter.outbound.http.parser.impl.study_program_edge_parser import (
     StudyProgramScrapResourceParser,
@@ -29,7 +29,7 @@ from infrastructure.adapter.outbound.http.parser.impl.subject_edge_parser import
 __all__ = [
     "CurriculumScrapResourceParser",
     "GradeLevelScrapResourceParser",
-    "ModalityScrapResourceParser",
+    "CurriculumFrameworkScrapResourceParser",
     "StudyProgramScrapResourceParser",
     "StudyProgramRefScrapResourceParser",
     "SubjectScrapResourceParser",

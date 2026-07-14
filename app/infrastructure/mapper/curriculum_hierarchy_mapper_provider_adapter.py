@@ -18,8 +18,8 @@ from domain.port.outbound.curriculum_hierarchy_mapper_provider import (
 )
 from infrastructure.mapper.impl.curriculum_mapper import CurriculumMapper
 from infrastructure.mapper.impl.grade_level_mapper import GradeLevelMapper
-from infrastructure.mapper.impl.modality_mapper import (
-    ModalityMapper,
+from infrastructure.mapper.impl.curriculum_framework_mapper import (
+    CurriculumFrameworkMapper,
 )
 from infrastructure.mapper.impl.study_program_mapper import StudyProgramMapper
 from infrastructure.mapper.impl.study_program_ref_mapper import (
@@ -34,7 +34,7 @@ class CurriculumHierarchyMapperProviderAdapter(CurriculumHierarchyMapperProvider
             CurriculumHierarchyType, CurriculumHierarchyMapper[Any, Any]
         ] = {
             CurriculumHierarchyType.CURRICULUM: CurriculumMapper(),
-            CurriculumHierarchyType.MODALITY: ModalityMapper(),
+            CurriculumHierarchyType.CURRICULUM_FRAMEWORK: CurriculumFrameworkMapper(),
             CurriculumHierarchyType.SUBJECT: SubjectMapper(),
             CurriculumHierarchyType.GRADE_LEVEL: GradeLevelMapper(),
             CurriculumHierarchyType.STUDY_PROGRAM_REF: StudyProgramRefMapper(),

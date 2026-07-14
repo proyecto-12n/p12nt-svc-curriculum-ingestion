@@ -19,7 +19,7 @@ from domain.port.outbound.scrap_resource_parser import (
 from infrastructure.adapter.outbound.http.parser.impl import (
     CurriculumScrapResourceParser,
     GradeLevelScrapResourceParser,
-    ModalityScrapResourceParser,
+    CurriculumFrameworkScrapResourceParser,
     StudyProgramScrapResourceParser,
     StudyProgramRefScrapResourceParser,
     SubjectScrapResourceParser,
@@ -30,7 +30,7 @@ class ScrapResourceParserProviderAdapter(ScrapResourceParserProvider):
     def __init__(self):
         self._parsers: Dict[CurriculumHierarchyType, ScrapResourceParser] = {
             CurriculumHierarchyType.CURRICULUM: CurriculumScrapResourceParser(),
-            CurriculumHierarchyType.MODALITY: ModalityScrapResourceParser(),
+            CurriculumHierarchyType.CURRICULUM_FRAMEWORK: CurriculumFrameworkScrapResourceParser(),
             CurriculumHierarchyType.SUBJECT: SubjectScrapResourceParser(),
             CurriculumHierarchyType.GRADE_LEVEL: GradeLevelScrapResourceParser(),
             CurriculumHierarchyType.STUDY_PROGRAM_REF: StudyProgramRefScrapResourceParser(),

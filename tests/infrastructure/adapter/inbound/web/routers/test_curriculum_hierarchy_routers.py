@@ -9,7 +9,7 @@ from domain.model import (
     GradeLevel,
     GradeLevelDetailReport,
     GradeLevelSummaryReport,
-    Modality,
+    CurriculumFramework,
     StudyProgram,
     StudyProgramRef,
     Subject,
@@ -20,7 +20,7 @@ from domain.model.scrap_resource_parser_result import ScrapResourceParserResult
 from infrastructure.adapter.inbound.web.routers import (
     curriculum_router,
     grade_level_router,
-    modality_router,
+    curriculum_framework_router,
     study_program_ref_router,
     study_program_router,
     subject_router,
@@ -34,20 +34,22 @@ LIST_CASES = [
         Curriculum(id=1, url="url", title="Curriculum", content="html"),
     ),
     (
-        modality_router.list_modalities,
+        curriculum_framework_router.list_curriculum_frameworks,
         1,
-        Modality(
+        CurriculumFramework(
             id=2,
             curriculum_id=1,
             url="url",
-            title="Modality",
+            title="CurriculumFramework",
             content="html",
         ),
     ),
     (
         subject_router.list_subjects,
         2,
-        Subject(id=3, modality_id=2, url="url", title="Subject", content="html"),
+        Subject(
+            id=3, curriculum_framework_id=2, url="url", title="Subject", content="html"
+        ),
     ),
     (
         grade_level_router.list_grade_levels,
@@ -86,19 +88,21 @@ GET_CASES = [
         "Curriculum not found",
     ),
     (
-        modality_router.get_modality,
-        Modality(
+        curriculum_framework_router.get_curriculum_framework,
+        CurriculumFramework(
             id=2,
             curriculum_id=1,
             url="url",
-            title="Modality",
+            title="CurriculumFramework",
             content="html",
         ),
         "Curriculum framework not found",
     ),
     (
         subject_router.get_subject,
-        Subject(id=3, modality_id=2, url="url", title="Subject", content="html"),
+        Subject(
+            id=3, curriculum_framework_id=2, url="url", title="Subject", content="html"
+        ),
         "Subject not found",
     ),
     (
@@ -134,7 +138,7 @@ GET_CASES = [
 PARSE_CASES = [
     (curriculum_router.parse_curriculum_resource, "Curriculum not found"),
     (
-        modality_router.parse_modality_resource,
+        curriculum_framework_router.parse_curriculum_framework_resource,
         "Curriculum framework not found",
     ),
     (subject_router.parse_subject_resource, "Subject not found"),
@@ -150,9 +154,9 @@ FACTORY_CASES = [
     curriculum_router.get_list_curriculums_use_case,
     curriculum_router.get_get_curriculum_use_case,
     curriculum_router.get_parse_curriculum_use_case,
-    modality_router.get_list_modalities_use_case,
-    modality_router.get_get_modality_use_case,
-    modality_router.get_parse_modality_use_case,
+    curriculum_framework_router.get_list_curriculum_frameworks_use_case,
+    curriculum_framework_router.get_get_curriculum_framework_use_case,
+    curriculum_framework_router.get_parse_curriculum_framework_use_case,
     subject_router.get_list_subjects_use_case,
     subject_router.get_get_subject_use_case,
     subject_router.get_parse_subject_use_case,
@@ -170,7 +174,7 @@ FACTORY_CASES = [
 ]
 
 PARENT_FILTER_ROUTERS = [
-    modality_router.router,
+    curriculum_framework_router.router,
     subject_router.router,
     grade_level_router.router,
     study_program_ref_router.router,
